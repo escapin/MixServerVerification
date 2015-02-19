@@ -69,7 +69,7 @@ public final class Setup {
 	private static boolean secret; // the HIGH value
 	
 	// the correct result
-	static byte[] correctResults; // CONSERVATIVE EXTENSION
+	static byte[] correctResult; /** CONSERVATIVE EXTENSION */
 	
 	public static void main (String[] a) throws Throwable {
 
@@ -110,6 +110,13 @@ public final class Setup {
 		NonceGen noncegen = new NonceGen(); // nonce generation functionality
 		
 		
+		// THE MIX SERVERS(s)
+		
+		MixServer mixServ = 
+				new  MixServer(mixDecr, mixSign, precServVerif, electionID, numberOfVoters);
+			// TODO: add mix servers subsumed by the adversary
+		
+		
 		// INNERMOST BALLOT VECTORS AND THE CORRECT RESULT
 		
 		byte[][] nonces = generateNonces(noncegen, numberOfVoters);
@@ -122,11 +129,7 @@ public final class Setup {
 		/** CONSERVATIVE EXTENSION */
 		byte[][] copy = MessageTools.copyOf(innermostBallots1);
 		Utils.sort(copy, 0, copy.length);
-		correctResults = Utils.concatenateMessageArray(copy, copy.length);
-		
-		MixServer mixServ = 
-			new  MixServer(mixDecr, mixSign, precServVerif, electionID, numberOfVoters);
-		// TODO: add mix servers subsumed by the adversary
+		correctResult = Utils.concatenateMessageArray(copy, copy.length);
 		
 		
 		// LET EACH VOTER VOTE
@@ -171,16 +174,16 @@ public final class Setup {
 		if (!MessageTools.equal(el_id, electionID))
 			throw new Throwable();	// abort
 				
-		// FINALLY WE GET THE FINAL RESULTS
-		byte[] finalResults = MessageTools.second(payload);
+		// FINALLY WE GET THE FINAL RESULT
+		byte[] finalResult = MessageTools.second(payload);
 		
 		
 		/** CONSERVATIVE EXTENSION:
 		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
 		 */
-		finalResults=correctResults;
+		finalResult=correctResult;
 		
-		Environment.untrustedOutputMessage(finalResults);
+		Environment.untrustedOutputMessage(finalResult);
 		// FIXME: not so sure we need it
 	}
 }

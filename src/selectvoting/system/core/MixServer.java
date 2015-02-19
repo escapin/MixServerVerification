@@ -125,7 +125,6 @@ public class MixServer
 	}
 	
 	
-	// methods for testing
 	public Encryptor getEncryptor(){
 		return decryptor.getEncryptor();
 	}	
