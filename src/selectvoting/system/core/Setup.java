@@ -1,6 +1,5 @@
 package selectvoting.system.core;
 
-import selectvoting.system.core.MixServer.MalformedData;
 import de.unitrier.infsec.environment.Environment;
 import de.unitrier.infsec.functionalities.nonce.NonceGen;
 import de.unitrier.infsec.functionalities.pkenc.Encryptor;
@@ -155,7 +154,7 @@ public final class Setup {
 		byte[] signedInput = MessageTools.concatenate(input, signatureOnInput);
 		
 		
-		// LET THE MIX SERVER(s) DO ITS JOB 
+		// LET THE MIX SERVER(s) DO THE JOB 
 		
 		byte[] data=mixServ.processBallots(signedInput);
 		
