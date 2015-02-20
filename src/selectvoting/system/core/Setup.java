@@ -21,7 +21,7 @@ public final class Setup {
 		return choices;
 	}
 	
-	private static int[] computeResult (int[] choices, int numberOfCandidates) {
+	private static int[] computeResult(int[] choices, int numberOfCandidates) {
 		int[] res = new int[numberOfCandidates];
 		for (int i=0; i<choices.length; i++) 
 			++res[choices[i]];
@@ -32,13 +32,6 @@ public final class Setup {
 		for (int j= 0; j<r1.length; j++)
 			if (r1[j]!=r2[j]) return false;
 		return true;
-	}
-	
-	
-	private static byte[] createInnermostBallots(byte[] nonce, int choice) {
-		byte[] vote = MessageTools.intToByteArray(choice);
-		byte[] innerBallot = MessageTools.concatenate(nonce, vote);
-		return innerBallot;
 	}
 	
 	private static byte[] encryptBallot(Encryptor enc, byte[] electionID, byte[] innerBallot){
@@ -86,14 +79,14 @@ public final class Setup {
 		int[] choices0 = createChoices(numberOfVoters, numberOfCandidates);
 		int[] choices1 = createChoices(numberOfVoters, numberOfCandidates);
 		
-		/** CONSERVATIVE EXTENSION */
-		correctResult = choices1;
-
 		// check that those vectors give the same result
 		int[] r0 = computeResult(choices0, numberOfCandidates);
 		int[] r1 = computeResult(choices1, numberOfCandidates);
 		if (!equalResult(r0,r1))
 			throw new Throwable();	// abort if the vectors do not yield the same result
+		
+		/** CONSERVATIVE EXTENSION */
+		correctResult = r1;
 		
 		// CREATING THE CRYPTOGRAPHIC FUNCTIONALITIES
 		
@@ -121,10 +114,11 @@ public final class Setup {
 		for(int i=0; i<numberOfVoters; ++i) {
 			byte[] nonce = noncegen.nextNonce();
 			int choice = secret? choices0[i] : choices1[i];
+			byte[] vote = MessageTools.intToByteArray(choice);
+			byte[] innerBallot = MessageTools.concatenate(nonce, vote);
 			
-			byte[] innerBallots = createInnermostBallots(nonce, choice);
 			// TODO: encrypt as many time as the number of mix servers
-			encrBallots[i] = encryptBallot(mixServ.getEncryptor(), electionID, innerBallots);
+			encrBallots[i] = encryptBallot(mixServ.getEncryptor(), electionID, innerBallot);
 		}
 			
 		
@@ -167,7 +161,12 @@ public final class Setup {
 		for( MessageSplitIter iter = new MessageSplitIter(finalResultAsAMessage); iter.notEmpty(); iter.next() ) {
 			if (numberOfEntries >= numberOfVoters) // too many entries
 				throw new Throwable();
-			finalResult[numberOfEntries] = MessageTools.second(iter.current()); // ignore the nonce, take only the vote
+			byte[] current = iter.current();
+			byte[] elID = MessageTools.first(current);
+			if (!MessageTools.equal(elID, electionID)) // wrong election id
+				throw new Throwable();
+			byte[] nonce_vote = MessageTools.second(current);
+			finalResult[numberOfEntries] = MessageTools.second(nonce_vote); // ignore the nonce, take only the vote
 			numberOfEntries++;
 		}
 		if(numberOfEntries!=numberOfVoters) // not all votes found
