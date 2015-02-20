@@ -39,16 +39,6 @@ public final class Setup {
 		byte[] encrBallot=enc.encrypt(ballot);
 		return encrBallot;
 	}
-	
-	private static int[] getResult(byte[][] finalResult, int numberOfCandidates) {
-		int[] votesForCandidates = new int[numberOfCandidates];
-
-		for(int i=0; i<finalResult.length; ++i) {
-			int choice = MessageTools.byteArrayToInt(finalResult[i]);
-			votesForCandidates[choice]++;
-		}		
-		return votesForCandidates;
-	}
 
 	
 	// MAIN METHOD:
@@ -155,8 +145,11 @@ public final class Setup {
 			throw new Throwable();	// abort
 				
 		// FINALLY WE GET THE FINAL RESULT
+		
 		byte[] finalResultAsAMessage = MessageTools.second(payload);
 		byte[][] finalResult = new byte[numberOfVoters][];
+		int[] votesForCandidates = new int[numberOfCandidates];
+		
 		int numberOfEntries = 0;
 		for( MessageSplitIter iter = new MessageSplitIter(finalResultAsAMessage); iter.notEmpty(); iter.next() ) {
 			if (numberOfEntries >= numberOfVoters) // too many entries
@@ -167,12 +160,13 @@ public final class Setup {
 				throw new Throwable();
 			byte[] nonce_vote = MessageTools.second(current);
 			finalResult[numberOfEntries] = MessageTools.second(nonce_vote); // ignore the nonce, take only the vote
+			int choice = MessageTools.byteArrayToInt(finalResult[numberOfEntries]);
+			votesForCandidates[choice]++;
 			numberOfEntries++;
 		}
 		if(numberOfEntries!=numberOfVoters) // not all votes found
 			throw new Throwable();
 
-		int[] votesForCandidates=getResult(finalResult, numberOfCandidates);
 		
 		/** CONSERVATIVE EXTENSION:
 		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
