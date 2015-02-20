@@ -1,5 +1,6 @@
 package selectvoting.system.core;
 
+import selectvoting.system.core.Utils.MessageSplitIter;
 import de.unitrier.infsec.environment.Environment;
 import de.unitrier.infsec.functionalities.nonce.NonceGen;
 import de.unitrier.infsec.functionalities.pkenc.Encryptor;
@@ -34,31 +35,26 @@ public final class Setup {
 	}
 	
 	
-	private static byte[] createBallot(byte[] nonce, int choice) {
+	private static byte[] createInnermostBallots(byte[] nonce, int choice) {
 		byte[] vote = MessageTools.intToByteArray(choice);
 		byte[] innerBallot = MessageTools.concatenate(nonce, vote);
 		return innerBallot;
-	}
-	
-	private static byte[][] generateNonces(NonceGen noncegen, int number) {
-		byte[][] nonces = new byte[number][];
-		for(int i=0; i<nonces.length; ++i)
-			nonces[i]=noncegen.nextNonce();
-		return nonces;
-	}
-	
-	private static byte[][] createInnermostBallots(byte[][] nonces, int[] choices) {
-		int ballotsNumber = choices.length;
-		byte[][] innerMostBallots = new byte[ballotsNumber][];
-		for(int i=0; i<ballotsNumber; ++i)
-			innerMostBallots[i] = createBallot(nonces[i], choices[i]);
-		return innerMostBallots;
 	}
 	
 	private static byte[] encryptBallot(Encryptor enc, byte[] electionID, byte[] innerBallot){
 		byte[] ballot = MessageTools.concatenate(electionID, innerBallot);
 		byte[] encrBallot=enc.encrypt(ballot);
 		return encrBallot;
+	}
+	
+	private static int[] getResult(byte[][] finalResult, int numberOfCandidates) {
+		int[] votesForCandidates = new int[numberOfCandidates];
+
+		for(int i=0; i<finalResult.length; ++i) {
+			int choice = MessageTools.byteArrayToInt(finalResult[i]);
+			votesForCandidates[choice]++;
+		}		
+		return votesForCandidates;
 	}
 
 	
@@ -68,7 +64,7 @@ public final class Setup {
 	private static boolean secret; // the HIGH value
 	
 	// the correct result
-	static byte[] correctResult; /** CONSERVATIVE EXTENSION */
+	static int[] correctResult; /** CONSERVATIVE EXTENSION */
 	
 	public static void main (String[] a) throws Throwable {
 
@@ -89,6 +85,9 @@ public final class Setup {
 		// let the environment determine two vectors of choices
 		int[] choices0 = createChoices(numberOfVoters, numberOfCandidates);
 		int[] choices1 = createChoices(numberOfVoters, numberOfCandidates);
+		
+		/** CONSERVATIVE EXTENSION */
+		correctResult = choices1;
 
 		// check that those vectors give the same result
 		int[] r0 = computeResult(choices0, numberOfCandidates);
@@ -116,26 +115,14 @@ public final class Setup {
 			// TODO: add mix servers subsumed by the adversary
 		
 		
-		// INNERMOST BALLOT VECTORS AND THE CORRECT RESULT
-		
-		byte[][] nonces = generateNonces(noncegen, numberOfVoters);
-		// FIXME: understand the implications of having different nonces 
-		// in the two innermost ballot vectors
-		byte[][] innermostBallots0 = createInnermostBallots(nonces, choices0);
-		byte[][] innermostBallots1 = createInnermostBallots(nonces, choices1);
-		
-		
-		/** CONSERVATIVE EXTENSION */
-		byte[][] copy = MessageTools.copyOf(innermostBallots1);
-		Utils.sort(copy, 0, copy.length);
-		correctResult = Utils.concatenateMessageArray(copy, copy.length);
-		
-		
 		// LET EACH VOTER VOTE
 		
 		byte[][] encrBallots = new byte[numberOfVoters][];
 		for(int i=0; i<numberOfVoters; ++i) {
-			byte[] innerBallots = secret? innermostBallots0[i]: innermostBallots1[i];
+			byte[] nonce = noncegen.nextNonce();
+			int choice = secret? choices0[i] : choices1[i];
+			
+			byte[] innerBallots = createInnermostBallots(nonce, choice);
 			// TODO: encrypt as many time as the number of mix servers
 			encrBallots[i] = encryptBallot(mixServ.getEncryptor(), electionID, innerBallots);
 		}
@@ -174,15 +161,27 @@ public final class Setup {
 			throw new Throwable();	// abort
 				
 		// FINALLY WE GET THE FINAL RESULT
-		byte[] finalResult = MessageTools.second(payload);
-		
+		byte[] finalResultAsAMessage = MessageTools.second(payload);
+		byte[][] finalResult = new byte[numberOfVoters][];
+		int numberOfEntries = 0;
+		for( MessageSplitIter iter = new MessageSplitIter(finalResultAsAMessage); iter.notEmpty(); iter.next() ) {
+			if (numberOfEntries >= numberOfVoters) // too many entries
+				throw new Throwable();
+			finalResult[numberOfEntries] = MessageTools.second(iter.current()); // ignore the nonce, take only the vote
+			numberOfEntries++;
+		}
+		if(numberOfEntries!=numberOfVoters) // not all votes found
+			throw new Throwable();
+
+		int[] votesForCandidates=getResult(finalResult, numberOfCandidates);
 		
 		/** CONSERVATIVE EXTENSION:
 		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
 		 */
-		finalResult=correctResult;
+		votesForCandidates=correctResult;
 		
-		Environment.untrustedOutputMessage(finalResult);
+		for(int i=0; i<votesForCandidates.length; ++i)
+			Environment.untrustedOutput(votesForCandidates[i]);
 		// FIXME: not so sure we need it
 	}
 }
