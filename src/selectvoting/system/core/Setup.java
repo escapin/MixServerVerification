@@ -175,6 +175,5 @@ public final class Setup {
 		
 		for(int i=0; i<votesForCandidates.length; ++i)
 			Environment.untrustedOutput(votesForCandidates[i]);
-		// FIXME: not so sure we need it
 	}
 }
