@@ -168,12 +168,14 @@ public final class Setup {
 			throw new Throwable();
 
 		
-		/** CONSERVATIVE EXTENSION:
-		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
-		 */
-		votesForCandidates=correctResult;
-		
-		for(int i=0; i<votesForCandidates.length; ++i)
-			Environment.untrustedOutput(votesForCandidates[i]);
+		for(int i=0; i<votesForCandidates.length; ++i) {
+			int votes = votesForCandidates[i];
+			/** CONSERVATIVE EXTENSION:
+			 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
+			 */
+			votes=correctResult[i];
+			
+			Environment.untrustedOutput(votes);
+		}
 	}
 }
