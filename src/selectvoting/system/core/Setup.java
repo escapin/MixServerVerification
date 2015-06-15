@@ -94,7 +94,7 @@ public final class Setup {
 		// THE MIX SERVERS(s)
 		
 		MixServer mixServ = 
-				new  MixServer(mixDecr, mixSign, precServVerif, electionID, numberOfVoters);
+				new  MixServer(mixDecr, mixSign, precServVerif, electionID);
 			// TODO: add mix servers subsumed by the adversary
 		
 		
