@@ -132,18 +132,11 @@ public final class Setup {
 		
 
 		byte[] tagged_payload = MessageTools.first(data);
-//		byte[] signature = MessageTools.second(data);
-//		if (!mixServ.getVerifier().verify(signature, tagged_payload))
-//			throw new Throwable();	// abort
-		// check the tag
-		byte[] tag = MessageTools.first(tagged_payload);
-//		if (!MessageTools.equal(tag, Tag.BALLOTS))
-//			throw new Throwable();	// abort
+		//byte[] signature = MessageTools.second(data);
+		
+		//byte[] tag = MessageTools.first(tagged_payload);
 		byte[] payload = MessageTools.second(tagged_payload);
-		// check the election id 
-//		byte[] el_id = MessageTools.first(payload);
-//		if (!MessageTools.equal(el_id, electionID))
-//			throw new Throwable();	// abort
+		//byte[] el_id = MessageTools.first(payload);
 					
 		// FINALLY WE GET THE FINAL RESULT
 			
@@ -156,19 +149,14 @@ public final class Setup {
 			if (numberOfEntries >= numberOfVoters) // too many entries
 				throw new Throwable();
 			byte[] current = iter.current();
-			byte[] elID = MessageTools.first(current);
-			if (!MessageTools.equal(elID, electionID)) // wrong election id
-				throw new Throwable();
+			//byte[] elID = MessageTools.first(current);
 			byte[] nonce_vote = MessageTools.second(current);
 			finalResult[numberOfEntries] = MessageTools.second(nonce_vote); // ignore the nonce, take only the vote
 			int choice = MessageTools.byteArrayToInt(finalResult[numberOfEntries]);
 			votesForCandidates[choice]++;
 			numberOfEntries++;
 		}
-		if(numberOfEntries!=numberOfVoters) // not all votes found
-			throw new Throwable();
 	
-			
 		for(int i=0; i<votesForCandidates.length; ++i) {
 			int votes = votesForCandidates[i];
 			/** CONSERVATIVE EXTENSION:
@@ -176,6 +164,6 @@ public final class Setup {
 			 */
 			votes=correctResult[i];
 			Environment.untrustedOutput(votes);
-		}	
+		}
 	}
 }

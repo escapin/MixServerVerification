@@ -1,5 +1,6 @@
 package selectvoting.system.core;
 
+import selectvoting.system.core.MixServer.MalformedData;
 import selectvoting.system.core.Utils.MessageSplitIter;
 import de.unitrier.infsec.environment.Environment;
 import de.unitrier.infsec.functionalities.nonce.NonceGen;
@@ -49,6 +50,9 @@ public final class NewSetup {
 	// one secret bit
 	private static boolean secret; // the HIGH value
 	
+	// the correct result
+	static int[] correctResult; /** CONSERVATIVE EXTENSION */
+
 /**
  * A setup for modeling one honest mixserver peeling out 
  * one layer of encryption.
@@ -71,6 +75,9 @@ public final class NewSetup {
 		if (!equalResult(r0,r1))
 			throw new Throwable();	// abort if the vectors do not yield the same result
 		
+		/** CONSERVATIVE EXTENSION */
+		correctResult = r1;
+		
 		// Let the adversary decide how many mix servers we have
 		int nMixServers = Environment.untrustedInput();
 		
@@ -91,7 +98,7 @@ public final class NewSetup {
 		Signer sign = new Signer();
 		Signer precServSign = new Signer();
 		Verifier precServVerif = precServSign.getVerifier();
-		MixServer mix = new MixServer(decr, sign, precServVerif, electionID);
+		MixServer honestMix = new MixServer(decr, sign, precServVerif, electionID);
 		
 		// Encrypts n-times 
 		NonceGen noncegen = new NonceGen();
@@ -110,13 +117,38 @@ public final class NewSetup {
 		byte[] ballotsAsAMessage=Utils.concatenateMessageArray(encrBallots, encrBallots.length);
 		// add election id, tag and sign
 		byte[] elID_ballots = MessageTools.concatenate(electionID, ballotsAsAMessage);
-		byte[] input = MessageTools.concatenate(Tag.BALLOTS, elID_ballots);
-		byte[] signatureOnInput = precServSign.sign(input);
-		byte[] signedInput = MessageTools.concatenate(input, signatureOnInput);
+		byte[] tag_elID_ballots = MessageTools.concatenate(Tag.BALLOTS, elID_ballots);
+		byte[] signatureOnInput = precServSign.sign(tag_elID_ballots);
+		byte[] initialInput = MessageTools.concatenate(tag_elID_ballots, signatureOnInput);
 		
+		byte[] data=initialInput;
+		// let each mix server peel out one layer of encryption
+		for(int i=0; i<nMixServers; ++i){
+			if(i!=indexHonestMix){
+				// let the mix server controlled by the adversary peel out the layer of encryption
+				
+				// if we give 'data' to the untrusted environment, 
+				// we have an information flow from SECRET to DATA
+				Environment.untrustedOutputMessage(data);
+				data=Environment.untrustedInputMessage();
+			}
+			else
+				data=honestMix.processBallots(data);
+		}
 		
+		byte[] tagged_payload = MessageTools.first(data);
+		//byte[] signature = MessageTools.second(data);
 		
+		//byte[] tag = MessageTools.first(tagged_payload);
+		byte[] payload = MessageTools.second(tagged_payload);
 		
+		//byte[] el_id = MessageTools.first(payload);
+		// retrieve and process ballots (store decrypted entries in 'entries')
+		byte[] finalResultsAsAMessage = MessageTools.second(payload);
 		
+		// (the final results must be equal to the ballots as a message)
+		
+		// PUBLISH THE FINAL RESULTS
+		Environment.untrustedOutputMessage(finalResultsAsAMessage);
 	}
 }
