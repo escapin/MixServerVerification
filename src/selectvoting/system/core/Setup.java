@@ -129,27 +129,28 @@ public final class Setup {
 		
 		byte[] data=mixServ.processBallots(signedInput);
 		
-		// CHECK WHETHER THE MIX SERVER(s) DID THE JOB CORRECTLY
+		
+
 		byte[] tagged_payload = MessageTools.first(data);
-		byte[] signature = MessageTools.second(data);
-		if (!mixServ.getVerifier().verify(signature, tagged_payload))
-			throw new Throwable();	// abort
+//		byte[] signature = MessageTools.second(data);
+//		if (!mixServ.getVerifier().verify(signature, tagged_payload))
+//			throw new Throwable();	// abort
 		// check the tag
 		byte[] tag = MessageTools.first(tagged_payload);
-		if (!MessageTools.equal(tag, Tag.BALLOTS))
-			throw new Throwable();	// abort
+//		if (!MessageTools.equal(tag, Tag.BALLOTS))
+//			throw new Throwable();	// abort
 		byte[] payload = MessageTools.second(tagged_payload);
 		// check the election id 
-		byte[] el_id = MessageTools.first(payload);
-		if (!MessageTools.equal(el_id, electionID))
-			throw new Throwable();	// abort
-				
+//		byte[] el_id = MessageTools.first(payload);
+//		if (!MessageTools.equal(el_id, electionID))
+//			throw new Throwable();	// abort
+					
 		// FINALLY WE GET THE FINAL RESULT
-		
+			
 		byte[] finalResultAsAMessage = MessageTools.second(payload);
 		byte[][] finalResult = new byte[numberOfVoters][];
 		int[] votesForCandidates = new int[numberOfCandidates];
-		
+			
 		int numberOfEntries = 0;
 		for( MessageSplitIter iter = new MessageSplitIter(finalResultAsAMessage); iter.notEmpty(); iter.next() ) {
 			if (numberOfEntries >= numberOfVoters) // too many entries
@@ -166,16 +167,15 @@ public final class Setup {
 		}
 		if(numberOfEntries!=numberOfVoters) // not all votes found
 			throw new Throwable();
-
-		
+	
+			
 		for(int i=0; i<votesForCandidates.length; ++i) {
 			int votes = votesForCandidates[i];
 			/** CONSERVATIVE EXTENSION:
 			 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
 			 */
 			votes=correctResult[i];
-			
 			Environment.untrustedOutput(votes);
-		}
+		}	
 	}
 }

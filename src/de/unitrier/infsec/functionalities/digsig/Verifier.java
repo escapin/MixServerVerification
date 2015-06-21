@@ -1,31 +1,24 @@
 package de.unitrier.infsec.functionalities.digsig;
 
-import de.unitrier.infsec.utils.MessageTools;
+import static de.unitrier.infsec.utils.MessageTools.copyOf;
 import de.unitrier.infsec.lib.crypto.CryptoLib;
 
-/**
- * An object encapsulating the verification key and allowing a user to verify
- * a signature.
- */
 public class Verifier {
-	
-	private byte[] verifKey;
-	private Signer.Log log;
-	
-	// Note that this constructor is not public in the ideal functionality.
-	public Verifier(byte[] verifKey, Signer.Log log) {
+	protected byte[] verifKey;
+
+	public Verifier(byte[] verifKey) {
 		this.verifKey = verifKey;
-		this.log = log;
 	}
 
 	public boolean verify(byte[] signature, byte[] message) {
-		// verify both that the signature is correct (using the real verification 
-		// algorithm) and that the message has been logged as signed
-		return CryptoLib.verify(MessageTools.copyOf(message), MessageTools.copyOf(signature), MessageTools.copyOf(verifKey))
-				&& log.contains(message);
+		return CryptoLib.verify(message, signature, verifKey);
 	}
 
-	public byte[] getVerificationKey() {
-		return MessageTools.copyOf(verifKey);
+	public byte[] getVerifKey() {
+		return copyOf(verifKey);
+	}
+
+	protected Verifier copy() {
+		return new Verifier(verifKey);
 	}
 }
