@@ -11,7 +11,7 @@ import de.unitrier.infsec.functionalities.digsig.Verifier;
 import de.unitrier.infsec.functionalities.nonce.NonceGen;
 import de.unitrier.infsec.utils.MessageTools;
 
-public final class NewSetup {
+public final class SetupMultiMixServers {
 
 	// PURE SUPPORT METHODS:
 	

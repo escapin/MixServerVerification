@@ -84,9 +84,9 @@ public final class Setup {
 		Decryptor mixDecr = new Decryptor();
 		Signer mixSign = new Signer();
 		
-		Signer precServSign = new Signer(); 
+		Signer precServSign = new Signer();
 		Verifier precServVerif = precServSign.getVerifier(); 
-		// TODO: create a corrupted Verifier with a public key chosen by the adversary
+
 		
 		NonceGen noncegen = new NonceGen(); // nonce generation functionality
 		
@@ -107,7 +107,6 @@ public final class Setup {
 			byte[] vote = MessageTools.intToByteArray(choice);
 			byte[] innerBallot = MessageTools.concatenate(nonce, vote);
 			
-			// TODO: encrypt as many time as the number of mix servers
 			encrBallots[i] = encryptBallot(mixServ.getEncryptor(), electionID, innerBallot);
 		}
 			
@@ -120,7 +119,6 @@ public final class Setup {
 		// add election id, tag and sign
 		byte[] elID_ballots = MessageTools.concatenate(electionID, ballotsAsAMessage);
 		byte[] input = MessageTools.concatenate(Tag.BALLOTS, elID_ballots);
-		// FIXME: should the tag be also subsumed by the adversary? I don't think so, but...
 		byte[] signatureOnInput = precServSign.sign(input);
 		byte[] signedInput = MessageTools.concatenate(input, signatureOnInput);
 		
