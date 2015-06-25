@@ -1,28 +1,33 @@
 package de.unitrier.infsec.functionalities.pkenc;
 
-import static de.unitrier.infsec.utils.MessageTools.copyOf;
 import de.unitrier.infsec.lib.crypto.CryptoLib;
+import de.unitrier.infsec.utils.MessageTools;
 
-
-/** Encryptor encapsulating possibly corrupted public key.
+/**
+ * Ideal functionality for public-key encryption: Encryptor
  */
-public class Encryptor {
-	protected byte[] publicKey;
+public final class Encryptor {
 
-	public Encryptor(byte[] publicKey) {
-		this.publicKey = publicKey;
+	private byte[] publKey;
+	private Decryptor.EncryptionLog log;
+	
+	Encryptor(byte[] publicKey, Decryptor.EncryptionLog log) { 
+		publKey = publicKey;
+		this.log=log;
 	}
-
-	public byte[] encrypt(byte[] message) {
-		return copyOf(CryptoLib.pke_encrypt(copyOf(message), copyOf(publicKey)));
-	}
-
+		
 	public byte[] getPublicKey() {
-		return copyOf(publicKey);
+		return MessageTools.copyOf(publKey);
 	}
-
-	protected Encryptor copy() {
-		return new Encryptor(publicKey);
-	}	
+	
+	public byte[] encrypt(byte[] message) {
+		byte[] messageCopy = MessageTools.copyOf(message);
+		byte[] randomCipher = null;
+		// keep asking the environment for the ciphertext, until a fresh one is given:
+		while( randomCipher==null || log.containsCiphertext(randomCipher) ) {
+			randomCipher = MessageTools.copyOf(CryptoLib.pke_encrypt(MessageTools.getZeroMessage(message.length), MessageTools.copyOf(publKey)));
+		}
+		log.add(messageCopy, randomCipher);
+		return MessageTools.copyOf(randomCipher);
+	}
 }
-
