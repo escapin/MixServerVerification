@@ -120,12 +120,14 @@ public class MixServer
 		// sort the entries
 		byte[][] entr_arr = new byte[entries.size()][];
 		entries.toArray(entr_arr);
-		// Utils.sort(entries, 0, numberOfEntries);
-		// TODO: we could use Collections.sort(entries,...)
 		Utils.sort(entr_arr, 0, numberOfEntries);
 		
+		/** CONSERVATIVE EXTENSION:
+		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
+		 */
+		entr_arr = ConservativeExtension.retrieveSortedMessages(); 
+		
 		// format entries as one message
-		// TODO: as above, message concatenation is very inefficient
 		byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr, numberOfEntries);
 		
 		

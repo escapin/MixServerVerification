@@ -82,22 +82,5 @@ public class Utils
 		});
 	}
 	
-	public static class ObjectsMap
-	{
-		private Hashtable<Object, Object> map = new Hashtable<Object, Object>();
-		
-		public void put(Object key, Object value) throws NullPointerException
-		{
-			map.put(key, value);
-		}
-		
-		public Object get(Object key)
-		{
-			return map.get(key);
-		}
-		
-		public boolean containsKey(Object key){
-			return map.containsKey(key);
-		}
-	}
+	
 }

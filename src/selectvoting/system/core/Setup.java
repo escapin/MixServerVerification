@@ -25,40 +25,17 @@ public final class Setup {
 		return true;
 	}
 	
-	
 	// MAIN METHOD:
 	
 	// one secret bit
 	private static boolean secret; // the HIGH value
 	
-	// the correct result
-	static byte[][] correctResult; /** CONSERVATIVE EXTENSION */
 	
 	public static void main (String[] a) throws Throwable {
 
-
-		// let the adversary choose how many messages have to 
-		// be sent to the mix server
-		int numberOfMessages = Environment.untrustedInput();
-		
-		
-		// let the environment determine the two array of messages
-		byte[][] msg1 = new byte[numberOfMessages][];
-		byte[][] msg2 = new byte[numberOfMessages][];
-		for(int i=0; i<numberOfMessages; ++i){
-			msg1[i] = Environment.untrustedInputMessage();
-			msg2[i] = Environment.untrustedInputMessage();
-		}
-		
-		// the two sets represented by the two arrays must be equal
-		if(!setEquality(msg1, msg2))
-			throw new Throwable();
-		
-		// store the correct result of the mix server
-		ConservativeExtension.getMessages(msg1); 
+		// SETUP THE COMPONENTS
 		
 		byte[] electionID = Environment.untrustedInputMessage();
-		
 		
 		// create the cryptographic functionalities
 		Decryptor mixDecr = new Decryptor();
@@ -70,16 +47,44 @@ public final class Setup {
 		
 		NonceGen noncegen = new NonceGen(); // nonce generation functionality
 		
-		
 		MixServer mixServ = 
 				new  MixServer(mixDecr, mixSign, precServVerif, electionID);
 		
 		
-		// encrypt each message
+		
+		// let the adversary choose how many messages have to 
+		// be sent to the mix server
+		int numberOfMessages = Environment.untrustedInput();
+		
+		// let the adversary decide the length of the messages 
+		// all the messages must have the same length: 
+		int lengthOfTheMessages = Environment.untrustedInput();
+		
+		
+		// let the environment determine the two arrays of messages
+		byte[][] msg1 = new byte[numberOfMessages][];
+		byte[][] msg2 = new byte[numberOfMessages][];
+		for(int i=0; i<numberOfMessages; ++i){
+			msg1[i] = Environment.untrustedInputMessage();
+			msg2[i] = Environment.untrustedInputMessage();
+			// the environment must provide all the messages with the same, prefixed length
+			// otherwise, the adversary can distinguish which vector of messages is encrypting.
+			if(msg1[i].length!=lengthOfTheMessages || msg2[i].length!=lengthOfTheMessages)
+				throw new Throwable();
+		}
+		
+		// the two vectors must be two permutations of the same set
+		if(!setEquality(msg1, msg2))
+			throw new Throwable();
+		
+		ConservativeExtension.storeMessages(msg1);
+		
+		
+		// encrypt each message, along with the election ID as expected by the mix server 
 		byte[][] encrMsg = new byte[numberOfMessages][];
 		for(int i=0; i<numberOfMessages; ++i){
 			byte[] msg = secret? msg1[i] : msg2[i];
-			encrMsg[i] = mixEncr.encrypt(msg);
+			encrMsg[i] = mixEncr.encrypt(MessageTools.concatenate(electionID, msg));
 		}
 			
 		
@@ -95,43 +100,20 @@ public final class Setup {
 		byte[] signedInput = MessageTools.concatenate(input, signatureOnInput);
 		
 		
+		// MODEL THE NETWORK
+		
+		// send the message over the network, controlled by the adversary
+		Environment.untrustedOutputMessage(signedInput);
+		
+		byte[] mixServerInput=Environment.untrustedInputMessage();
+		// what I get from the network is supposed to be the signedInput
+		// otherwise, if the message is not on the supposed format the mix server will stop
 		
 		// let the mix server process the ballots 
-		byte[] data=mixServ.processBallots(signedInput);
+		byte[] mixServerOutput=mixServ.processBallots(mixServerInput);
 		
-		
-
-		byte[] tagged_payload = MessageTools.first(data);
-		//byte[] signature = MessageTools.second(data);
-		
-		//byte[] tag = MessageTools.first(tagged_payload);
-		byte[] payload = MessageTools.second(tagged_payload);
-		//byte[] el_id = MessageTools.first(payload);
-					
-		// FINALLY WE GET THE FINAL RESULT
-			
-		byte[] finalResultAsAMessage = MessageTools.second(payload);
-		
-		byte[][] finalResult = new byte[numberOfMessages][];
-		int numberOfEntries = 0;
-		for( MessageSplitIter iter = new MessageSplitIter(finalResultAsAMessage); iter.notEmpty(); iter.next() ) {
-			if (numberOfEntries >= numberOfMessages) // too many entries
-				throw new Throwable();
-			byte[] current = iter.current();
-			byte[] elID = MessageTools.first(current);
-			finalResult[numberOfEntries] = MessageTools.second(current);
-			
-			numberOfEntries++;
-		}
-		
-		/** CONSERVATIVE EXTENSION:
-		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
-		 */
-		finalResult = ConservativeExtension.retrieveMessages();
-		
-		// We publish the final result
-		for(int i=0; i<finalResult.length; i++)
-			Environment.untrustedOutputMessage(finalResult[i]);
+		// send the output over the network
+		Environment.untrustedOutputMessage(mixServerOutput);
 		
 	}
 }
