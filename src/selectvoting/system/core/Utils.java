@@ -1,8 +1,5 @@
 package selectvoting.system.core;
 
-import java.util.Arrays;
-import java.util.Hashtable;
-
 import de.unitrier.infsec.utils.MessageTools;
 
 public class Utils 
@@ -73,14 +70,18 @@ public class Utils
 		return n1 - n2;
 	}	
 	
-	public static void sort(byte[][] byteArrays, int fromIndex, int toIndex)
-	{	
-		Arrays.sort(byteArrays, fromIndex, toIndex, new java.util.Comparator<byte[]>() {
-			public int compare(byte[] a1, byte[] a2) {
-				return Utils.compare(a1, a2);
-			}
-		});
-	}
+	public static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {	
+		if(fromIndex>=0 && toIndex<=byteArrays.length && fromIndex<toIndex){
+			for(int sorted=fromIndex+1; sorted<toIndex; ++sorted){
+				byte[] key=byteArrays[sorted]; // the item to be inserted
+				// insert key into the sorted sequence A[fomIndex, ..., sorted-1]
+				int i;
+				for(i=sorted-1; i>=fromIndex && Utils.compare(byteArrays[i], key)>0; --i)
+					byteArrays[i+1]=byteArrays[i];
+				byteArrays[i+1]=key;
+			}	
+		}
 	
-	
+	}	
+		
 }

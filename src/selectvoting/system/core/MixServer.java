@@ -1,7 +1,5 @@
 package selectvoting.system.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import de.unitrier.infsec.functionalities.digsig.Signer;
 import de.unitrier.infsec.functionalities.digsig.Verifier;
 import de.unitrier.infsec.functionalities.pkenc.Decryptor;
@@ -90,7 +88,7 @@ public class MixServer
 		byte[] ballotsAsAMessage = MessageTools.second(payload);
 		
 		// byte[][] entries = new byte[numberOfVoters][];
-		ArrayList<byte[]> entries = new ArrayList<byte[]>();
+		EntryList entries = new EntryList();
 
 		// Loop over the input entries 
 		byte[] last = null;

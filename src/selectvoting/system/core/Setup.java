@@ -105,14 +105,18 @@ public final class Setup {
 		// send the message over the network, controlled by the adversary
 		Environment.untrustedOutputMessage(signedInput);
 		
+		// retrieve the message from the network
 		byte[] mixServerInput=Environment.untrustedInputMessage();
-		// what I get from the network is supposed to be the signedInput
-		// otherwise, if the message is not on the supposed format the mix server will stop
+		// what I get from the network is supposed to be the the message I sent (signedInput)
+		// otherwise, if the message is not on the supposed format the mix server will 
+		// throw an exception
+		
 		
 		// let the mix server process the ballots 
 		byte[] mixServerOutput=mixServ.processBallots(mixServerInput);
 		
-		// send the output over the network
+		
+		// send the output of the mix server over the network
 		Environment.untrustedOutputMessage(mixServerOutput);
 		
 	}
