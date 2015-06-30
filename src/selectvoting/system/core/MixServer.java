@@ -87,14 +87,12 @@ public class MixServer
 		// retrieve and process ballots (store decrypted entries in 'entries')
 		byte[] ballotsAsAMessage = MessageTools.second(payload);
 		
-		// byte[][] entries = new byte[numberOfVoters][];
+		//ArrayList<byte[]> entries = new ArrayList<byte[]>();
 		EntryList entries = new EntryList();
 
 		// Loop over the input entries 
 		byte[] last = null;
 		int numberOfEntries = 0;
-		// TODO: the implementation of messages and of MessageSplitIter in particular is enormously inefficient.
-		// It should be re-implemented.
 		for( MessageSplitIter iter = new MessageSplitIter(ballotsAsAMessage); iter.notEmpty(); iter.next() ) {
 			byte[] current = iter.current();
 			if (last!=null && Utils.compare(last, current)>0)
