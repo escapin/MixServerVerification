@@ -83,7 +83,39 @@ public final class Setup {
 		// encrypt each message, along with the election ID as expected by the mix server 
 		byte[][] encrMsg = new byte[numberOfMessages][];
 		for(int i=0; i<numberOfMessages; ++i){
-			byte[] msg = secret? msg1[i] : msg2[i];
+			//byte[] msg = secret? msg1[i] : msg2[i];
+			/**
+			 * JOANA Change: let secret only decide about the content,
+			 * not about pointers, and not about (abnormal) program termination.
+			 * rationale:
+			 * a) With "msg = secret? msg1[i] : msg2[i]",
+			 * the secret value taints the value of the pointer msg. This means
+			 * that *every* dereferencing of msg (including msg.length) is also
+			 * tainted.
+			 * b) With "msg = secret? msg1[i] : msg2[i]", the secret also decides
+			 * which of the two array accesses is executed. This means that the
+			 * secret value may also decide whether the program crashes or not, since
+			 * Joana does not know how long arrays are and assumes that every array
+			 * access may fail. Hence, the secret value decides whether every subsequent
+			 * program action (in particular: the public outputs) happens or not.
+			 * A workaround is to push the decision on the secret value as far as possible
+			 * into the innermost loop. This means:
+			 * - instead of assigning pointers, a new array is created
+			 * - this new array is initialized elementwise in an inner loop
+			 * - for each element, both the respective elements of msg1[i] and msg2[i] are read
+			 *   (into local variables)
+			 * - the secret is only used to decide between the values of these two variables
+			 * - the result is written into the new array
+			 * This way, the secret value does not decide about which pointer is assigned or which
+			 * array access may fail but only which value is selected.
+			 */
+			byte[] msg = new byte[lengthOfTheMessages];
+			for (int j=0; j<msg.length; j++) {
+				byte b1 = msg1[i][j];
+				byte b2 = msg2[i][j];
+				byte b = secret?b1:b2;
+				msg[j] = b;
+			}
 			encrMsg[i] = mixEncr.encrypt(MessageTools.concatenate(electionID, msg));
 		}
 			
