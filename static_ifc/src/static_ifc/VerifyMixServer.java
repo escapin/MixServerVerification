@@ -3,6 +3,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static_ifc.FindStaticFieldAccesses.Kind;
@@ -16,6 +17,8 @@ import com.ibm.wala.util.NullProgressMonitor;
 import com.ibm.wala.util.graph.GraphIntegrity.UnsoundGraphException;
 
 import edu.kit.joana.api.IFCAnalysis;
+import edu.kit.joana.api.annotations.AnnotationType;
+import edu.kit.joana.api.annotations.NodeAnnotationInfo;
 import edu.kit.joana.api.lattice.BuiltinLattices;
 import edu.kit.joana.api.sdg.SDGConfig;
 import edu.kit.joana.api.sdg.SDGInstruction;
@@ -64,6 +67,25 @@ public class VerifyMixServer {
 					ana.addSinkAnnotation(i, BuiltinLattices.STD_SECLEVEL_LOW);
 				}
 			}
+		}
+		// sanity check
+		if (ana.getSources().isEmpty()) {
+			throw new RuntimeException("No sources annotated in PDG! Something is deeply wrong!");
+		} else if (ana.getSinks().isEmpty()) {
+			throw new RuntimeException("No sinks annotated in PDG! Something is deeply wrong!");
+		} else {
+			int noSourceNodes = 0;
+			int noSinkNodes = 0;
+			int noAnnNodes = 0;
+			for (Map.Entry<SecurityNode, NodeAnnotationInfo> e : ana.getAnnotatedNodes().entrySet()) {
+				if (e.getValue().getAnnotation().getType() == AnnotationType.SOURCE) {
+					noSourceNodes++;
+				} else if (e.getValue().getAnnotation().getType() == AnnotationType.SINK) {
+					noSinkNodes++;
+				}
+				noAnnNodes++;
+			}
+			System.out.println(String.format("%d nodes in PDG annotated (%d source(s) and %d sink(s))", noAnnNodes, noSourceNodes, noSinkNodes));
 		}
 		Collection<? extends IViolation<SecurityNode>> result = ana.doIFC();
 		System.out.println(String.format("%d violation(s) found.", result.size()));
