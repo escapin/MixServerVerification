@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static_ifc.FindStaticFieldAccesses.Kind;
+import static_ifc.AccessInfo.Kind;
 
 import com.ibm.wala.ipa.callgraph.pruned.DoNotPrune;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;

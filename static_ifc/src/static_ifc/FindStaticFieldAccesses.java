@@ -2,7 +2,7 @@ package static_ifc;
 import java.util.ArrayList;
 import java.util.Set;
 
-import static_ifc.FindStaticFieldAccesses.Kind;
+import static_ifc.AccessInfo.Kind;
 
 import com.ibm.wala.classLoader.IBytecodeMethod;
 import com.ibm.wala.ipa.callgraph.CGNode;
@@ -18,16 +18,45 @@ import com.ibm.wala.types.FieldReference;
 
 import edu.kit.joana.wala.core.CGConsumer;
 
+class AccessInfo {
+	public static enum Kind {
+		READ, WRITE;
+	}
+	private final FieldReference field;
+	private final String method;
+	private final int bcIndex;
+	private final Kind kind;
+	public AccessInfo(FieldReference field, String method, int bcIndex,
+			Kind kind) {
+		super();
+		this.field = field;
+		this.method = method;
+		this.bcIndex = bcIndex;
+		this.kind = kind;
+	}
+	public FieldReference getField() {
+		return field;
+	}
+	public String getMethod() {
+		return method;
+	}
+	public int getBcIndex() {
+		return bcIndex;
+	}
+	public Kind getKind() {
+		return kind;
+	}
 
-
+	public String toString() {
+		return String.format("(%s:%d) %s of %s", method, bcIndex, kind, field);
+	}
+}
 
 /**
  * Helper class which finds all places in a given program, where a given static field is written.
  */
 public class FindStaticFieldAccesses implements CGConsumer {
-	public static enum Kind {
-		READ, WRITE;
-	}
+
 	private ArrayList<AccessInfo> accesses = new ArrayList<AccessInfo>();
 
 	private final Set<FieldReference> fields;
