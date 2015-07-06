@@ -2,6 +2,7 @@ package selectvoting.system.core;
 
 import selectvoting.system.core.Utils.MessageSplitIter;
 import de.unitrier.infsec.environment.Environment;
+import de.unitrier.infsec.functionalities.nonce.NonceGen;
 import de.unitrier.infsec.functionalities.pkenc.Encryptor;
 import de.unitrier.infsec.functionalities.pkenc.Decryptor;
 import de.unitrier.infsec.functionalities.digsig.Signer;
@@ -44,6 +45,7 @@ public final class Setup {
 		Signer precServSign = new Signer();
 		Verifier precServVerif = precServSign.getVerifier(); 
 		
+		NonceGen noncegen = new NonceGen(); // nonce generation functionality
 		
 		MixServer mixServ = 
 				new  MixServer(mixDecr, mixSign, precServVerif, electionID);
