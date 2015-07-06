@@ -36,6 +36,19 @@ public final class Setup {
 		
 		byte[] electionID = Environment.untrustedInputMessage();
 		
+		// create the cryptographic functionalities
+		Decryptor mixDecr = new Decryptor();
+		Encryptor mixEncr = mixDecr.getEncryptor();
+		Signer mixSign = new Signer();
+		
+		Signer precServSign = new Signer();
+		Verifier precServVerif = precServSign.getVerifier(); 
+		
+		
+		MixServer mixServ = 
+				new  MixServer(mixDecr, mixSign, precServVerif, electionID);
+		
+		
 		
 		// let the adversary choose how many messages have to 
 		// be sent to the mix server
@@ -63,18 +76,6 @@ public final class Setup {
 			throw new Throwable();
 		
 		ConservativeExtension.storeMessages(msg1);
-		
-		
-		// create the cryptographic functionalities
-		Decryptor mixDecr = new Decryptor();
-		Encryptor mixEncr = mixDecr.getEncryptor();
-		Signer mixSign = new Signer();
-				
-		Signer precServSign = new Signer();
-		Verifier precServVerif = precServSign.getVerifier(); 
-				
-				
-		MixServer mixServ =  new  MixServer(mixDecr, mixSign, precServVerif, electionID);
 		
 		
 		// encrypt each message, along with the election ID as expected by the mix server 
@@ -113,16 +114,7 @@ public final class Setup {
 				byte b = secret?b1:b2;
 				msg[j] = b;
 			}
-			//Environment.untrustedOutputMessage(msg);
-			/**
-			 * If the line above is commented out, a violation is correctly found
-			 */
 			encrMsg[i] = mixEncr.encrypt(MessageTools.concatenate(electionID, msg));
-			Environment.untrustedOutputMessage(encrMsg[i]);
-			/**
-			 * Here no IFC are found: the ideal functionalities are designed in such a way that 
-			 * the resulted cyphertext does not depend on the the plaintext.
-			 */
 		}
 			
 		
@@ -141,19 +133,14 @@ public final class Setup {
 		// MODEL THE NETWORK
 		
 		// send the message over the network, controlled by the adversary
-		//Environment.untrustedOutputMessage(signedInput);
+		Environment.untrustedOutputMessage(signedInput);
 		
 		// retrieve the message from the network
-		//byte[] mixServerInput=Environment.untrustedInputMessage();
+		byte[] mixServerInput=Environment.untrustedInputMessage();
 		// what I get from the network is supposed to be the the message I sent (signedInput)
 		// otherwise, if the message is not on the supposed format the mix server will 
 		// throw an exception
 		
-		/**
-		 * the simulation of the network commented out to make sure that the input 
-		 * of the mix server is the encrypted vector array properly formatted. 
-		 */
-		byte[] mixServerInput = signedInput;
 		
 		// let the mix server process the ballots 
 		byte[] mixServerOutput=mixServ.processBallots(mixServerInput);

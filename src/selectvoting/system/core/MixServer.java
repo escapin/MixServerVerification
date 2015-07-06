@@ -1,6 +1,5 @@
 package selectvoting.system.core;
 
-import de.unitrier.infsec.environment.Environment;
 import de.unitrier.infsec.functionalities.digsig.Signer;
 import de.unitrier.infsec.functionalities.digsig.Verifier;
 import de.unitrier.infsec.functionalities.pkenc.Decryptor;
@@ -102,11 +101,6 @@ public class MixServer
 				throw new ServerMisbehavior(-3, "Duplicate ballots"); 
 			last = current;
 			byte[] decryptedBallot = decryptor.decrypt(current); // decrypt the current ballot
-			Environment.untrustedOutputMessage(decryptedBallot);
-			/**
-			 * The decrypted ballot should be an HIGH variable, i..e.
-			 * outputting it to the environment should show that there is an information leak
-			 */
 			if (decryptedBallot == null){
 				System.out.println("[MixServer.java] Decryption failed for ballot #" + numberOfEntries);
 				continue;
@@ -127,7 +121,7 @@ public class MixServer
 		/** CONSERVATIVE EXTENSION:
 		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
 		 */
-		//entr_arr = ConservativeExtension.retrieveSortedMessages(); 
+		entr_arr = ConservativeExtension.retrieveSortedMessages(); 
 		
 		// format entries as one message
 		byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr, numberOfEntries);
