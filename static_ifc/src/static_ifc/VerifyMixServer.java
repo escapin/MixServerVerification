@@ -44,7 +44,7 @@ public class VerifyMixServer {
 		String classPath = args[0];
 		JavaMethodSignature entryMethod = JavaMethodSignature.mainMethodOfClass(MAIN_CLASS.substring(1, MAIN_CLASS.length()-1));
 		SDGConfig config = new SDGConfig(classPath, entryMethod.toBCString(), Stubs.JRE_14);
-		config.setPointsToPrecision(PointsToPrecision.N1_OBJECT_SENSITIVE);
+		config.setPointsToPrecision(PointsToPrecision.N3_CALL_STACK);
 		config.setFieldPropagation(FieldPropagation.OBJ_GRAPH_NO_MERGE_AT_ALL);
 		config.setPruningPolicy(new DoNotPrune());
 		config.setExceptionAnalysis(ExceptionAnalysis.INTERPROC);
