@@ -30,8 +30,11 @@ public class EntryList {
 			if(head==null)
 				head=last=newEntry;
 			else {
-				last.next=newEntry;
-				last=newEntry;
+				Node tmp = last;
+				if (last == tmp && tmp != null) {
+					tmp.next = newEntry;
+				}
+				last = tmp;
 			}
 			size++;
 		}
