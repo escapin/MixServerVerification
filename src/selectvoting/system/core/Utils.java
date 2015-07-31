@@ -58,16 +58,25 @@ public class Utils
 	 * 			less than, equal to, or greater than the second
 	 */
 	public static int compare(byte[] a1, byte[] a2) {
-		int n1 = a1.length;
-		int n2 = a2.length;
-		int min = Math.min(n1, n2);
-		for (int i = 0; i < min; i++){
-			byte b1 = a1[i];
-			byte b2 = a2[i];
-			if (b1 != b2)
-				return b1 - b2;
+		if (a1 != null && a2 != null) {
+			int n1 = a1.length;
+			int n2 = a2.length;
+			int min = Math.min(n1, n2);
+			for (int i = 0; i < min; i++) {
+				byte b1 = -1;
+				byte b2 = -1;
+				try {
+					b1 = a1[i];
+				} catch (Throwable t) {}
+				try {
+					b2 = a2[i];
+				} catch (Throwable t) {}
+				if (b1 != b2)
+					return b1 - b2;
+			}
+			return n1 - n2;
 		}
-		return n1 - n2;
+		return 0;
 	}
 
 	public static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
