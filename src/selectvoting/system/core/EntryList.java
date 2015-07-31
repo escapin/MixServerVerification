@@ -46,9 +46,14 @@ public class EntryList {
 		public void toArray(byte[][] arr)
 		{
 			int i=0;
-			for(Node current=head; current!=null; current=current.next){
-				arr[i] = current.entry;
+			Node tmp = head;
+			while (tmp != null) {
+				byte[] x = tmp.entry;
+				try {
+					arr[i] = x;
+				} catch (Throwable t) {}
 				i++;
+				tmp = tmp.next;
 			}
 		}		
 }
