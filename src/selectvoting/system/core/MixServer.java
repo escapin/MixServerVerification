@@ -73,16 +73,9 @@ public class MixServer
 		EntryList entries = new EntryList();
 
 		// Loop over the input entries 
-		byte[] last = null;
 		int numberOfEntries = 0;
 		for( MessageSplitIter iter = new MessageSplitIter(ballotsAsAMessage); iter.notEmpty(); iter.next() ) {
-			byte[] current = iter.current();
-			if (last!=null && Utils.compare(last, current)>0)
-				throw new ServerMisbehavior(-2, "Ballots not sorted");
-			if (last!=null && Utils.compare(last, current)==0)
-				throw new ServerMisbehavior(-3, "Duplicate ballots"); 
-			last = current;
-			byte[] decryptedBallot = decryptor.decrypt(current); // decrypt the current ballot
+			byte[] decryptedBallot = decryptor.decrypt(iter.current()); // decrypt the current ballot
 			if (decryptedBallot == null){
 				System.out.println("[MixServer.java] Decryption failed for ballot #" + numberOfEntries);
 				continue;
@@ -95,9 +88,19 @@ public class MixServer
 			++numberOfEntries;
 		}
 		
-		// sort the entries
 		byte[][] entr_arr = new byte[entries.size()][];
 		entries.toArray(entr_arr);
+		
+		for (int i= 1; i < numberOfEntries; i++) {
+			byte[] last = entr_arr[i-1];
+			byte[] current = entr_arr[i];
+			if (last!=null && Utils.compare(last, current)>0)
+				throw new ServerMisbehavior(-2, "Ballots not sorted");
+			if (last!=null && Utils.compare(last, current)==0)
+				throw new ServerMisbehavior(-3, "Duplicate ballots"); 
+		}
+		
+		// sort the entries
 		Utils.sort(entr_arr, 0, numberOfEntries);
 				
 		// format entries as one message
