@@ -117,12 +117,7 @@ public class MixServer
 		byte[][] entr_arr = new byte[entries.size()][];
 		entries.toArray(entr_arr);
 		Utils.sort(entr_arr, 0, numberOfEntries);
-		
-		/** CONSERVATIVE EXTENSION:
-		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
-		 */
-		entr_arr = ConservativeExtension.retrieveSortedMessages(); 
-		
+				
 		// format entries as one message
 		byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr, numberOfEntries);
 		
