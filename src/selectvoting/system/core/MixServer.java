@@ -67,25 +67,7 @@ public class MixServer
 	 * 
 	 */
 	public byte[] processBallots(byte[] data) throws MalformedData, ServerMisbehavior {
-		// verify the signature of previous server
-		byte[] tagged_payload = MessageTools.first(data);
-		byte[] signature = MessageTools.second(data);
-		if (!precServVerif.verify(signature, tagged_payload))
-			throw new MalformedData(1, "Wrong signature");
-		
-		// check the tag
-		byte[] tag = MessageTools.first(tagged_payload);
-		if (!MessageTools.equal(tag, Tag.BALLOTS))
-			throw new MalformedData(2, "Wrong tag");		
-		byte[] payload = MessageTools.second(tagged_payload);
-		
-		// check the election id 
-		byte[] el_id = MessageTools.first(payload);
-		if (!MessageTools.equal(el_id, electionID))
-			throw new MalformedData(3, "Wrong election ID");
-		
-		// retrieve and process ballots (store decrypted entries in 'entries')
-		byte[] ballotsAsAMessage = MessageTools.second(payload);
+		byte[] ballotsAsAMessage = checkAndGetBallots(data);
 		
 		//ArrayList<byte[]> entries = new ArrayList<byte[]>();
 		EntryList entries = new EntryList();
@@ -129,6 +111,29 @@ public class MixServer
 		byte[] signedResult = MessageTools.concatenate(result, signatureOnResult);
 		
 		return signedResult;
+	}
+
+	private byte[] checkAndGetBallots(byte[] data) throws MalformedData {
+		// verify the signature of previous server
+		byte[] tagged_payload = MessageTools.first(data);
+		byte[] signature = MessageTools.second(data);
+		if (!precServVerif.verify(signature, tagged_payload))
+			throw new MalformedData(1, "Wrong signature");
+		
+		// check the tag
+		byte[] tag = MessageTools.first(tagged_payload);
+		if (!MessageTools.equal(tag, Tag.BALLOTS))
+			throw new MalformedData(2, "Wrong tag");		
+		byte[] payload = MessageTools.second(tagged_payload);
+		
+		// check the election id 
+		byte[] el_id = MessageTools.first(payload);
+		if (!MessageTools.equal(el_id, electionID))
+			throw new MalformedData(3, "Wrong election ID");
+		
+		// retrieve and process ballots (store decrypted entries in 'entries')
+		byte[] ballotsAsAMessage = MessageTools.second(payload);
+		return ballotsAsAMessage;
 	}
 	
 	
