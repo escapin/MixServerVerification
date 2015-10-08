@@ -69,6 +69,19 @@ public class MixServer
 	public byte[] processBallots(byte[] data) throws MalformedData, ServerMisbehavior {
 		byte[] ballotsAsAMessage = checkAndGetBallots(data);
 		
+		byte[][] entr_arr = extractBallots(ballotsAsAMessage);
+		
+		checkBallotsSorted(entr_arr);
+		
+		// sort the entries
+		Utils.sort(entr_arr, 0, entr_arr.length);
+				
+		byte[] signedResult = postProcess(entr_arr);
+		
+		return signedResult;
+	}
+
+	private byte[][] extractBallots(byte[] ballotsAsAMessage) {
 		//ArrayList<byte[]> entries = new ArrayList<byte[]>();
 		EntryList entries = new EntryList();
 
@@ -90,14 +103,12 @@ public class MixServer
 		
 		byte[][] entr_arr = new byte[entries.size()][];
 		entries.toArray(entr_arr);
-		
-		checkBallotsSorted(entr_arr);
-		
-		// sort the entries
-		Utils.sort(entr_arr, 0, numberOfEntries);
-				
+		return entr_arr;
+	}
+
+	private byte[] postProcess(byte[][] entr_arr) {
 		// format entries as one message
-		byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr, numberOfEntries);
+		byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr, entr_arr.length);
 		
 		
 		// add election id, tag and sign
@@ -105,7 +116,6 @@ public class MixServer
 		byte[] result = MessageTools.concatenate(Tag.BALLOTS, elID_entriesAsAMessage);
 		byte[] signatureOnResult = signer.sign(result);
 		byte[] signedResult = MessageTools.concatenate(result, signatureOnResult);
-		
 		return signedResult;
 	}
 
