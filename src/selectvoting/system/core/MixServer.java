@@ -91,14 +91,7 @@ public class MixServer
 		byte[][] entr_arr = new byte[entries.size()][];
 		entries.toArray(entr_arr);
 		
-		for (int i= 1; i < numberOfEntries; i++) {
-			byte[] last = entr_arr[i-1];
-			byte[] current = entr_arr[i];
-			if (last!=null && Utils.compare(last, current)>0)
-				throw new ServerMisbehavior(-2, "Ballots not sorted");
-			if (last!=null && Utils.compare(last, current)==0)
-				throw new ServerMisbehavior(-3, "Duplicate ballots"); 
-		}
+		checkBallotsSorted(entr_arr);
 		
 		// sort the entries
 		Utils.sort(entr_arr, 0, numberOfEntries);
@@ -114,6 +107,17 @@ public class MixServer
 		byte[] signedResult = MessageTools.concatenate(result, signatureOnResult);
 		
 		return signedResult;
+	}
+
+	private void checkBallotsSorted(byte[][] entr_arr) throws ServerMisbehavior {
+		for (int i= 1; i < entr_arr.length; i++) {
+			byte[] last = entr_arr[i-1];
+			byte[] current = entr_arr[i];
+			if (last!=null && Utils.compare(last, current)>0)
+				throw new ServerMisbehavior(-2, "Ballots not sorted");
+			if (last!=null && Utils.compare(last, current)==0)
+				throw new ServerMisbehavior(-3, "Duplicate ballots"); 
+		}
 	}
 
 	private byte[] checkAndGetBallots(byte[] data) throws MalformedData {
