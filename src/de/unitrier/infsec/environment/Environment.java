@@ -9,18 +9,43 @@ class NodeValue {
 }
 
 class NodeList {
-	public class Node {
-		public String entry;
-		public Node next;
+	public static class Node {
+		public /*@ nullable @*/ String entry;
+		public /*@ nullable @*/ Node next;
 
-		public Node(String entry) {
+		/*@ public normal_behaviour
+          @ requires true;
+          @ assignable this.entry, this.next;
+          @ ensures this.entry == entry && this.next == null;
+          @*/
+		public Node(/*@ nullable @*/ String entry) {
 			this.entry = entry;
 			this.next=null;
 		}
 	}
 
-	public Node head, last;
-	public void add(String entry) {
+	public /*@ spec_public nullable @*/ Node head, last;
+
+	/*@ public normal_behaviour
+      @ requires head == null;
+      @ assignable head, last;
+      @ ensures head != null && last != null
+      @     && head.entry == entry && last.entry == entry
+      @     && \fresh(head) && \fresh(last);
+      @ also
+      @ public normal_behaviour
+      @ requires head != null && last != null;
+      @ assignable last, last.next;
+      @ ensures last != null && last.entry == entry && \fresh(last);
+      @ also
+      @ public exceptional_behaviour
+      @ requires head != null && last == null;
+      @ diverges true;
+      @ signals_only NullPointerException;
+      @ assignable \nothing;
+      @ signals (NullPointerException e) true;
+      @*/
+	public /*@ helper @*/ void add(/*@ nullable @*/ String entry) {
 		Node newEntry=new Node(entry);
 		if(head==null)
 			head=last=newEntry;
@@ -33,18 +58,24 @@ class NodeList {
 
 public class Environment {
 
-	private static boolean result; // the LOW variable
+	private /*@ spec_public @*/ static boolean result; // the LOW variable
 	
-	private static NodeValue listValue = null;
-	private static boolean listInitializedValue = false;
+	private /*@ spec_public @*/ static NodeValue listValue = null;
+	private /*@ spec_public @*/ static boolean listInitializedValue = false;
+
 	private static NodeValue initialValue() {
 		// Unknown specification of the following form:
 		// return new Node(U1, new Node(U2, ...));
 		// where U1, U2, ...Un are constant integers.
 		return new NodeValue(1, new NodeValue(7,null));  // just an example
 	}
-	
-	public static int untrustedInput() {
+
+	/*@ public behaviour
+      @ assignable inputCounter;
+      @ diverges true;
+      @ ensures true;
+      @*/
+	public static /*@ helper @*/ int untrustedInput() {
     	if (!listInitializedValue) {
     		listValue = initialValue();
     	    listInitializedValue = true;        
@@ -54,30 +85,53 @@ public class Environment {
     	listValue = listValue.next;
     	return tmp;
 	}
-		
-    public static void untrustedOutput(int x) {
+
+	/*@ public behaviour
+      @ diverges true;
+      @ assignable inputCounter, result;
+      @ ensures true;
+      @*/
+    public static /*@ helper @*/ void untrustedOutput(int x) {
 		if (untrustedInput()!=0) {
 			result = (x==untrustedInput());
 			throw new Error();  // abort
 		}
 	}
-	
-    public static byte[] untrustedInputMessage() {
+
+    /*@ public behaviour
+      @ diverges true;
+      @ assignable inputCounter;
+      @ ensures true;
+      @*/
+    public static /*@ helper nullable @*/ byte[] untrustedInputMessage() {
 		int len = untrustedInput();
 		if (len<0) return null;
 		byte[] returnval = new byte[len];
+
+		/*@ loop_invariant true;
+          @ assignable inputCounter, returnval[*];
+          @*/
 		for (int i = 0; i < len; i++)
 			returnval[i] = (byte) untrustedInput();
 		return returnval;    
     }
-    
-    public static void untrustedOutputMessage(byte[] t) {
+
+    /*@ public behaviour
+      @ diverges true;
+      @ assignable inputCounter, result;
+      @ ensures true;
+      @*/
+    public static /*@ helper @*/ void untrustedOutputMessage(/*@ nullable @*/ byte[] t) {
     	untrustedOutput(t.length);
+
+        /*@ loop_invariant true;
+          @ assignable inputCounter, result;
+          @*/
 		for (int i = 0; i < t.length; i++) {
 			untrustedOutput(t[i]);
 		}
     }
-    
+
 	private static NodeList stringsList = null;
 
 	public static String untrustedInputString() {
@@ -100,12 +154,21 @@ public class Environment {
     	}
 		return "";
     }
-    
-    public static void untrustedOutputString(String s) {
+
+	/*@ public behaviour
+      @ diverges true;
+      @ assignable inputCounter, result;
+      @ ensures true;
+      @*/
+    public static /*@ helper @*/ void untrustedOutputString(String s) {
     	if(stringsList==null)
     		stringsList = new NodeList();
     	// value comparison
     	untrustedOutput(s.length());
+
+        /*@ loop_invariant true;
+          @ assignable inputCounter, result;
+          @*/
     	for (int i = 0; i < s.length(); i++)
         	untrustedOutput(s.charAt(i));
     	// reference comparison

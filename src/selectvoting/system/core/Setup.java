@@ -1,6 +1,5 @@
 package selectvoting.system.core;
 
-import selectvoting.system.core.Utils.MessageSplitIter;
 import de.unitrier.infsec.environment.Environment;
 import de.unitrier.infsec.functionalities.pkenc.Encryptor;
 import de.unitrier.infsec.functionalities.pkenc.Decryptor;
@@ -12,12 +11,22 @@ public final class Setup {
 
 	// PURE SUPPORT METHODS:
 
-	private static boolean setEquality(byte[][] arr1, byte[][] arr2) {
+    /*@ private normal_behaviour
+      @ requires r1.length == r2.length;
+      @ ensures \result == (\forall int i; 0 <= i && i < r1.length; r1[i] == r2[i]);
+      @*/
+	private static /*@ strictly_pure helper @*/ boolean setEquality(byte[][] arr1, byte[][] arr2) {
 		if(arr1.length!=arr2.length) return false;
 		byte[][] a1=MessageTools.copyOf(arr1);
 		byte[][] a2=MessageTools.copyOf(arr2);
 		Utils.sort(a1, 0, a1.length);
 		Utils.sort(a2, 0, a2.length);
+
+		/*@ loop_invariant 0 <= j && r1.length == r2.length
+          @         &&  (\forall int i; 0 <= i && i < j; r1[i] == r2[i]);
+          @ assignable \strictly_nothing;
+          @ decreases r1.length - j;
+          @*/
 		for(int i=0;i<a1.length;i++)
 			if(!MessageTools.equal(a1[i],a2[i])) 
 				return false;

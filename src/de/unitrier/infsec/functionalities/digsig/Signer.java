@@ -21,7 +21,13 @@ public class Signer {
 		this.log = new Log();
 	}
 
-	public byte[] sign(byte[] message) {
+	/*@ public behaviour
+      @ requires message != null;
+      @ signals_only Error;
+      @ diverges true;
+      @ ensures true;
+      @*/
+	public /*@ strictly_pure helper nullable @// to be proven with JOANA?? */ byte[] sign(byte[] message) {
 		byte[] signature = CryptoLib.sign(MessageTools.copyOf(message), MessageTools.copyOf(signKey));
 		// we make sure that the signing has not failed
 		if (signature == null) return null;
