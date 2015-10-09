@@ -54,8 +54,11 @@ public class EntryList {
 			if(head==null)
 				head=last=newEntry;
 			else {
-				last.next=newEntry;
-				last=newEntry;
+				Node tmp = last;
+				if (last == tmp && tmp != null) {
+					tmp.next = newEntry;
+				}
+				last = tmp;
 			}
 			size++;
 		}
@@ -74,13 +77,18 @@ public class EntryList {
 		public /*@ pure helper nullable @*/ void toArray(byte[][] arr)
 		{
 			int i=0;
+			Node tmp = head;
 
 			/*@ loop_invariant head != null;
-	          @ assignable entries;
-	          @*/
-			for(Node current=head; current!=null; current=current.next){
-				arr[i] = current.entry;
+              @ assignable entries;
+              @*/
+			while (tmp != null) {
+				byte[] x = tmp.entry;
+				try {
+					arr[i] = x;
+				} catch (Throwable t) {}
 				i++;
+				tmp = tmp.next;
 			}
 		}		
 }

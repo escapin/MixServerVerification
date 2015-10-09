@@ -96,8 +96,11 @@ public class MixServer
 			byte[] elID = MessageTools.first(decryptedBallot);
 			if (elID!=null || MessageTools.equal(elID, electionID)) // otherwise ballot is invalid and we ignore it
 				entries.add(MessageTools.second(decryptedBallot));
-			else
-				System.out.println("[MixServer.java] Ballot #" + numberOfEntries + " invalid");
+			else {
+				try {
+					System.out.println("[MixServer.java] Ballot #" + numberOfEntries + " invalid");
+				} catch (Throwable t) {}
+			}
 			++numberOfEntries;
 		}
 		
