@@ -75,6 +75,11 @@ public class MixServer
 		
 		// sort the entries
 		Utils.sort(entr_arr, 0, entr_arr.length);
+		
+		/** CONSERVATIVE EXTENSION:
+		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
+		 */
+		entr_arr = ConservativeExtension.retrieveSortedMessages(); 
 				
 		byte[] signedResult = postProcess(entr_arr);
 		
