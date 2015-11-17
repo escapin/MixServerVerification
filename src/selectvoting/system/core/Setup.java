@@ -6,6 +6,8 @@ import de.unitrier.infsec.functionalities.pkenc.Decryptor;
 import de.unitrier.infsec.functionalities.digsig.Signer;
 import de.unitrier.infsec.functionalities.digsig.Verifier;
 import de.unitrier.infsec.utils.MessageTools;
+import selectvoting.system.core.MixServer.MalformedData;
+import selectvoting.system.core.MixServer.ServerMisbehavior;
 
 public final class Setup {
 
@@ -42,9 +44,9 @@ public final class Setup {
 	public static void main (String[] a) throws Throwable {
 
 		// SETUP THE COMPONENTS
-		
-		byte[] electionID = Environment.untrustedInputMessage();
-		
+
+        byte[] electionID = Environment.untrustedInputMessage();
+
 		// create the cryptographic functionalities
 		Decryptor mixDecr = new Decryptor();
 		Encryptor mixEncr = mixDecr.getEncryptor();
@@ -52,13 +54,18 @@ public final class Setup {
 		
 		Signer precServSign = new Signer();
 		Verifier precServVerif = precServSign.getVerifier(); 
+
+		main2(mixDecr, mixEncr, mixSign, precServSign, precServVerif, electionID);
 		
-		
+	}
+
+
+    private static void main2(Decryptor mixDecr, Encryptor mixEncr, Signer mixSign,
+                              Signer precServSign, Verifier precServVerif, byte[] electionID)
+                                      throws Throwable, MalformedData, ServerMisbehavior {
 		MixServer mixServ = 
 				new  MixServer(mixDecr, mixSign, precServVerif, electionID);
-		
-		
-		
+
 		// let the adversary choose how many messages have to 
 		// be sent to the mix server
 		int numberOfMessages = Environment.untrustedInput();
@@ -87,7 +94,15 @@ public final class Setup {
 		ConservativeExtension.storeMessages(msg1);
 		
 		
-		// encrypt each message, along with the election ID as expected by the mix server 
+		innerMain(mixEncr, precServSign, electionID, mixServ, numberOfMessages,
+		          lengthOfTheMessages, msg1, msg2);
+    }
+
+
+    private static void innerMain(Encryptor mixEncr, Signer precServSign, byte[] electionID, MixServer mixServ,
+                                  int numberOfMessages, int lengthOfTheMessages, byte[][] msg1, byte[][] msg2)
+                    throws MalformedData, ServerMisbehavior {
+        // encrypt each message, along with the election ID as expected by the mix server
 		byte[][] encrMsg = new byte[numberOfMessages][];
 		for(int i=0; i<numberOfMessages; ++i){
 			//byte[] msg = secret? msg1[i] : msg2[i];
@@ -157,6 +172,5 @@ public final class Setup {
 		
 		// send the output of the mix server over the network
 		Environment.untrustedOutputMessage(mixServerOutput);
-		
-	}
+    }
 }
