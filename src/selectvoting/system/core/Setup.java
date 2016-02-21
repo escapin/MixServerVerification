@@ -19,8 +19,8 @@ public final class Setup {
       @*/
 	private static /*@ strictly_pure helper @*/ boolean setEquality(byte[][] arr1, byte[][] arr2) {
 		if(arr1.length!=arr2.length) return false;
-		byte[][] a1=MessageTools.copyOf(arr1);
-		byte[][] a2=MessageTools.copyOf(arr2);
+		byte[][] a1=Utils.copyOf(arr1);
+		byte[][] a2=Utils.copyOf(arr2);
 		Utils.sort(a1, 0, a1.length);
 		Utils.sort(a2, 0, a2.length);
 

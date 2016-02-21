@@ -108,6 +108,14 @@ public class Utils
 			}
 		}
 	
+	}
+
+	public static byte[][] copyOf(byte[][] arr) {
+	    if (arr==null) return null;
+	    byte[][] copy = new byte[arr.length][];
+	    for (int i = 0; i < arr.length; i++)
+	            copy[i] = MessageTools.copyOf(arr[i]);
+	    return copy;	
 	}	
 		
 }

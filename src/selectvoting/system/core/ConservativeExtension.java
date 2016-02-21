@@ -1,12 +1,11 @@
 package selectvoting.system.core;
 
-import verif.utils.MessageTools;
 
 public class ConservativeExtension{
 	private static byte[][] messages;
 	
 	public static void storeMessages(byte[][] msg){
-		messages=MessageTools.copyOf(msg);
+		messages=Utils.copyOf(msg);
 	}
 	
 	public static byte[][] retrieveSortedMessages(){
