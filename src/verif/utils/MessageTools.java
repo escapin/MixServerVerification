@@ -27,7 +27,6 @@ public class MessageTools {
         return copy;
     }
 
-    
     public static boolean equal(byte[] a, byte[] b) {
         if( a.length != b.length ) return false;
         for( int i=0; i<a.length; ++i)
