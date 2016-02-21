@@ -1,4 +1,4 @@
-package de.unitrier.infsec.lib.crypto;
+package verif.lib.crypto;
 
 public class KeyPair {
 	public byte[] publicKey;

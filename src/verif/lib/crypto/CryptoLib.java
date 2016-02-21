@@ -1,6 +1,6 @@
-package de.unitrier.infsec.lib.crypto;
+package verif.lib.crypto;
 
-import de.unitrier.infsec.environment.Environment;
+import verif.environment.Environment;
 
 public class CryptoLib {
 

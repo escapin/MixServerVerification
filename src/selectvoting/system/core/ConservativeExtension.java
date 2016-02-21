@@ -1,6 +1,6 @@
 package selectvoting.system.core;
 
-import de.unitrier.infsec.utils.MessageTools;
+import verif.utils.MessageTools;
 
 public class ConservativeExtension{
 	private static byte[][] messages;

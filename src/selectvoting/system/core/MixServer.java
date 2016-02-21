@@ -1,11 +1,11 @@
 package selectvoting.system.core;
 
-import de.unitrier.infsec.functionalities.digsig.Signer;
-import de.unitrier.infsec.functionalities.digsig.Verifier;
-import de.unitrier.infsec.functionalities.pkenc.Decryptor;
-import de.unitrier.infsec.functionalities.pkenc.Encryptor;
-import de.unitrier.infsec.utils.MessageTools;
 import selectvoting.system.core.Utils.MessageSplitIter;
+import verif.functionalities.pkienc.Decryptor;
+import verif.functionalities.pkienc.Encryptor;
+import verif.functionalities.pkisig.Signer;
+import verif.functionalities.pkisig.Verifier;
+import verif.utils.MessageTools;
 
 public class MixServer 
 {	
