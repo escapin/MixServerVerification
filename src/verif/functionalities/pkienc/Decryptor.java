@@ -1,6 +1,5 @@
 package verif.functionalities.pkienc;
 
-import static verif.utils.MessageTools.copyOf;
 import verif.lib.crypto.CryptoLib;
 import verif.lib.crypto.KeyPair;
 import verif.utils.MessageTools;
@@ -14,19 +13,19 @@ public class Decryptor {
 
 	public Decryptor() {
 		KeyPair keypair = CryptoLib.pke_generateKeyPair();
-		this.privateKey = copyOf(keypair.privateKey);
-		this.publicKey = copyOf(keypair.publicKey);
+		this.privateKey = MessageTools.copyOf(keypair.privateKey);
+		this.publicKey = MessageTools.copyOf(keypair.publicKey);
 		this.log = new EncryptionLog();
 	}
 
 	/** "Decrypts" a message by, first trying to find in in the log (and returning
 	 *   the related plaintext) and, only if this fails, by using real decryption. */
 	public byte[] decrypt(byte[] message) {
-		byte[] messageCopy = copyOf(message);
+		byte[] messageCopy = MessageTools.copyOf(message);
 		if (!log.containsCiphertext(messageCopy)) {
-			return copyOf( CryptoLib.pke_decrypt(copyOf(privateKey), messageCopy) );
+			return MessageTools.copyOf( CryptoLib.pke_decrypt(MessageTools.copyOf(privateKey), messageCopy) );
 		} else {
-			return copyOf( log.lookup(messageCopy) );
+			return MessageTools.copyOf( log.lookup(messageCopy) );
 		}
 	}
 

@@ -1,6 +1,5 @@
 package verif.functionalities.pkisig;
 
-import static verif.utils.MessageTools.copyOf;
 import verif.lib.crypto.CryptoLib;
 import verif.lib.crypto.KeyPair;
 import verif.utils.MessageTools;
@@ -18,8 +17,8 @@ final public class Signer {
 
 	public Signer() {
 		KeyPair keypair = CryptoLib.generateSignatureKeyPair();
-		this.signKey = copyOf(keypair.privateKey);
-		this.verifKey = copyOf(keypair.publicKey);
+		this.signKey = MessageTools.copyOf(keypair.privateKey);
+		this.verifKey = MessageTools.copyOf(keypair.publicKey);
 		this.log = new Log();
 	}
 
@@ -31,15 +30,15 @@ final public class Signer {
 	  @*/
 	public /*@ strictly_pure helper nullable @// to be proven with JOANA */ byte[]
 			sign(byte[] message) {
-		byte[] signature = CryptoLib.sign(copyOf(message), copyOf(signKey));
+		byte[] signature = CryptoLib.sign(MessageTools.copyOf(message), MessageTools.copyOf(signKey));
 		// we make sure that the signing has not failed
 		if (signature == null) return null;
 		// and that the signature is correct
-		if( !CryptoLib.verify(copyOf(message), copyOf(signature), copyOf(verifKey)) )
+		if( !CryptoLib.verify(MessageTools.copyOf(message), MessageTools.copyOf(signature), MessageTools.copyOf(verifKey)) )
 			return null;
 		// now we log the message (only!) as signed and return the signature
-		log.add(copyOf(message));
-		return copyOf(copyOf(signature));
+		log.add(MessageTools.copyOf(message));
+		return MessageTools.copyOf(MessageTools.copyOf(signature));
 	}
 
 	public Verifier getVerifier() {
