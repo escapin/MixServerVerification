@@ -67,33 +67,63 @@ public class MixServer
 	 * 
 	 */
 	public byte[] processBallots(byte[] data) throws MalformedData, ServerMisbehavior {
+		
 		byte[] ballotsAsAMessage = checkAndGetBallots(data);
 		
 		byte[][] entr_arr = extractBallots(ballotsAsAMessage);
 		
-		checkBallotsSorted(entr_arr);
-		
-		// sort the entries
-		Utils.sort(entr_arr, 0, entr_arr.length);
-		
-		/** CONSERVATIVE EXTENSION:
-		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
+		/**
+		 * Assumption: the messages in the array variable 'entr_arr' above 
+		 * are a permutation of the messages in the array variable 'msg' in Setup.java
+		 * 
+		 * Assumption necessary because of the issues in verifying that the 
+		 * encryption scheme works:
+		 * The property 
+		 * 	'The message decrypted is equals to the message previously 
+		 * 	 encrypted' 
+		 * is too demanding and time consuming for KeY.
 		 */
-		entr_arr = ConservativeExtension.retrieveSortedMessages(); 
+		
+		entr_arr = sort(entr_arr); 
 				
 		byte[] signedResult = postProcess(entr_arr);
 		
 		return signedResult;
 	}
 
-	private byte[][] extractBallots(byte[] ballotsAsAMessage) {
+	/**
+	 * TO BE PROVEN: The method returns the sorted input
+	 * By proving that Utils.sort also return the sorted input, we obtain that
+	 * the next assignment is redundant
+	 */
+	private byte[][] sort(byte[][] entr_arr) {
+		// sort the entries
+		Utils.sort(entr_arr, 0, entr_arr.length);
+		
+		/** CONSERVATIVE EXTENSION:
+		 * 	 PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
+		 */
+		entr_arr = ConservativeExtension.retrieveSortedMessages();
+		
+		return entr_arr;
+	}
+	
+	
+	private byte[][] extractBallots(byte[] ballotsAsAMessage) throws ServerMisbehavior{
 		//ArrayList<byte[]> entries = new ArrayList<byte[]>();
 		EntryList entries = new EntryList();
 
 		// Loop over the input entries 
+		byte[] last = null;
 		int numberOfEntries = 0;
 		for( MessageSplitIter iter = new MessageSplitIter(ballotsAsAMessage); iter.notEmpty(); iter.next() ) {
-			byte[] decryptedBallot = decryptor.decrypt(iter.current()); // decrypt the current ballot
+			byte[] current = iter.current();
+			if (last!=null && Utils.compare(last, current)>0)
+				throw new ServerMisbehavior(-2, "Ballots not sorted");
+			if (last!=null && Utils.compare(last, current)==0)
+				throw new ServerMisbehavior(-3, "Duplicate ballots"); 
+			last = current;
+			byte[] decryptedBallot = decryptor.decrypt(current); // decrypt the current ballot
 			if (decryptedBallot == null){
 				System.out.println("[MixServer.java] Decryption failed for ballot #" + numberOfEntries);
 				continue;
@@ -127,16 +157,6 @@ public class MixServer
 		return signedResult;
 	}
 
-	private void checkBallotsSorted(byte[][] entr_arr) throws ServerMisbehavior {
-		for (int i= 1; i < entr_arr.length; i++) {
-			byte[] last = entr_arr[i-1];
-			byte[] current = entr_arr[i];
-			if (last!=null && Utils.compare(last, current)>0)
-				throw new ServerMisbehavior(-2, "Ballots not sorted");
-			if (last!=null && Utils.compare(last, current)==0)
-				throw new ServerMisbehavior(-3, "Duplicate ballots"); 
-		}
-	}
 
 	private byte[] checkAndGetBallots(byte[] data) throws MalformedData {
 		// verify the signature of previous server
