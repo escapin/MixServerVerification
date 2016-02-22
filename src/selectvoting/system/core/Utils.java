@@ -57,6 +57,9 @@ public class Utils
 	 * @return a negative integer, zero, or a positive integer as the first argument is 
 	 * 			less than, equal to, or greater than the second
 	 */
+	/*@
+	   
+	 @*/
 	public static int compare(byte[] a1, byte[] a2) {
 		if (a1 != null && a2 != null) {
 			int n1 = a1.length;
@@ -78,7 +81,14 @@ public class Utils
 		}
 		return 0;
 	}
-
+	/*@
+	  requires byteArrays != null;
+	  requires 0 <= fromIndex && fromIndex < byteArrays.length; 
+	  requires 0 <= toIndex && toIndex < byteArrays.length; 
+	  requires fromIndex <= toIndex;
+	  ensures \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
+	  ensures (\forall int i; fromIndex <= i && i < toIndex; compare(byteArrays[i],byteArrays[i+1]) <= 0);	  
+	@*/
 	public static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
 		if (byteArrays != null) {
 			if(fromIndex>=0 && toIndex<=byteArrays.length && fromIndex<toIndex){
@@ -109,7 +119,7 @@ public class Utils
 		}
 	
 	}
-
+	
 	public static byte[][] copyOf(byte[][] arr) {
 	    if (arr==null) return null;
 	    byte[][] copy = new byte[arr.length][];

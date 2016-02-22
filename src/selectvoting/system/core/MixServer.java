@@ -20,7 +20,7 @@ public class MixServer
 	/**
 	 * Error thrown if the input data is ill-formed.
 	 */
-	@SuppressWarnings("serial")
+	
 	public static class MalformedData extends Exception {
 		public int errCode;
 		public String description;
@@ -32,7 +32,7 @@ public class MixServer
 			return "Mix Server Error: " + description;
 		}
 	}
-	@SuppressWarnings("serial")
+	
 	public static class ServerMisbehavior extends Exception {
 		public int errCode;
 		public String description;
@@ -90,12 +90,25 @@ public class MixServer
 		
 		return signedResult;
 	}
+	
+	
+	
 
 	/**
 	 * TO BE PROVEN: The method returns the sorted input
 	 * By proving that Utils.sort also return the sorted input, we obtain that
 	 * the next assignment is redundant
 	 */
+	// this is the randomly chosen message array
+	//@ public ghost instance byte[][] msg;
+	
+	/*@
+	  requires byteArrays != null;
+	  requires \dl_seqPerm(\dl_array2seq(msg), \dl_array2seq(entr_arr));	  
+	  requires \dl_seqPerm(\dl_array2seq(msg), \dl_array2seq(ConservativeExtension.messages));
+	  ensures \dl_seqPerm(\dl_array2seq(\result), \dl_array2seq(entr_arr));
+	  ensures (\forall int i; fromIndex <= i && i < toIndex; compare(byteArrays[i],byteArrays[i+1]) <= 0);	  
+	@*/	
 	private byte[][] sort(byte[][] entr_arr) {
 		// sort the entries
 		Utils.sort(entr_arr, 0, entr_arr.length);
@@ -125,7 +138,7 @@ public class MixServer
 			last = current;
 			byte[] decryptedBallot = decryptor.decrypt(current); // decrypt the current ballot
 			if (decryptedBallot == null){
-				System.out.println("[MixServer.java] Decryption failed for ballot #" + numberOfEntries);
+				//System.out.println("[MixServer.java] Decryption failed for ballot #" + numberOfEntries);
 				continue;
 			}
 			byte[] elID = MessageTools.first(decryptedBallot);
@@ -133,7 +146,7 @@ public class MixServer
 				entries.add(MessageTools.second(decryptedBallot));
 			else {
 				try {
-					System.out.println("[MixServer.java] Ballot #" + numberOfEntries + " invalid");
+					//System.out.println("[MixServer.java] Ballot #" + numberOfEntries + " invalid");
 				} catch (Throwable t) {}
 			}
 			++numberOfEntries;
