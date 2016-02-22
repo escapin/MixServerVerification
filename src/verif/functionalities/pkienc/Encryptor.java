@@ -1,6 +1,6 @@
 package verif.functionalities.pkienc;
 
-import static verif.utils.MessageTools.copyOf;
+import verif.utils.MessageTools;
 import verif.lib.crypto.CryptoLib;
 
 
@@ -14,11 +14,11 @@ public class Encryptor {
 	}
 
 	public byte[] encrypt(byte[] message) {
-		return copyOf(CryptoLib.pke_encrypt(copyOf(message), copyOf(publicKey)));
+		return MessageTools.copyOf(CryptoLib.pke_encrypt(MessageTools.copyOf(message), MessageTools.copyOf(publicKey)));
 	}
 
 	public byte[] getPublicKey() {
-		return copyOf(publicKey);
+		return MessageTools.copyOf(publicKey);
 	}
 
 	protected Encryptor copy() {

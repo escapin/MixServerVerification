@@ -1,6 +1,6 @@
 package verif.functionalities.pkisig;
 
-import static verif.utils.MessageTools.copyOf;
+import verif.utils.MessageTools;
 import verif.lib.crypto.CryptoLib;
 
 public class Verifier {
@@ -15,7 +15,7 @@ public class Verifier {
 	}
 
 	public byte[] getVerifKey() {
-		return copyOf(verifKey);
+		return MessageTools.copyOf(verifKey);
 	}
 
 	protected Verifier copy() {
