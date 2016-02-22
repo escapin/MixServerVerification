@@ -35,7 +35,7 @@ import edu.kit.joana.wala.core.SDGBuilder.PointsToPrecision;
 public class VerifyMixServer {
 
 	private static final String MAIN_CLASS = "Lselectvoting/system/core/Setup;";
-	private static final String ENV_CLASS = "Lde/unitrier/infsec/environment/Environment;";
+	private static final String ENV_CLASS = "Lverif/environment/Environment;";
 
 	public static void main(String[] args) throws ClassHierarchyException, IOException, UnsoundGraphException, CancelException {
 		if (args.length != 2) {
