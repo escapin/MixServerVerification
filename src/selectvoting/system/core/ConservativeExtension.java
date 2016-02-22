@@ -1,7 +1,5 @@
 package selectvoting.system.core;
 
-import verif.utils.MessageTools;
-
 public class ConservativeExtension{
 	private /*@spec_public*/ static byte[][] messages;
 	
@@ -82,12 +80,18 @@ public class ConservativeExtension{
 			return n2;
 		}
 	}
-	
+	/*@ public normal_behaviour
+	  @ requires arr != null;
+	  @ ensures \result.length == arr.length;
+	  @ ensures (\forall int i; 0 <= i && i < \result.length; \result[i].length == arr[i].length);
+	  @ ensures (\forall int i; 0 <= i && i < \result.length; (\forall int j; 0 <=j && j < \result[i].length; \result[i] == arr[i]));
+	  @ 
+	  @*/
 	public static byte[][] copyOf(byte[][] arr) {
 	    if (arr==null) return null;
 	    byte[][] copy = new byte[arr.length][];
 	    for (int i = 0; i < arr.length; i++)
-	            copy[i] = MessageTools.copyOf(arr[i]);
+	            copy[i] = copyOf(arr[i]);
 	    return copy;	
 	}
 	

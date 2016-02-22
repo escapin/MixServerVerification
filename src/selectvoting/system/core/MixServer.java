@@ -103,11 +103,11 @@ public class MixServer
 	//@ public ghost instance byte[][] msg;
 	
 	/*@
-	  requires byteArrays != null;
+	  requires entr_arr != null;
 	  requires \dl_seqPerm(\dl_array2seq(msg), \dl_array2seq(entr_arr));	  
 	  requires \dl_seqPerm(\dl_array2seq(msg), \dl_array2seq(ConservativeExtension.messages));
 	  ensures \dl_seqPerm(\dl_array2seq(\result), \dl_array2seq(entr_arr));
-	  ensures (\forall int i; fromIndex <= i && i < toIndex; compare(byteArrays[i],byteArrays[i+1]) <= 0);	  
+	  ensures (\forall int i; 0 <= i && i < entr_arr.length; Utils.compare(entr_arr[i],entr_arr[i+1]) <= 0);	  
 	@*/	
 	private byte[][] sort(byte[][] entr_arr) {
 		// sort the entries

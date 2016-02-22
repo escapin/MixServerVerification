@@ -14,8 +14,8 @@ public final class Setup {
 	// PURE SUPPORT METHODS:
 
     /*@ private normal_behaviour
-      @ requires r1.length == r2.length;
-      @ ensures \result == (\forall int i; 0 <= i && i < r1.length; r1[i] == r2[i]);
+      @ requires arr1.length == arr2.length;
+      @ ensures \result == (\forall int i; 0 <= i && i < arr1.length; arr1[i] == arr2[i]);
       @*/
 	private static /*@ strictly_pure helper @*/ boolean setEquality(byte[][] arr1, byte[][] arr2) {
 		if(arr1.length!=arr2.length) return false;
@@ -24,8 +24,8 @@ public final class Setup {
 		Utils.sort(a1, 0, a1.length);
 		Utils.sort(a2, 0, a2.length);
 
-		/*@ loop_invariant 0 <= j && r1.length == r2.length
-          @         &&  (\forall int i; 0 <= i && i < j; r1[i] == r2[i]);
+		/* @ loop_invariant 0 <= j && arr1.length == arr2.length
+          @         &&  (\forall int i; 0 <= i && i < j; arr1[i] == arr2[i]);
           @ assignable \strictly_nothing;
           @ decreases r1.length - j;
           @*/

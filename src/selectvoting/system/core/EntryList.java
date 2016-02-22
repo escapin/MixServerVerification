@@ -80,7 +80,7 @@ public class EntryList {
 			Node tmp = head;
 
 			/*@ loop_invariant head != null;
-              @ assignable entries;
+              @ assignable arr;
               @*/
 			while (tmp != null) {
 				byte[] x = tmp.entry;
