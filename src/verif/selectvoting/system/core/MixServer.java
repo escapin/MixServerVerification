@@ -128,7 +128,7 @@ public class MixServer
 
 		// Loop over the input entries 
 		byte[] last = null;
-		int numberOfEntries = 0;
+		//int numberOfEntries = 0;
 		for( MessageSplitIter iter = new MessageSplitIter(ballotsAsAMessage); iter.notEmpty(); iter.next() ) {
 			byte[] current = iter.current();
 			if (last!=null && Utils.compare(last, current)>0)
@@ -149,7 +149,7 @@ public class MixServer
 					//System.out.println("[MixServer.java] Ballot #" + numberOfEntries + " invalid");
 				} catch (Throwable t) {}
 			}
-			++numberOfEntries;
+			//++numberOfEntries;
 		}
 		
 		byte[][] entr_arr = new byte[entries.size()][];
