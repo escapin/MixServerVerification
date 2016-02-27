@@ -1,7 +1,7 @@
-package selectvoting.system.core;
+package verif.selectvoting.system.core;
 
-import selectvoting.system.core.MixServer.MalformedData;
-import selectvoting.system.core.MixServer.ServerMisbehavior;
+import verif.selectvoting.system.core.MixServer.MalformedData;
+import verif.selectvoting.system.core.MixServer.ServerMisbehavior;
 import verif.environment.Environment;
 import verif.functionalities.pkienc.Decryptor;
 import verif.functionalities.pkienc.Encryptor;

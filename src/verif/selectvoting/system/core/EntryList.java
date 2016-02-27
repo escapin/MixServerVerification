@@ -1,4 +1,4 @@
-package selectvoting.system.core;
+package verif.selectvoting.system.core;
 
 
 public class EntryList {

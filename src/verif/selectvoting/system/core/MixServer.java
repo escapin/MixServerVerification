@@ -1,6 +1,6 @@
-package selectvoting.system.core;
+package verif.selectvoting.system.core;
 
-import selectvoting.system.core.Utils.MessageSplitIter;
+import verif.selectvoting.system.core.Utils.MessageSplitIter;
 import verif.functionalities.pkienc.Decryptor;
 import verif.functionalities.pkienc.Encryptor;
 import verif.functionalities.pkisig.Signer;
