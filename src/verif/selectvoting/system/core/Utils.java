@@ -26,7 +26,9 @@ public class Utils
 	public static byte[] concatenateMessageArray(byte[][] messages, int len) {
 		byte[] msg = new byte[0];
 		for (int i=len-1; i>=0; --i) { // from the last to the first
+		    try {
 			msg = MessageTools.concatenate(messages[i], msg);
+		    } catch (Throwable t) {}
 		}
 		return msg;
 	}	
