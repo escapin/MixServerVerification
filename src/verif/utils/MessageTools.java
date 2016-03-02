@@ -28,10 +28,17 @@ public class MessageTools {
     }
 
     public static boolean equal(byte[] a, byte[] b) {
-        if( a.length != b.length ) return false;
-        for( int i=0; i<a.length; ++i)
-            if( a[i] != b[i] ) return false;
-        return true;
+        if (a != null && b != null) {
+            if( a.length != b.length ) return false;
+            for( int i=0; i<a.length; ++i) {
+                try {
+                    if( a[i] != b[i] ) return false;
+                } catch (Throwable t) {}
+            }
+            return true;
+        } else {
+            return false; // you can also return true here, I (the Joana guy) don't care
+        }
     }
 
     public static byte[] getZeroMessage(int messageSize) {
