@@ -110,6 +110,7 @@ public class MixServer
 	  ensures (\forall int i; 0 <= i && i < entr_arr.length; Utils.compare(entr_arr[i],entr_arr[i+1]) <= 0);	  
 	@*/	
 	private byte[][] sort(byte[][] entr_arr) {
+	    if (entr_arr != null) {
 		// sort the entries
 		Utils.sort(entr_arr, 0, entr_arr.length);
 		
@@ -119,6 +120,9 @@ public class MixServer
 		entr_arr = ConservativeExtension.retrieveSortedMessages();
 		
 		return entr_arr;
+	    } else {
+	        return new byte[][] {};
+	    }
 	}
 	
 	
