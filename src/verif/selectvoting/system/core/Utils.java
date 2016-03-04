@@ -64,6 +64,54 @@ public class Utils
 		return b;
 	}
 	
+//	/* @
+//	   public normal_behaviour
+//	 
+//	   ensures  ((\forall int j; 0 <= j && j < a1.length; a1[j] == a2[j])
+//	                && a1.length == a2.length)    
+//	            <==> \result;
+//	            	   
+//	   assignable \strictly_nothing;
+//	 @*/
+//	public static boolean eq(byte[] a1, byte[] a2){
+//		return compare(a1,a2) == 0;
+//	}
+//	
+//	/*@
+//	//reflexivity
+//	   public normal_behaviour	   
+//	   ensures (\forall byte[] a; leq(a,a));
+//	   
+//	   also
+//	   
+//	   public normal_behaviour	   
+//	   ensures (\forall byte[] a; (\forall byte[] b; (leq(a,b) && leq(b,a)) ==> eq(a,b)));
+//	   
+//	   also
+//	   
+//	   public normal_behaviour	   
+//	   ensures (\forall byte[] a; (\forall byte[] b; (\forall byte[] c; (leq(a,b) && leq(b,c)) ==> leq(a,c))));
+//	@*/
+//	public static boolean dummy(){		
+//		return true;
+//	}
+//	
+//	/* @
+//	   public normal_behaviour
+//	 
+//	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] < a2[i] && 
+//	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
+//	            || 
+//	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
+//	                && a1.length <= a2.length) )   
+//	            <==> \result;
+//	            	   
+//	   assignable \strictly_nothing;   
+//	 @*/
+//	public static boolean leq(byte[] a1, byte[] a2){
+//		return compare(a1,a2) <= 0;
+//	}
+	
 	/**
 	 * Compares its two array arguments for lexicographic order. 
 	 * 
