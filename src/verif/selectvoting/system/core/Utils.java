@@ -51,6 +51,19 @@ public class Utils
 		}
 	}
 	
+	/*@
+	 public normal_behaviour
+	 ensures  (a <= b) <==> (\result == a);
+	 ensures (a > b) <==> (\result == b && a != b);
+	 assignable \strictly_nothing;
+	 @*/
+	public static int min(int a, int b){
+		if(a <= b){
+			return a;
+		}
+		return b;
+	}
+	
 	/**
 	 * Compares its two array arguments for lexicographic order. 
 	 * 
@@ -60,14 +73,39 @@ public class Utils
 	 * 			less than, equal to, or greater than the second
 	 */
 	/*@
-	   
+	   public normal_behaviour
+	 
+	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] < a2[i] && 
+	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
+	            || 
+	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
+	                && a1.length < a2.length) )   
+	            <==> (\result < 0);	
+	            
+	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] > a2[i] && 
+	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
+	            || 
+	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
+	                && a1.length > a2.length) )   
+	            <==> (\result > 0);
+	               
+	   ensures (a1.length == a2.length &&
+	                (\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j]))
+	            <==>(\result == 0);
+	   assignable \strictly_nothing;
 	 @*/
 	public static int compare(byte[] a1, byte[] a2) {
 		if (a1 != null && a2 != null) {
 			int n1 = a1.length;
 			int n2 = a2.length;
-			int min = Math.min(n1, n2);
-			for (int i = 0; i < min; i++) {
+			int m = min(n1, n2);
+			/*@
+			  loop_invariant 0 <=i && i <= m && n1 == a1.length && n2 == a2.length && m == min(n1, n2) &&
+			                 (\forall int j; 0 <=j && j < i; a1[j] == a2[j]);
+			  decreases m - i;      			  
+			  assignable \strictly_nothing;
+			 @*/
+			for (int i = 0; i < m; i++) {
 				byte b1 = -1;
 				byte b2 = -1;
 				try {
