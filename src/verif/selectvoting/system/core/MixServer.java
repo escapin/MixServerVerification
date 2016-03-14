@@ -64,6 +64,16 @@ public class MixServer
 	//@ public ghost instance byte[][] a;
 	// this is the value of entr_arr after the call to ConservativeExtenson.getRandomMessages
 	//@ public ghost instance byte[][] b;
+	
+	
+	/*@
+	  requires \dl_seqPerm(\dl_array2seq2d(a), \dl_array2seq2d(b));
+	  requires (\forall int i; 0 <= i && i < a.length-1; Utils.compare(a[i],a[i+1]) <= 0); 	  
+	  requires (\forall int i; 0 <= i && i < b.length-1; Utils.compare(b[i],b[i+1]) <= 0);
+	  ensures \result <==> (\dl_array2seq2d(a) == \dl_array2seq2d(b));
+	  ensures \result;
+	  public static model two_state boolean sortedPermIsEqual(byte[][] a, byte[][] b); 
+	 @*/
 
 
 	// PUBLIC METHODS
@@ -84,8 +94,9 @@ public class MixServer
 	 * ConservativeExtension.retrieveSortetMessages().
 	 */
 	/*@
-	  requires \dl_seqPerm(\dl_array2seq(msg), \dl_array2seq(ConservativeExtension.messages)); 	  
-	  ensures a.length == b.length && (\forall int i; 0 <= i && i < a.length; a[i] == b[i]);
+	  public normal_behaviour
+	  requires ConservativeExtension.messages != null;	  
+	  ensures true;
 	 @*/	
 	public byte[] processBallots(byte[] data) throws MalformedData, ServerMisbehavior {
 
@@ -111,12 +122,24 @@ public class MixServer
 
 
 		entr_arr = sort(entr_arr); 
-		//@set a = entr_arr;
+		
 		/** CONSERVATIVE EXTENSION:
 		 *   PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
 		 */
+		/*@
+		 public normal_behaviour
+		 requires ConservativeExtension.messages != null;
+		 requires \dl_seqPerm(\dl_array2seq2d(\old(entr_arr)), \dl_array2seq2d(ConservativeExtension.messages));
+		 requires (\forall int i; 0 <= i && i < \old(entr_arr.length)-1; Utils.compare(\old(entr_arr[i]),\old(entr_arr[i+1])) <= 0);
+		 ensures (\dl_array2seq2d(entr_arr) == \dl_array2seq2d(\old(entr_arr)));
+		 ensures entr_arr != null;
+		 ensures (\forall int i; 0 <= i && i < entr_arr.length; entr_arr[i] != null);
+		 assignable entr_arr;
+		 @*/
+		{
 		entr_arr = ConservativeExtension.retrieveSortedMessages();
-		//@set b = entr_arr;
+		}
+		
 
 		byte[] signedResult = postProcess(entr_arr);
 
@@ -124,22 +147,15 @@ public class MixServer
 	}
 
 
-
-
-	/**
-	 * TO BE PROVEN: The method returns the sorted input
-	 * By proving that Utils.sort also return the sorted input, we obtain that
-	 * the next assignment is redundant
-	 */
-
-
 	/*@
-	  requires entr_arr != null;	  
+	  public normal_behaviour	  	  
 	  ensures \dl_seqPerm(\dl_array2seq(\result), \dl_array2seq(entr_arr));
-	  ensures (\forall int i; 0 <= i && i < entr_arr.length; Utils.compare(entr_arr[i],entr_arr[i+1]) <= 0);	  
+	  ensures (\forall int i; 0 <= i && i < \result.length-1; Utils.compare(\result[i],\result[i+1]) <= 0);	
+	  ensures entr_arr != null;   
+	  assignable entr_arr;	    
 	@*/	
 	private byte[][] sort(byte[][] entr_arr) {
-		if (entr_arr != null) {
+		if (entr_arr != null) {				
 			// sort the entries
 			Utils.sort(entr_arr, 0, entr_arr.length);
 			return entr_arr;
@@ -151,6 +167,7 @@ public class MixServer
 	 * We assume this method returns a permutation of the array 'msg'.
 	 */
 	/*@
+	  public normal_behaviour
 	  ensures \result != null;
 	  ensures \dl_seqPerm( \dl_array2seq(\result), \dl_array2seq(msg)); 
 	  assignable \strictly_nothing; 
@@ -194,6 +211,7 @@ public class MixServer
 	 * We assume it doesn't change any fields.
 	 */
 	/*@
+	  public normal_behaviour
 	  ensures true;
 	  assignable \strictly_nothing;
 	 @*/

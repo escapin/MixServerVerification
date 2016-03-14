@@ -57,7 +57,7 @@ public class Utils
 	 ensures (a > b) <==> (\result == b && a != b);
 	 assignable \strictly_nothing;
 	 @*/
-	public static int min(int a, int b){
+	public /*@helper@*/static int min(int a, int b){
 		if(a <= b){
 			return a;
 		}
@@ -142,7 +142,7 @@ public class Utils
 	            <==>(\result == 0);
 	   assignable \strictly_nothing;
 	 @*/
-	public static int compare(byte[] a1, byte[] a2) {
+	public /*@helper@*/static int compare(byte[] a1, byte[] a2) {
 		if (a1 != null && a2 != null) {
 			int n1 = a1.length;
 			int n2 = a2.length;
@@ -177,7 +177,7 @@ public class Utils
 	  ensures \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
 	  ensures (\forall int i; fromIndex <= i && i < toIndex; compare(byteArrays[i],byteArrays[i+1]) <= 0);	  
 	@*/
-	public static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
+	public /*@helper@*/static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
 		if (byteArrays != null) {
 			if(fromIndex>=0 && toIndex<=byteArrays.length && fromIndex<toIndex){
 				for(int sorted=fromIndex+1; sorted<toIndex; ++sorted){
@@ -208,7 +208,7 @@ public class Utils
 	
 	}
 	
-	public static byte[][] copyOf(byte[][] arr) {
+	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
 	    if (arr==null) return null;
 	    byte[][] copy = new byte[arr.length][];
 	    for (int i = 0; i < arr.length; i++)

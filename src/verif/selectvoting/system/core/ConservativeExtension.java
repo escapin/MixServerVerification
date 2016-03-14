@@ -6,20 +6,27 @@ public class ConservativeExtension{
 	public static void storeMessages(byte[][] msg){
 		messages=copyOf(msg);
 	}
-	
-	public static byte[][] retrieveSortedMessages(){
-		sort(messages, 0, messages.length);
-		return messages;
-	}
 	/*@
-	  requires byteArrays != null;
+	  public normal_behaviour	  
+	  ensures \dl_seqPerm(\dl_array2seq(\result), \dl_array2seq(messages));
+	  ensures (\forall int i; 0 <= i && i < \result.length -1 ; compare(\result[i],\result[i+1]) <= 0);
+	  ensures \fresh(\result);
+	  assignable \nothing;	  
+	@*/
+	public /*@helper@*/static byte[][] retrieveSortedMessages(){		
+		byte[][] result = copyOf(messages); 		
+		sort(result, 0, result.length);
+		return result;
+	}
+	/*@	  
+	  public normal_behaviour
 	  requires 0 <= fromIndex && fromIndex < byteArrays.length; 
 	  requires 0 <= toIndex && toIndex < byteArrays.length; 
 	  requires fromIndex <= toIndex;
 	  ensures \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
 	  ensures (\forall int i; fromIndex <= i && i < toIndex; compare(byteArrays[i],byteArrays[i+1]) <= 0);	  
 	@*/
-	public static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
+	public /*@helper@*/static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
 		if (byteArrays != null) {
 			if(fromIndex>=0 && toIndex<=byteArrays.length && fromIndex<toIndex){
 				for(int sorted=fromIndex+1; sorted<toIndex; ++sorted){
@@ -49,8 +56,13 @@ public class ConservativeExtension{
 		}
 	
 	}
-	
-	public static int compare(byte[] a1, byte[] a2) {
+	/*@
+	  public normal_behaviour
+	  ensures \result == Utils.compare(a1,a2);
+	  assignable \strictly_nothing;
+	  
+	 @*/
+	public /*@helper@*/static int compare(byte[] a1, byte[] a2) {
 		if (a1 != null && a2 != null) {
 			int n1 = a1.length;
 			int n2 = a2.length;
@@ -71,8 +83,13 @@ public class ConservativeExtension{
 		}
 		return 0;
 	}
-	
-	public static int min(int n1, int n2){
+	/*@
+	  public normal_behaviour
+	  ensures \result == Utils.min(n1,n2);
+	  assignable \strictly_nothing;
+	  
+	 @*/
+	public /*@helper@*/static int min(int n1, int n2){
 		if(n1<=n2){
 			return n1;
 		}
@@ -87,7 +104,7 @@ public class ConservativeExtension{
 	  @ ensures (\forall int i; 0 <= i && i < \result.length; (\forall int j; 0 <=j && j < \result[i].length; \result[i] == arr[i]));
 	  @ 
 	  @*/
-	public static byte[][] copyOf(byte[][] arr) {
+	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
 	    if (arr==null) return null;
 	    byte[][] copy = new byte[arr.length][];
 	    for (int i = 0; i < arr.length; i++)
@@ -104,7 +121,7 @@ public class ConservativeExtension{
 	  @ 			&& (\forall int i; 0 <= i && i < message.length;
 	  @ 						\result[i] == message[i])));
 	  @*/
-  public static /*@ pure helper nullable @*/ byte[] copyOf(/*@ nullable @*/ byte[] message) {
+  public /*@helper@*/static /*@ pure helper nullable @*/ byte[] copyOf(/*@ nullable @*/ byte[] message) {
       if (message==null) return null;
       byte[] copy = new byte[message.length];
       /*@ loop_invariant 0 <= i && i <= message.length
