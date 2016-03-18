@@ -157,7 +157,7 @@ public class MixServer
 	  public normal_behaviour	
 	  requires ConservativeExtension.messages != null;
 	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);  	  
-	  ensures \dl_seqPerm(\dl_array2seq(\result), \dl_array2seq(entr_arr));
+	  ensures \dl_seqPerm(\dl_array2seq2d(\result), \dl_array2seq2d(entr_arr));
 	  ensures (\forall int i; 0 <= i && i < \result.length-1; Utils.compare(\result[i],\result[i+1]) <= 0);	
 	  ensures \fresh(\result);
 	  ensures ConservativeExtension.messages != null;
@@ -183,7 +183,7 @@ public class MixServer
 	  requires ConservativeExtension.messages != null;
 	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
 	  ensures \result != null;
-	  ensures \dl_seqPerm( \dl_array2seq(\result), \dl_array2seq(msg));
+	  ensures \dl_seqPerm( \dl_array2seq2d(\result), \dl_array2seq2d(msg));
 	  ensures ConservativeExtension.messages != null;
 	  ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	   
 	  assignable \strictly_nothing; 

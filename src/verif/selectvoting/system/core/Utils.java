@@ -224,7 +224,12 @@ public class Utils
 		}
 	
 	}
-	
+	/*@ public normal_behaviour
+	  @ requires arr != null;	  
+	  @ ensures \dl_array2seq2d(\result) == \dl_array2seq2d(arr);
+	  @ ensures \fresh(\result);
+	  @ assignable \nothing;
+	  @*/
 	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
 		/**
 		 * We cannot say 'if (arr==null) return null' here. Here is why:
