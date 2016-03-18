@@ -70,7 +70,7 @@ public class MixServer
 	  requires \dl_seqPerm(\dl_array2seq2d(a), \dl_array2seq2d(b));
 	  requires (\forall int i; 0 <= i && i < a.length-1; Utils.compare(a[i],a[i+1]) <= 0); 	  
 	  requires (\forall int i; 0 <= i && i < b.length-1; Utils.compare(b[i],b[i+1]) <= 0);
-	  ensures \result <==> (\dl_array2seq2d(a) == \dl_array2seq2d(b));
+	  ensures  (\dl_array2seq2d(a) == \dl_array2seq2d(b));
 	  ensures \result;
 	  public static model two_state boolean sortedPermIsEqual(byte[][] a, byte[][] b); 
 	 @*/
@@ -95,7 +95,12 @@ public class MixServer
 	 */
 	/*@
 	  public normal_behaviour
-	  requires ConservativeExtension.messages != null;	  
+	  requires ConservativeExtension.messages != null;
+	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
+	  requires msg != null;
+	  requires msg != ConservativeExtension.messages;
+	  requires (\forall int i; 0 <= i && i < msg.length; msg[i] != null);	  
+	  requires \dl_seqPerm(\dl_array2seq2d(msg), \dl_array2seq2d(ConservativeExtension.messages));
 	  ensures true;
 	 @*/	
 	public byte[] processBallots(byte[] data) throws MalformedData, ServerMisbehavior {
@@ -129,12 +134,13 @@ public class MixServer
 		/*@
 		 public normal_behaviour
 		 requires ConservativeExtension.messages != null;
-		 requires \dl_seqPerm(\dl_array2seq2d(\old(entr_arr)), \dl_array2seq2d(ConservativeExtension.messages));
-		 requires (\forall int i; 0 <= i && i < \old(entr_arr.length)-1; Utils.compare(\old(entr_arr[i]),\old(entr_arr[i+1])) <= 0);
-		 ensures (\dl_array2seq2d(entr_arr) == \dl_array2seq2d(\old(entr_arr)));
+		 requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);		 	  	 
+		 ensures sortedPermIsEqual(entr_arr, \old(entr_arr));		 
 		 ensures entr_arr != null;
 		 ensures (\forall int i; 0 <= i && i < entr_arr.length; entr_arr[i] != null);
-		 assignable entr_arr;
+		 ensures ConservativeExtension.messages != null;
+	     ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
+		 assignable ConservativeExtension.messages[*];
 		 @*/
 		{
 		entr_arr = ConservativeExtension.retrieveSortedMessages();
@@ -148,17 +154,22 @@ public class MixServer
 
 
 	/*@
-	  public normal_behaviour	  	  
+	  public normal_behaviour	
+	  requires ConservativeExtension.messages != null;
+	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);  	  
 	  ensures \dl_seqPerm(\dl_array2seq(\result), \dl_array2seq(entr_arr));
 	  ensures (\forall int i; 0 <= i && i < \result.length-1; Utils.compare(\result[i],\result[i+1]) <= 0);	
-	  ensures entr_arr != null;   
-	  assignable entr_arr;	    
+	  ensures ConservativeExtension.messages != null;
+	  ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	     
+	  assignable entr_arr[*];	    
 	@*/	
 	private byte[][] sort(byte[][] entr_arr) {
-		if (entr_arr != null) {				
-			// sort the entries
-			Utils.sort(entr_arr, 0, entr_arr.length);
-			return entr_arr;
+		
+		byte[][] result = Utils.copyOf(entr_arr);
+		
+		if (result != null) {
+			Utils.sort(result, 0, result.length);
+			return result;
 		} else {
 			return new byte[][] {};
 		}
@@ -168,8 +179,12 @@ public class MixServer
 	 */
 	/*@
 	  public normal_behaviour
+	  requires ConservativeExtension.messages != null;
+	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
 	  ensures \result != null;
-	  ensures \dl_seqPerm( \dl_array2seq(\result), \dl_array2seq(msg)); 
+	  ensures \dl_seqPerm( \dl_array2seq(\result), \dl_array2seq(msg));
+	  ensures ConservativeExtension.messages != null;
+	  ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	   
 	  assignable \strictly_nothing; 
 	 @*/
 	private byte[][] extractBallots(byte[] ballotsAsAMessage) throws ServerMisbehavior{
@@ -216,6 +231,11 @@ public class MixServer
 	  assignable \strictly_nothing;
 	 @*/
 	private byte[] postProcess(byte[][] entr_arr) {
+		
+		if(entr_arr == null){
+			return null;
+		}
+		
 		// format entries as one message
 		byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr, entr_arr.length);
 
@@ -233,8 +253,11 @@ public class MixServer
 	 */
 	/*@
 	  public normal_behaviour
-	  ensures true;
-	  assignable \strictly_nothing;
+	  requires ConservativeExtension.messages != null;
+	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	  
+	  ensures ConservativeExtension.messages != null;
+	  ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	   
+	  assignable \strictly_nothing; 
 	 @*/
 	private byte[] checkAndGetBallots(byte[] data) throws MalformedData {
 		// verify the signature of previous server

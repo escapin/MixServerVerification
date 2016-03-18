@@ -120,6 +120,29 @@ public class Utils
 	 * @return a negative integer, zero, or a positive integer as the first argument is 
 	 * 			less than, equal to, or greater than the second
 	 */
+//	/*@
+//	   public normal_behaviour
+//	 
+//	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] < a2[i] && 
+//	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
+//	            || 
+//	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
+//	                && a1.length < a2.length) )   
+//	            <==> (\result < 0);	
+//	            
+//	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] > a2[i] && 
+//	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
+//	            || 
+//	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
+//	                && a1.length > a2.length) )   
+//	            <==> (\result > 0);
+//	               
+//	   ensures (a1.length == a2.length &&
+//	                (\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j]))
+//	            <==>(\result == 0);
+//	   assignable \strictly_nothing;
+//	 @*/
+	
 	/*@
 	   public normal_behaviour
 	 
@@ -127,20 +150,10 @@ public class Utils
 	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
 	            || 
 	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
-	                && a1.length < a2.length) )   
-	            <==> (\result < 0);	
-	            
-	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] > a2[i] && 
-	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
-	            || 
-	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
-	                && a1.length > a2.length) )   
-	            <==> (\result > 0);
-	               
-	   ensures (a1.length == a2.length &&
-	                (\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j]))
-	            <==>(\result == 0);
-	   assignable \strictly_nothing;
+	                && a1.length <= a2.length) )   
+	            <==> \result <= 0;
+	            	   
+	   assignable \strictly_nothing;   
 	 @*/
 	public /*@helper@*/static int compare(byte[] a1, byte[] a2) {
 		if (a1 != null && a2 != null) {
@@ -170,12 +183,16 @@ public class Utils
 		return 0;
 	}
 	/*@
+	  public normal_behaviour
 	  requires byteArrays != null;
-	  requires 0 <= fromIndex && fromIndex < byteArrays.length; 
-	  requires 0 <= toIndex && toIndex < byteArrays.length; 
+	  requires (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  requires 0 <= fromIndex && fromIndex <= byteArrays.length; 
+	  requires 0 <= toIndex && toIndex <= byteArrays.length; 
 	  requires fromIndex <= toIndex;
 	  ensures \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
-	  ensures (\forall int i; fromIndex <= i && i < toIndex; compare(byteArrays[i],byteArrays[i+1]) <= 0);	  
+	  ensures (\forall int i; fromIndex <= i && i < toIndex-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+	  ensures (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  assignable byteArrays[*];	  
 	@*/
 	public /*@helper@*/static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
 		if (byteArrays != null) {
@@ -211,8 +228,9 @@ public class Utils
 	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
 	    if (arr==null) return null;
 	    byte[][] copy = new byte[arr.length][];
-	    for (int i = 0; i < arr.length; i++)
-	            copy[i] = MessageTools.copyOf(arr[i]);
+	    for (int i = 0; i < arr.length; i++){
+	    	copy[i] = MessageTools.copyOf(arr[i]);
+	    }
 	    return copy;	
 	}	
 		

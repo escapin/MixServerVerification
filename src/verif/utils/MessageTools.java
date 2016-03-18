@@ -22,7 +22,7 @@ public class MessageTools {
           @ decreases message.length - i;
           @*/
         for (int i = 0; i < message.length; i++) {
-            copy[i] = message[i];
+        	copy[i] = message[i];
         }
         return copy;
     }
