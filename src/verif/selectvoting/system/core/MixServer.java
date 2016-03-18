@@ -159,9 +159,10 @@ public class MixServer
 	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);  	  
 	  ensures \dl_seqPerm(\dl_array2seq(\result), \dl_array2seq(entr_arr));
 	  ensures (\forall int i; 0 <= i && i < \result.length-1; Utils.compare(\result[i],\result[i+1]) <= 0);	
+	  ensures \fresh(\result);
 	  ensures ConservativeExtension.messages != null;
 	  ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	     
-	  assignable entr_arr[*];	    
+	  assignable \nothing;	    
 	@*/	
 	private byte[][] sort(byte[][] entr_arr) {
 		
