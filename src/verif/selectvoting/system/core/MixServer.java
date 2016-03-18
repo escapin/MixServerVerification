@@ -65,6 +65,40 @@ public class MixServer
 	// this is the value of entr_arr after the call to ConservativeExtenson.getRandomMessages
 	//@ public ghost instance byte[][] b;
 	
+	/*@	  
+	  requires Utils.compare(a,b) <= 0; 	  
+	  requires Utils.compare(b,a) <= 0;
+	  ensures  (\dl_array2seq(a) == \dl_array2seq(b));
+	  ensures \result;
+	  public static model two_state boolean antiSym(byte[] a, byte[] b); 
+	 @*/
+	
+	/*@	  
+	  ensures Utils.compare(a,a) <= 0;
+	  ensures \result;
+	  public static model two_state boolean refl(byte[] a); 
+	 @*/
+	
+	/*@	  
+	  requires Utils.compare(a,b) <= 0; 	  
+	  requires Utils.compare(b,c) <= 0;
+	  ensures  Utils.compare(a,c) <= 0;
+	  ensures \result;
+	  public static model two_state boolean trans(byte[] a, byte[] b, byte[] c); 
+	 @*/
+	
+	/*@	  
+	  ensures  !test2();
+	  ensures \result;
+	  public static model two_state boolean test(); 
+	 @*/
+	
+	/*@	  
+	  ensures \result;
+	  public static model two_state boolean test2(); 
+	 @*/
+	
+	
 	
 	/*@
 	  requires \dl_seqPerm(\dl_array2seq2d(a), \dl_array2seq2d(b));
