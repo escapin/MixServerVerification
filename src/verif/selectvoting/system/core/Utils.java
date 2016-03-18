@@ -226,10 +226,12 @@ public class Utils
 	}
 	
 	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
-	    if (arr==null) return null;
+	    if (arr==null) return arr;
 	    byte[][] copy = new byte[arr.length][];
 	    for (int i = 0; i < arr.length; i++){
-	    	copy[i] = MessageTools.copyOf(arr[i]);
+	        try {
+	            copy[i] = MessageTools.copyOf(arr[i]);
+	        } catch (Throwable t) {}
 	    }
 	    return copy;	
 	}	
