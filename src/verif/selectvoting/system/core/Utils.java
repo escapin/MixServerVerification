@@ -226,10 +226,26 @@ public class Utils
 	}
 	
 	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
-	    if (arr==null) return null;
+		/**
+		 * We cannot say 'if (arr==null) return null' here. Here is why:
+		 * Some compilers (e.g. the Oracle JDK 1.8.0_45) generate code
+		 * which performs a redundant checked cast of null to byte[][]
+		 * before null is returned.
+		 * Joana (or WALA respectively) does not perform any additional
+		 * class cast analysis and hence conservatively assumes that the
+		 * checked cast operation may fail with an exception.
+		 * This appears to cause several violations. The reason for that has
+		 * not been investigated yet.
+		 * Interestingly, Eclipse's compiler does not generate this cast. So
+		 * it could be easy to integrate this optimization into WALA to overcome
+		 * this problem.
+		 */
+	    if (arr==null) return arr;
 	    byte[][] copy = new byte[arr.length][];
 	    for (int i = 0; i < arr.length; i++){
-	    	copy[i] = MessageTools.copyOf(arr[i]);
+	        try {
+	            copy[i] = MessageTools.copyOf(arr[i]);
+	        } catch (Throwable t) {}
 	    }
 	    return copy;	
 	}	
