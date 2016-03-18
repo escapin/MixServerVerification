@@ -140,7 +140,7 @@ public class MixServer
 		 ensures (\forall int i; 0 <= i && i < entr_arr.length; entr_arr[i] != null);
 		 ensures ConservativeExtension.messages != null;
 	     ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
-		 assignable ConservativeExtension.messages[*];
+		 assignable \nothing;
 		 @*/
 		{
 		entr_arr = ConservativeExtension.retrieveSortedMessages();
