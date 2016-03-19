@@ -64,16 +64,29 @@ public class ConservativeExtension{
 	
 	}
 	/*@
-	  public normal_behaviour
-	  ensures \result == Utils.compare(a1,a2);
-	  assignable \strictly_nothing;	  
+	   public normal_behaviour
+	 
+	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] < a2[i] && 
+	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
+	            || 
+	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
+	                && a1.length <= a2.length) )   
+	            <==> \result <= 0;
+	            	   
+	   assignable \strictly_nothing;   
 	 @*/
 	public /*@helper@*/static int compare(byte[] a1, byte[] a2) {
 		if (a1 != null && a2 != null) {
 			int n1 = a1.length;
 			int n2 = a2.length;
-			int min = min(n1, n2);
-			for (int i = 0; i < min; i++) {
+			int m = min(n1, n2);
+			/*@
+			  loop_invariant 0 <=i && i <= m && n1 == a1.length && n2 == a2.length && m == min(n1, n2) &&
+			                 (\forall int j; 0 <=j && j < i; a1[j] == a2[j]);
+			  decreases m - i;      			  
+			  assignable \strictly_nothing;
+			 @*/
+			for (int i = 0; i < m; i++) {
 				byte b1 = -1;
 				byte b2 = -1;
 				try {
@@ -90,17 +103,17 @@ public class ConservativeExtension{
 		return 0;
 	}
 	/*@
-	  public normal_behaviour
-	  ensures \result == Utils.min(n1,n2);
-	  assignable \strictly_nothing;
-	  
+	 public normal_behaviour
+	 ensures  (a <= b) <==> (\result == a);
+	 ensures (a > b) <==> (\result == b && a != b);
+	 assignable \strictly_nothing;
 	 @*/
-	public /*@helper@*/static int min(int n1, int n2){
-		if(n1<=n2){
-			return n1;
+	public /*@helper@*/static int min(int a, int b){
+		if(a<=b){
+			return a;
 		}
 		else{
-			return n2;
+			return b;
 		}
 	}
 	/*@ public normal_behaviour

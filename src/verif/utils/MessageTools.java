@@ -4,14 +4,11 @@ package verif.utils;
 public class MessageTools {
 
 	/*@ public normal_behaviour
-	  @ ensures ((\result == null) <==> (message == null))
-	  @ 	&& (\result != null ==>
-	  @ 		(\fresh(\result) && \result.length == message.length
-	  @ 			&& \result != message
-	  @ 			&& (\forall int i; 0 <= i && i < message.length;
-	  @ 						\result[i] == message[i])));
+	  @ requires message != null;
+	  @ ensures (\fresh(\result) && \dl_array2seq(\result) == \dl_array2seq(\old(message)));	  
+	  @ assignable \nothing;
 	  @*/
-    public static /*@ pure helper nullable @*/ byte[] copyOf(/*@ nullable @*/ byte[] message) {
+    public static /*@helper @*/ byte[] copyOf(byte[] message) {
         if (message==null) return null;
         byte[] copy = new byte[message.length];
         /*@ loop_invariant 0 <= i && i <= message.length

@@ -87,18 +87,13 @@ public class MixServer
 	  public static model two_state boolean trans(byte[] a, byte[] b, byte[] c); 
 	 @*/
 	
-	/*@	  
-	  ensures  !test2();
+	/*@
+	  requires 0 <= j  && j < a.length;	  
+	  requires (\forall int i; 0 <= i && i < a.length-1; Utils.compare(a[i],a[i+1]) <= 0);
+	  ensures (\forall int i; j <= i && i < a.length; Utils.compare(a[j],a[i]) <= 0);
 	  ensures \result;
-	  public static model two_state boolean test(); 
-	 @*/
-	
-	/*@	  
-	  ensures \result;
-	  public static model two_state boolean test2(); 
-	 @*/
-	
-	
+	  public static model two_state boolean minEl(byte[][] a,int j); 
+	 @*/	
 	
 	/*@
 	  requires \dl_seqPerm(\dl_array2seq2d(a), \dl_array2seq2d(b));

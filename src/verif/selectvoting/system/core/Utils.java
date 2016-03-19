@@ -227,7 +227,7 @@ public class Utils
 	/*@ public normal_behaviour
 	  @ requires arr != null;	  
 	  @ ensures \dl_array2seq2d(\result) == \dl_array2seq2d(arr);
-	  @ ensures \fresh(\result);
+	  @ ensures \fresh(\result);	      
 	  @ assignable \nothing;
 	  @*/
 	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
@@ -247,8 +247,17 @@ public class Utils
 		 */
 	    if (arr==null) return arr;
 	    byte[][] copy = new byte[arr.length][];
+	    /*@
+	      loop_invariant 0 <= i && i <= arr.length && copy.length == arr.length && arr != copy && copy !=null;
+	      //loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(copy[i]) == \dl_array2seq(arr[i]));
+	     
+	      loop_invariant \fresh(copy);
+	      assignable copy[*];
+	      decreases arr.length - i;
+	     @*/
 	    for (int i = 0; i < arr.length; i++){
-	        try {
+//	    	copy[i] = arr[i];
+	    	try {
 	            copy[i] = MessageTools.copyOf(arr[i]);
 	        } catch (Throwable t) {}
 	    }
