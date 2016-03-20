@@ -223,7 +223,8 @@ public class Utils
 			}
 		}
 	
-	}
+	}	
+	
 	/*@ public normal_behaviour
 	  @ requires arr != null;	  
 	  @ ensures \dl_array2seq2d(\result) == \dl_array2seq2d(arr);
@@ -246,12 +247,15 @@ public class Utils
 		 * this problem.
 		 */
 	    if (arr==null) return arr;
-	    byte[][] copy = new byte[arr.length][];
+	    byte[][] copy = new byte[arr.length][];;
 	    /*@
-	      loop_invariant 0 <= i && i <= arr.length && copy.length == arr.length && arr != copy && copy !=null;
-	      //loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(copy[i]) == \dl_array2seq(arr[i]));
+	      loop_invariant 0 <= i && i <= arr.length 
+	      && copy.length == arr.length 
+	      && arr != copy && copy !=null;
+	      loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(copy[j]) == \dl_array2seq(arr[j]));
 	     
 	      loop_invariant \fresh(copy);
+	      loop_invariant (\forall int j; 0 <= j && j < i; copy[j] != null);
 	      assignable copy[*];
 	      decreases arr.length - i;
 	     @*/

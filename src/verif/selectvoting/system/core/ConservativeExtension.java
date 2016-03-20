@@ -2,8 +2,12 @@ package verif.selectvoting.system.core;
 
 public class ConservativeExtension{
 	private /*@spec_public*/ static byte[][] messages;
-	
-	public static void storeMessages(byte[][] msg){
+	/*@
+	  public normal_behaviour
+	  ensures \dl_array2seq2d(messages) == \dl_array2seq2d(msg);
+	  assignable messages;
+	 @*/
+	public static/*@helper@*/ void storeMessages(byte[][] msg){
 		messages=copyOf(msg);
 	}
 	/*@
@@ -125,6 +129,17 @@ public class ConservativeExtension{
 	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
 	    if (arr==null) return arr;
 	    byte[][] copy = new byte[arr.length][];
+	    /*@
+	      loop_invariant 0 <= i && i <= arr.length 
+	      && copy.length == arr.length 
+	      && arr != copy && copy !=null;
+	      loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(copy[j]) == \dl_array2seq(arr[j]));
+	     
+	      loop_invariant \fresh(copy);
+	      loop_invariant (\forall int j; 0 <= j && j < i; copy[j] != null);
+	      assignable copy[*];
+	      decreases arr.length - i;
+	     @*/
 	    for (int i = 0; i < arr.length; i++)
 	            copy[i] = copyOf(arr[i]);
 	    return copy;	
@@ -132,24 +147,20 @@ public class ConservativeExtension{
 	
 	
 	/*@ public normal_behaviour
-	  @ ensures ((\result == null) <==> (message == null))
-	  @ 	&& (\result != null ==>
-	  @ 		(\fresh(\result) && \result.length == message.length
-	  @ 			&& \result != message
-	  @ 			&& (\forall int i; 0 <= i && i < message.length;
-	  @ 						\result[i] == message[i])));
+	  @ requires message != null;
+	  @ ensures (\fresh(\result) && \dl_array2seq(\result) == \dl_array2seq(\old(message)));	  
 	  @ assignable \nothing;
 	  @*/
-  public /*@helper@*/static /*@ pure helper nullable @*/ byte[] copyOf(/*@ nullable @*/ byte[] message) {
+  public /*@helper@*/static byte[] copyOf(/*@ nullable @*/ byte[] message) {
       if (message==null) return null;
       byte[] copy = new byte[message.length];
       /*@ loop_invariant 0 <= i && i <= message.length
-        @ 		&& copy != null && copy != message && \fresh(copy)
-        @ 		&& copy.length == message.length
-        @ 		&& (\forall int j; 0 <= j && j < i; copy[j] == message[j]);
-        @ assignable copy[*];
-        @ decreases message.length - i;
-        @*/
+      @ 		&& copy != null && copy != message && \fresh(copy)
+      @ 		&& copy.length == message.length
+      @ 		&& (\forall int j; 0 <= j && j < i; copy[j] == message[j]);
+      @ assignable copy[*];
+      @ decreases message.length - i;
+      @*/
       for (int i = 0; i < message.length; i++) {
           copy[i] = message[i];
       }

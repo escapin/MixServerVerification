@@ -23,10 +23,21 @@ public class MessageTools {
         }
         return copy;
     }
-
-    public static boolean equal(byte[] a, byte[] b) {
+    /*@ public normal_behaviour
+	  @ requires a != null && b!= null;
+	  @ ensures \result <==> \dl_array2seq(a) == \dl_array2seq(b);	  
+	  @ assignable \strictly_nothing;
+	  @*/
+    public static/*@helper@*/ boolean equal(byte[] a, byte[] b) {
         if (a != null && b != null) {
             if( a.length != b.length ) return false;
+            /*@ loop_invariant 0 <= i && i <= a.length
+            @ 		&& a != null && b != null
+            @ 		&& a.length == b.length
+            @ 		&& (\forall int j; 0 <= j && j < i; a[j] == b[j]);
+            @ assignable \strictly_nothing;
+            @ decreases a.length - i;
+            @*/
             for( int i=0; i<a.length; ++i) {
                 try {
                     if( a[i] != b[i] ) return false;
