@@ -64,7 +64,12 @@ public class MixServer
 	//@ public ghost instance byte[][] a;
 	// this is the value of entr_arr after the call to ConservativeExtenson.getRandomMessages
 	//@ public ghost instance byte[][] b;
-	
+	/**
+	 * Here are some model methods which are used as lemmas.
+	 */
+	/**
+	 * Antisimmetry of compare <= 0
+	 */
 	/*@	  
 	  requires Utils.compare(a,b) <= 0; 	  
 	  requires Utils.compare(b,a) <= 0;
@@ -72,13 +77,17 @@ public class MixServer
 	  ensures \result;
 	  public static model two_state boolean antiSym(byte[] a, byte[] b); 
 	 @*/
-	
+	/**
+	 * Reflexivity of compare <= 0
+	 */
 	/*@	  
 	  ensures Utils.compare(a,a) <= 0;
 	  ensures \result;
 	  public static model two_state boolean refl(byte[] a); 
 	 @*/
-	
+	/**
+	 * Transitivity of compare <= 0
+	 */
 	/*@	  
 	  requires Utils.compare(a,b) <= 0; 	  
 	  requires Utils.compare(b,c) <= 0;
@@ -86,7 +95,9 @@ public class MixServer
 	  ensures \result;
 	  public static model two_state boolean trans(byte[] a, byte[] b, byte[] c); 
 	 @*/
-	
+	/**
+	 * Split equality in two gte.
+	 */
 	/*@	   	  
 	  requires \dl_array2seq(a) == \dl_array2seq(b);
 	  ensures  Utils.compare(a,b) <= 0;
@@ -94,7 +105,9 @@ public class MixServer
 	  ensures \result;
 	  public static model two_state boolean antiSym2(byte[] a, byte[] b); 
 	 @*/
-	
+	/**
+	 * If a is sorted then a[j] is smaller or equal than all elements with an index >= j.
+	 */
 	/*@
 	  requires 0 <= j  && j < a.length;	  
 	  requires (\forall int i; 0 <= i && i < a.length-1; Utils.compare(a[i],a[i+1]) <= 0);
@@ -102,7 +115,9 @@ public class MixServer
 	  ensures \result;
 	  public static model two_state boolean minEl(byte[][] a,int j); 
 	 @*/	
-	
+	/**
+	 * If a and b are permutations of each other and both are sorted, then a is a copy of b.
+	 */
 	/*@
 	  requires \dl_seqPerm(\dl_array2seq2d(a), \dl_array2seq2d(b));
 	  requires (\forall int i; 0 <= i && i < a.length-1; Utils.compare(a[i],a[i+1]) <= 0); 	  
@@ -165,8 +180,12 @@ public class MixServer
 
 		entr_arr = sort(entr_arr); 
 		
-		/** CONSERVATIVE EXTENSION:
-		 *   PROVE THAT THE FOLLOWING ASSINGMENT IS REDUNDANT
+		/** 
+		 * We show that this statement does not change any locations of already created objects on the heap.
+		 * Also we show that the values of entr_arr before the statement and after the statement fulfill the requirements
+		 * of the  sortedPermIsEqual model method. The contract of sortedPermIsEqual then guarantees that entr_arr before
+		 * the redundant statement and entr_arr after the redundant statement are copies of each other. The contract of 
+		 * sortedPermIsEqual is proved separately. 
 		 */
 		/*@
 		 public normal_behaviour
@@ -189,7 +208,9 @@ public class MixServer
 		return signedResult;
 	}
 
-
+	/**
+	 * Returns a sorted copy of entr_arr.
+	 */
 	/*@
 	  public normal_behaviour	
 	  requires ConservativeExtension.messages != null;
@@ -212,7 +233,7 @@ public class MixServer
 			return new byte[][] {};
 		}
 	}
-	/*
+	/**
 	 * We assume this method returns a permutation of the array 'msg'.
 	 */
 	/*@
@@ -259,7 +280,7 @@ public class MixServer
 		entries.toArray(entr_arr);
 		return entr_arr;
 	}
-	/*
+	/**
 	 * Since this method is called after the redundant statement, we don't care what it does.
 	 *
 	 */
@@ -286,7 +307,7 @@ public class MixServer
 		return signedResult;
 	}
 	
-	/*
+	/**
 	 * We assume it doesn't change any fields.
 	 */
 	/*@

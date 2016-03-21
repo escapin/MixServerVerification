@@ -8,9 +8,7 @@ public class Environment {
 	private /*@ spec_public @*/ static int inputCounter = 0;
 
 
-	/*@ public behavior
-	  @ assignable inputCounter;
-	  @ diverges true;
+	/*@ public behavior	  	  
 	  @ ensures true;
 	  @*/
 	public static /*@ helper @*/ int untrustedInput()

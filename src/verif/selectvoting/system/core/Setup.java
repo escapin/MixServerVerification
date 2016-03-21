@@ -13,7 +13,9 @@ public final class Setup {
 
 	// PURE SUPPORT METHODS:
 	
-	
+	/**
+	 * Returns a new array which is sorted and a permutation of entr_arr.
+	 */
 	/*@
 	  public normal_behaviour
 	  ensures \dl_seqPerm(\dl_array2seq2d(\result), \dl_array2seq2d(entr_arr));
@@ -32,7 +34,9 @@ public final class Setup {
 			return new byte[][] {};
 		}
 	}
-
+    /**
+     * Returns true if and only if arr1 and arr2 are permutations of each other. 
+     */
     /*@ public normal_behaviour  
         requires arr1 != null && arr2 != null;    
         ensures \result <==> \dl_seqPerm(\dl_array2seq2d(arr1), \dl_array2seq2d(arr2));
@@ -44,6 +48,9 @@ public final class Setup {
 		byte[][] a2=sort(arr2);		
 		return equals(a1, a2);
 	}
+	/**
+     * Returns true if and only if a1 and a2 are copies of each other. 
+     */
     /*@
       public normal_behaviour
       requires a1 != null && a2 != null;
@@ -88,8 +95,54 @@ public final class Setup {
 		main2(mixDecr, mixEncr, mixSign, precServSign, precServVerif, electionID);
 		
 	}
+	/**
+	 *  KeY: This method checks a message array to see if the array and its elements are not null and if the length
+	 *  of the array and of its elements are equal to numberOfMessages and lengthOfMessages respectively.
+	 *  If any of these conditions are not fulfilled a Throwable is thrown.
+	 *  By using method we ensure that the preconditions for the other methods(not null and messages of equal lengths) 
+	 *  are fulfilled.
+	 */
 	
-	
+	/*@
+    public exceptional_behaviour
+    requires msg==null || msg.length != numberOfMessages || (\exists int i; 0<=i && i < msg.length; msg[i] == null || msg[i].length != lengthOfMessages);
+    signals(Throwable);
+    
+    also
+    
+    public normal_behaviour
+    requires msg != null;
+    requires msg.length == numberOfMessages;
+    requires (\forall int i; 0<=i && i < msg.length; msg[i]!= null && msg[i].length == lengthOfMessages);
+    ensures true;           
+    assignable \strictly_nothing;
+  @*/
+	private static /*@helper@*/void checkMessages(/*@nullable@*/byte[][] msg, int numberOfMessages, int lengthOfMessages) throws Throwable{
+		
+		if(msg==null || msg.length != numberOfMessages){
+			throw new Throwable();
+		}
+		/*@
+		  loop_invariant 0 <= i && i <= numberOfMessages;
+		  loop_invariant numberOfMessages == msg.length;
+		  loop_invariant (\forall int j; 0 <= j && j < i; msg[j] != null && msg[j].length == lengthOfMessages);
+		  assignable \strictly_nothing;
+		  decreases numberOfMessages - i;
+		 @*/
+		for(int i=0; i<numberOfMessages; ++i){	
+			/**
+			 * KeY: Added explicit check for null, otherwise it would have thrown a NullPointerException when checking the length.
+			 * In any case null messages are not allowed.
+			 */
+			if(msg[i] == null){
+				throw new Throwable();
+			}
+			
+			if(msg[i].length != lengthOfMessages)
+				throw new Throwable();
+		}		
+		
+	}
 
 
     private static void main2(Decryptor mixDecr, Encryptor mixEncr, Signer mixSign,
@@ -113,17 +166,25 @@ public final class Setup {
 		for(int i=0; i<numberOfMessages; ++i){
 			msg1[i] = Environment.untrustedInputMessage();
 			msg2[i] = Environment.untrustedInputMessage();
-			// the environment must provide all the messages with the same, prefixed length
-			// otherwise, the adversary can distinguish which vector of messages is encrypting.
-			if(msg1[i].length!=lengthOfTheMessages || msg2[i].length!=lengthOfTheMessages)
-				throw new Throwable();
+			
 		}
+		
+		checkMessages(msg1, numberOfMessages, lengthOfTheMessages);
+		checkMessages(msg2, numberOfMessages, lengthOfTheMessages);
 		
 		byte[][] chosen = chooseAndStoreMsg(msg1, msg2);
 		
 		innerMain(mixEncr, precServSign, electionID, mixServ, numberOfMessages,
 		          lengthOfTheMessages, chosen);
     }
+    /**
+     * If msg1 and msg2 are not permutations of each other a Throwable is thrown.
+     * 
+     * If they are permutations and if all messages are of equal length(established by the checkMsg method)
+     * the result of this method is a copy of msg1 if secret is set and a copy of msg2 otherwise, and in 
+     * ConservativeExtension.messages we always store a copy of msg1.
+     * 
+     */
     /*@
        public exceptional_behaviour
        requires !\dl_seqPerm(\dl_array2seq2d(msg1), \dl_array2seq2d(msg2));
@@ -201,6 +262,9 @@ public final class Setup {
 		// send the output of the mix server over the network
 		Environment.untrustedOutputMessage(mixServerOutput);
     }
+    /**
+     *If secret is set returns a copy of msg1 otherwise returns a copy of msg2.     
+     */
     /*@
     public normal_behaviour
     requires msg1 != null && msg2 != null && msg1.length == msg2.length;
@@ -229,6 +293,9 @@ public final class Setup {
 		}
 		return chosen;
 	}
+	/**
+     *If secret is set returns a copy of msg1 otherwise returns a copy of msg2.     
+     */
     /*@
       public normal_behaviour
       requires msg1 != null && msg2 != null && msg1.length == msg2.length;      

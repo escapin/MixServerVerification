@@ -2,6 +2,9 @@ package verif.selectvoting.system.core;
 
 public class ConservativeExtension{
 	private /*@spec_public*/ static byte[][] messages;
+	/**
+	 * Copies msg to messages.
+	 */
 	/*@
 	  public normal_behaviour
 	  ensures \dl_array2seq2d(messages) == \dl_array2seq2d(msg);
@@ -10,6 +13,9 @@ public class ConservativeExtension{
 	public static/*@helper@*/ void storeMessages(byte[][] msg){
 		messages=copyOf(msg);
 	}
+	/**
+	 * Returns a sorted copy of messages.
+	 */
 	/*@
 	  public normal_behaviour	
 	  requires messages != null;
@@ -67,6 +73,12 @@ public class ConservativeExtension{
 		}
 	
 	}
+	/**
+	 * KeY:
+	 * We only specify the case when the result of compare is smaller or equal to 0,
+	 * since this is the only way it is used in the specification and implementation 
+	 * of sorting. 
+	 */
 	/*@
 	   public normal_behaviour
 	 
@@ -120,6 +132,9 @@ public class ConservativeExtension{
 			return b;
 		}
 	}
+	/**
+	 * Returns a new object which is a copy of arr.
+	 */
 	/*@ public normal_behaviour
 	  @ requires arr != null;	  
 	  @ ensures \dl_array2seq2d(\result) == \dl_array2seq2d(arr);
@@ -145,7 +160,9 @@ public class ConservativeExtension{
 	    return copy;	
 	}
 	
-	
+	/**
+	 * Returns a new object which is a copy of message.
+	 */
 	/*@ public normal_behaviour
 	  @ requires message != null;
 	  @ ensures (\fresh(\result) && \dl_array2seq(\result) == \dl_array2seq(\old(message)));	  

@@ -50,7 +50,7 @@ public class Utils
 				rest = MessageTools.second(rest);
 		}
 	}
-	
+
 	/*@
 	 public normal_behaviour
 	 ensures  (a <= b) <==> (\result == a);
@@ -64,53 +64,7 @@ public class Utils
 		return b;
 	}
 	
-//	/* @
-//	   public normal_behaviour
-//	 
-//	   ensures  ((\forall int j; 0 <= j && j < a1.length; a1[j] == a2[j])
-//	                && a1.length == a2.length)    
-//	            <==> \result;
-//	            	   
-//	   assignable \strictly_nothing;
-//	 @*/
-//	public static boolean eq(byte[] a1, byte[] a2){
-//		return compare(a1,a2) == 0;
-//	}
-//	
-//	/*@
-//	//reflexivity
-//	   public normal_behaviour	   
-//	   ensures (\forall byte[] a; leq(a,a));
-//	   
-//	   also
-//	   
-//	   public normal_behaviour	   
-//	   ensures (\forall byte[] a; (\forall byte[] b; (leq(a,b) && leq(b,a)) ==> eq(a,b)));
-//	   
-//	   also
-//	   
-//	   public normal_behaviour	   
-//	   ensures (\forall byte[] a; (\forall byte[] b; (\forall byte[] c; (leq(a,b) && leq(b,c)) ==> leq(a,c))));
-//	@*/
-//	public static boolean dummy(){		
-//		return true;
-//	}
-//	
-//	/* @
-//	   public normal_behaviour
-//	 
-//	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] < a2[i] && 
-//	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
-//	            || 
-//	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
-//	                && a1.length <= a2.length) )   
-//	            <==> \result;
-//	            	   
-//	   assignable \strictly_nothing;   
-//	 @*/
-//	public static boolean leq(byte[] a1, byte[] a2){
-//		return compare(a1,a2) <= 0;
-//	}
+
 	
 	/**
 	 * Compares its two array arguments for lexicographic order. 
@@ -120,29 +74,13 @@ public class Utils
 	 * @return a negative integer, zero, or a positive integer as the first argument is 
 	 * 			less than, equal to, or greater than the second
 	 */
-//	/*@
-//	   public normal_behaviour
-//	 
-//	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] < a2[i] && 
-//	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
-//	            || 
-//	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
-//	                && a1.length < a2.length) )   
-//	            <==> (\result < 0);	
-//	            
-//	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] > a2[i] && 
-//	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
-//	            || 
-//	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
-//	                && a1.length > a2.length) )   
-//	            <==> (\result > 0);
-//	               
-//	   ensures (a1.length == a2.length &&
-//	                (\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j]))
-//	            <==>(\result == 0);
-//	   assignable \strictly_nothing;
-//	 @*/
-	
+
+	/**
+	 * KeY:
+	 * We only specify the case when the result of compare is smaller or equal to 0,
+	 * since this is the only way it is used in the specification and implementation 
+	 * of sorting. 
+	 */
 	/*@
 	   public normal_behaviour
 	 
@@ -182,6 +120,7 @@ public class Utils
 		}
 		return 0;
 	}
+	
 	/*@
 	  public normal_behaviour
 	  requires byteArrays != null;
@@ -224,7 +163,9 @@ public class Utils
 		}
 	
 	}	
-	
+	/**
+	 * Returns a new object which is a copy of arr.
+	 */
 	/*@ public normal_behaviour
 	  @ requires arr != null;	  
 	  @ ensures \dl_array2seq2d(\result) == \dl_array2seq2d(arr);
