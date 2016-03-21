@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Sun Mar 20 12:42:29 CET 2016
+#Mon Mar 21 14:34:35 CET 2016
 [StrategyProperty]VBT_PHASE=VBT_SYM_EX
 [SMTSettings]useUninterpretedMultiplication=true
 [SMTSettings]SelectedTaclets=
@@ -22,7 +22,7 @@
 [StrategyProperty]SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OPTIONS_KEY=SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OFF
 [StrategyProperty]QUERY_NEW_OPTIONS_KEY=QUERY_OFF
 [Strategy]Timeout=-1
-[Strategy]MaximumNumberOfAutomaticApplications=8000
+[Strategy]MaximumNumberOfAutomaticApplications=5000
 [SMTSettings]integersMaximum=2147483645
 [Choice]DefaultChoices=assertions-assertions\\:on , initialisation-initialisation\\:disableStaticInitialisation , intRules-intRules\\:arithmeticSemanticsIgnoringOF , programRules-programRules\\:Java , runtimeExceptions-runtimeExceptions\\:allow , JavaCard-JavaCard\\:on , Strings-Strings\\:on , modelFields-modelFields\\:treatAsAxiom , bigint-bigint\\:on , sequences-sequences\\:on , moreSeqRules-moreSeqRules\\:on , reach-reach\\:on , integerSimplificationRules-integerSimplificationRules\\:full , permissions-permissions\\:off , wdOperator-wdOperator\\:L , wdChecks-wdChecks\\:off , joinGenerateIsWeakeningGoal-joinGenerateIsWeakeningGoal\\:off
 [SMTSettings]useConstantsForBigOrSmallIntegers=true
@@ -42,7 +42,7 @@
 \javaSource "../src";
 
 \proofObligation "#Proof Obligation Settings
-#Sun Mar 20 12:42:29 CET 2016
+#Mon Mar 21 14:34:35 CET 2016
 name=verif.selectvoting.system.core.ConservativeExtension[verif.selectvoting.system.core.ConservativeExtension\\:\\:copyOf([[B)].JML normal_behavior operation contract.0
 contract=verif.selectvoting.system.core.ConservativeExtension[verif.selectvoting.system.core.ConservativeExtension\\:\\:copyOf([[B)].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
@@ -51,7 +51,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 \proof {
 (keyLog "0" (keyUser "mihai" ) (keyVersion "6bc7ade97061383f11985e24decf735b7f2f0af2"))
 
-(autoModeTime "38461")
+(autoModeTime "36883")
 
 (branch "dummy ID"
 (builtin "One Step Simplification" (formula "1") (newnames "arr_0,result,exc,heapAtPre,o,f"))
@@ -1699,12 +1699,12 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                           (rule "leq_literals" (formula "32") (term "0,0,0,0"))
                                           (builtin "One Step Simplification" (formula "32"))
                                           (rule "andRight" (formula "32"))
-                                          (branch "Case 1"
+                                          (branch
                                              (rule "andRight" (formula "32"))
-                                             (branch "Case 1"
+                                             (branch
                                                 (rule "allRight" (formula "32") (inst "sk=j_3"))
                                                 (rule "cutUpperBound" (formula "32") (ifseqformula "12"))
-                                                (branch "Case 1"
+                                                (branch
                                                    (rule "crossInst" (formula "13") (inst "sk=j_17") (ifseqformula "33"))
                                                    (rule "orRight" (formula "34"))
                                                    (rule "andLeft" (formula "13"))
@@ -1762,7 +1762,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                    (rule "leq_literals" (formula "1"))
                                                    (rule "closeFalse" (formula "1"))
                                                 )
-                                                (branch "Case 2"
+                                                (branch
                                                    (rule "crossInst" (formula "13") (inst "sk=j_4") (ifseqformula "33"))
                                                    (rule "orRight" (formula "34"))
                                                    (rule "notLeft" (formula "1"))
@@ -2027,7 +2027,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                          (builtin "One Step Simplification" (formula "35"))
                                                          (rule "allRight" (formula "35") (inst "sk=iv_5"))
                                                          (rule "cutUpperBound" (formula "35") (ifseqformula "14"))
-                                                         (branch "Case 1"
+                                                         (branch
                                                             (rule "crossInst" (formula "15") (inst "sk=j_16") (ifseqformula "36"))
                                                             (rule "orRight" (formula "37"))
                                                             (rule "andLeft" (formula "15"))
@@ -2063,7 +2063,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                             (rule "leq_literals" (formula "2"))
                                                             (rule "closeFalse" (formula "2"))
                                                          )
-                                                         (branch "Case 2"
+                                                         (branch
                                                             (rule "crossInst" (formula "15") (inst "sk=j_15") (ifseqformula "36"))
                                                             (rule "orRight" (formula "37"))
                                                             (rule "notLeft" (formula "1"))
@@ -2671,7 +2671,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                                   (builtin "One Step Simplification" (formula "41"))
                                                                   (rule "allRight" (formula "41") (inst "sk=iv_4"))
                                                                   (rule "cutUpperBound" (formula "41") (ifseqformula "19"))
-                                                                  (branch "Case 1"
+                                                                  (branch
                                                                      (rule "crossInst" (formula "20") (inst "sk=j_14") (ifseqformula "42"))
                                                                      (rule "orRight" (formula "43"))
                                                                      (rule "andLeft" (formula "20"))
@@ -2715,7 +2715,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                                      (rule "leq_literals" (formula "3"))
                                                                      (rule "closeFalse" (formula "3"))
                                                                   )
-                                                                  (branch "Case 2"
+                                                                  (branch
                                                                      (rule "crossInst" (formula "20") (inst "sk=j_13") (ifseqformula "42"))
                                                                      (rule "orRight" (formula "43"))
                                                                      (rule "notLeft" (formula "1"))
@@ -3539,7 +3539,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                                (builtin "One Step Simplification" (formula "38"))
                                                                (rule "allRight" (formula "38") (inst "sk=iv_3"))
                                                                (rule "cutUpperBound" (formula "38") (ifseqformula "17"))
-                                                               (branch "Case 1"
+                                                               (branch
                                                                   (rule "crossInst" (formula "18") (inst "sk=j_12") (ifseqformula "39"))
                                                                   (rule "orRight" (formula "40"))
                                                                   (rule "andLeft" (formula "18"))
@@ -3548,7 +3548,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                                   (builtin "One Step Simplification" (formula "43") (ifInst ""  (formula "42")))
                                                                   (rule "closeTrue" (formula "43"))
                                                                )
-                                                               (branch "Case 2"
+                                                               (branch
                                                                   (rule "crossInst" (formula "18") (inst "sk=j_11") (ifseqformula "39"))
                                                                   (rule "orRight" (formula "40"))
                                                                   (rule "notLeft" (formula "1"))
@@ -3651,7 +3651,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                          (builtin "One Step Simplification" (formula "33"))
                                                          (rule "allRight" (formula "33") (inst "sk=iv_2"))
                                                          (rule "cutUpperBound" (formula "33") (ifseqformula "15"))
-                                                         (branch "Case 1"
+                                                         (branch
                                                             (rule "crossInst" (formula "16") (inst "sk=j_10") (ifseqformula "34"))
                                                             (rule "orRight" (formula "35"))
                                                             (rule "andLeft" (formula "16"))
@@ -3660,7 +3660,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                             (builtin "One Step Simplification" (formula "38") (ifInst ""  (formula "37")))
                                                             (rule "closeTrue" (formula "38"))
                                                          )
-                                                         (branch "Case 2"
+                                                         (branch
                                                             (rule "crossInst" (formula "16") (inst "sk=j_9") (ifseqformula "34"))
                                                             (rule "orRight" (formula "35"))
                                                             (rule "notLeft" (formula "1"))
@@ -3866,7 +3866,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                                   (builtin "One Step Simplification" (formula "40"))
                                                                   (rule "allRight" (formula "40") (inst "sk=iv_1"))
                                                                   (rule "cutUpperBound" (formula "40") (ifseqformula "20"))
-                                                                  (branch "Case 1"
+                                                                  (branch
                                                                      (rule "crossInst" (formula "21") (inst "sk=j_8") (ifseqformula "41"))
                                                                      (rule "orRight" (formula "42"))
                                                                      (rule "andLeft" (formula "21"))
@@ -3895,7 +3895,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                                      (rule "leq_literals" (formula "1"))
                                                                      (rule "closeFalse" (formula "1"))
                                                                   )
-                                                                  (branch "Case 2"
+                                                                  (branch
                                                                      (rule "crossInst" (formula "21") (inst "sk=j_7") (ifseqformula "41"))
                                                                      (rule "orRight" (formula "42"))
                                                                      (rule "notLeft" (formula "1"))
@@ -4624,7 +4624,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                             (builtin "One Step Simplification" (formula "37"))
                                                             (rule "allRight" (formula "37") (inst "sk=iv_0"))
                                                             (rule "cutUpperBound" (formula "37") (ifseqformula "18"))
-                                                            (branch "Case 1"
+                                                            (branch
                                                                (rule "crossInst" (formula "19") (inst "sk=j_6") (ifseqformula "38"))
                                                                (rule "orRight" (formula "39"))
                                                                (rule "andLeft" (formula "19"))
@@ -4633,7 +4633,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                                (builtin "One Step Simplification" (formula "42") (ifInst ""  (formula "41")))
                                                                (rule "closeTrue" (formula "42"))
                                                             )
-                                                            (branch "Case 2"
+                                                            (branch
                                                                (rule "crossInst" (formula "19") (inst "sk=j_5") (ifseqformula "38"))
                                                                (rule "orRight" (formula "39"))
                                                                (rule "notLeft" (formula "1"))
@@ -4648,10 +4648,10 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                    )
                                                 )
                                              )
-                                             (branch "Case 2"
+                                             (branch
                                                 (rule "allRight" (formula "32") (inst "sk=j_0"))
                                                 (rule "cutUpperBound" (formula "32") (ifseqformula "12"))
-                                                (branch "Case 1"
+                                                (branch
                                                    (rule "crossInst" (formula "13") (inst "sk=j_2") (ifseqformula "33"))
                                                    (rule "orRight" (formula "34"))
                                                    (rule "andLeft" (formula "13"))
@@ -4679,7 +4679,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                    (rule "leq_literals" (formula "1"))
                                                    (rule "closeFalse" (formula "1"))
                                                 )
-                                                (branch "Case 2"
+                                                (branch
                                                    (rule "crossInst" (formula "13") (inst "sk=j_1") (ifseqformula "33"))
                                                    (rule "orRight" (formula "34"))
                                                    (rule "notLeft" (formula "1"))
@@ -5003,7 +5003,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                 )
                                              )
                                           )
-                                          (branch "Case 2"
+                                          (branch
                                              (rule "allRight" (formula "32") (inst "sk=f_0"))
                                              (rule "allRight" (formula "32") (inst "sk=o_0"))
                                              (rule "orRight" (formula "32"))
@@ -6220,7 +6220,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                  (builtin "One Step Simplification" (formula "31"))
                                  (rule "allRight" (formula "31") (inst "sk=iv_8"))
                                  (rule "cutUpperBound" (formula "31") (ifseqformula "19"))
-                                 (branch "Case 1"
+                                 (branch
                                     (rule "crossInst" (formula "20") (inst "sk=j_23") (ifseqformula "32"))
                                     (rule "orRight" (formula "33"))
                                     (rule "andLeft" (formula "20"))
@@ -6253,7 +6253,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                     (rule "leq_literals" (formula "2"))
                                     (rule "closeFalse" (formula "2"))
                                  )
-                                 (branch "Case 2"
+                                 (branch
                                     (rule "crossInst" (formula "20") (inst "sk=j_22") (ifseqformula "32"))
                                     (rule "orRight" (formula "33"))
                                     (rule "notLeft" (formula "1"))

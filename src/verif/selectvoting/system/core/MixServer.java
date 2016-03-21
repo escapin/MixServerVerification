@@ -87,6 +87,14 @@ public class MixServer
 	  public static model two_state boolean trans(byte[] a, byte[] b, byte[] c); 
 	 @*/
 	
+	/*@	   	  
+	  requires \dl_array2seq(a) == \dl_array2seq(b);
+	  ensures  Utils.compare(a,b) <= 0;
+	  ensures  Utils.compare(b,a) <= 0;
+	  ensures \result;
+	  public static model two_state boolean antiSym2(byte[] a, byte[] b); 
+	 @*/
+	
 	/*@
 	  requires 0 <= j  && j < a.length;	  
 	  requires (\forall int i; 0 <= i && i < a.length-1; Utils.compare(a[i],a[i+1]) <= 0);
@@ -253,7 +261,7 @@ public class MixServer
 	}
 	/*
 	 * Since this method is called after the redundant statement, we don't care what it does.
-	 * We assume it doesn't change any fields.
+	 *
 	 */
 	/*@
 	  public normal_behaviour
