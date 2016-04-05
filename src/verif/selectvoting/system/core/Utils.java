@@ -133,9 +133,10 @@ public class Utils
 	  ensures (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
 	  assignable byteArrays[*];	  
 	@*/
-	public /*@helper@*/static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
+	public /*@helper@*/static void sort3(byte[][] byteArrays, int fromIndex, int toIndex) {
 		if (byteArrays != null) {
 			if(fromIndex>=0 && toIndex<=byteArrays.length && fromIndex<toIndex){
+
 				/*@
 				  loop_invariant (\forall int i; fromIndex <= i && i < sorted-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
 				  loop_invariant (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
@@ -149,6 +150,7 @@ public class Utils
 				  @*/
 				for(int sorted=fromIndex; sorted<toIndex; ++sorted){
 					selSort(byteArrays, fromIndex, sorted);
+
 				}
 			}
 		}	
@@ -191,6 +193,137 @@ public class Utils
 	
 	
 	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	/*@
+	  public normal_behaviour
+	  requires byteArrays != null;
+	  requires (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  requires 0 <= fromIndex && fromIndex <= byteArrays.length; 
+	  requires 0 <= toIndex && toIndex <= byteArrays.length; 
+	  requires fromIndex <= toIndex;
+	  ensures \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
+	  ensures (\forall int i; fromIndex <= i && i < toIndex-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+	  ensures (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  assignable byteArrays[*];	  
+	@*/
+	public /*@helper@*/static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
+		if (byteArrays != null) {
+			if(fromIndex>=0 && toIndex<=byteArrays.length && fromIndex<toIndex){
+				/*@
+				  loop_invariant 0 <= fromIndex && fromIndex <= byteArrays.length;
+				  loop_invariant 0 <= toIndex && toIndex <= byteArrays.length;
+				  loop_invariant fromIndex <= toIndex;
+				  loop_invariant fromIndex <= sorted && sorted <= toIndex;
+				  loop_invariant (\forall int i; fromIndex <= i && i < sorted;(\forall int j; i < j && j < toIndex;compare(byteArrays[i], byteArrays[j]) <= 0));
+				  loop_invariant \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
+				  loop_invariant byteArrays != null && (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i]!=null);
+				  assignable byteArrays[sorted..toIndex];
+				  decreases toIndex - sorted;
+				 @*/
+				for(int sorted=fromIndex; sorted<toIndex; ++sorted){					
+					int m = min(byteArrays, sorted, toIndex);
+					if(sorted != m){
+						swap(byteArrays, sorted, m);					
+					}
+				}
+			}
+		}
+	
+	}
+	
+	/*@
+	  public normal_behaviour
+	  requires byteArrays != null;
+	  requires (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  requires 0 <= fromIndex && fromIndex <= byteArrays.length; 
+	  requires 0 <= toIndex && toIndex <= byteArrays.length; 
+	  requires fromIndex <= toIndex;
+	  requires fromIndex <= sorted && sorted <= toIndex;
+	  requires  (\forall int i; fromIndex <= i && i < sorted-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+	  ensures \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
+	  ensures (\forall int i; fromIndex <= i && i < sorted; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+	  ensures (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  assignable byteArrays[fromIndex..toIndex];	  
+	@*/
+	public /*@helper@*/ static void swapMin(byte[][] byteArrays,int fromIndex, int sorted, int toIndex){
+		
+		int m = min(byteArrays, sorted, toIndex);
+		swap(byteArrays, sorted, m);
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	/*@
+	  public normal_behaviour
+	  requires 0 <= fromIndex && fromIndex <= byteArrays.length; 
+	  requires 0 <= toIndex && toIndex <= byteArrays.length; 
+	  requires fromIndex <= toIndex;
+	  ensures (\forall int i; fromIndex <= i && i < toIndex; compare(byteArrays[\result],byteArrays[i]) <= 0);
+	  ensures fromIndex <= \result && \result < toIndex; 
+	  assignable \strictly_nothing;
+	 @*/
+	private static/*@helper@*/ int min(byte[][] byteArrays, int fromIndex, int toIndex){
+		int result = fromIndex;
+		
+		if(byteArrays == null){
+			return result;
+		}
+		/*@
+		  loop_invariant true;
+		 @*/
+		for(int i = fromIndex; i < toIndex; i++ ){	
+			try{
+				if(compare(byteArrays[i],byteArrays[result]) <= 0){
+					result = i;
+				}
+			}catch(Throwable t){}
+			
+		}
+		
+		return result;
+		
+		
+	}
+	/*@	
+	  public normal_behaviour 
+	  requires 0 <= i && i < a.length;
+	  requires 0 <= j && j < a.length;	 
+	  ensures a[i] == \old(a[j]);
+	  ensures a[j] == \old(a[i]);
+	  ensures (\forall int k; 0 <= k && k < a.length && k!= i && k !=j; a[k]==\old(a[k]));
+	  ensures \dl_seqPerm(\dl_array2seq(a), \old(\dl_array2seq(a)));
+	  ensures a != null && (\forall int k; 0 <= k && k < a.length; a[k]!=null);
+	  assignable a[i], a[j];	  
+	 @*/
+	private static /*@helper@*/void swap(byte[][] a, int i, int j){
+		
+		
+		try{
+			byte[] temp = a[i];
+			a[i] = a[j];
+			a[j] = temp;
+		}catch(Throwable t){};
+		
+		
+	}
+	
+	
+	
+
 	/**
 	 * Returns a new object which is a copy of arr.
 	 */
