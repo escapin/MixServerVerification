@@ -136,33 +136,61 @@ public class Utils
 	public /*@helper@*/static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
 		if (byteArrays != null) {
 			if(fromIndex>=0 && toIndex<=byteArrays.length && fromIndex<toIndex){
-				for(int sorted=fromIndex+1; sorted<toIndex; ++sorted){
-					byte[] key = new byte[0];
-					try {
-						key = byteArrays[sorted]; // the item to be inserted
-					} catch (Throwable t) {}
-					// insert key into the sorted sequence A[fomIndex, ..., sorted-1]
-					int i;
-					for(i=sorted-1; i>=fromIndex; --i) {
-						byte[] byteArrays_i= new byte[0];
-						try {
-							byteArrays_i = byteArrays[i];
-						} catch (Throwable thr) {}
-						if (Utils.compare(byteArrays_i, key)<=0) {
-							break;
-						}
-						try {
-							byteArrays[i+1]=byteArrays[i];
-						} catch (Throwable t) {}
-					}
-					try {
-						byteArrays[i+1]=key;
-					} catch (Throwable t) {}
+				/*@
+				  loop_invariant (\forall int i; fromIndex <= i && i < sorted-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+				  loop_invariant (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+				  loop_invariant \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
+				  loop_invariant 0 <= fromIndex && fromIndex <= byteArrays.length;
+				  loop_invariant 0 <= toIndex && toIndex <= byteArrays.length;				  
+				  loop_invariant fromIndex <= sorted && sorted <= toIndex;
+				  loop_invariant byteArrays != null;
+				  assignable byteArrays[fromIndex..sorted];
+				  decreases toIndex - sorted;
+				  @*/
+				for(int sorted=fromIndex; sorted<toIndex; ++sorted){
+					selSort(byteArrays, fromIndex, sorted);
 				}
 			}
+		}	
+	}
+	/*@
+	  public normal_behaviour
+	  requires 0 <= fromIndex && fromIndex <= byteArrays.length;
+	  requires 0 <= sorted && sorted < byteArrays.length;
+	  requires (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  requires fromIndex <= sorted;
+	  requires (\forall int i; fromIndex <= i && i < sorted-2; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+	  ensures  (\forall int i; fromIndex <= i && i < sorted-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+	  ensures   \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
+	  ensures (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  assignable byteArrays[fromIndex..sorted];	  
+	@*/	
+	private /*@helper@*/static void selSort(byte[][] byteArrays, int fromIndex, int sorted) {		
+		try {
+			byte[] key = byteArrays[sorted]; // the item to be inserted
+			int i = shiftRight(byteArrays, fromIndex, sorted, key);
+			byteArrays[i+1]=key;
+		} catch (Throwable t) {}		
+	}
+
+	private static int shiftRight(byte[][] byteArrays, int fromIndex, int sorted, byte[] key) {
+		int i;
+		for(i=sorted-1; i>=fromIndex; --i) {
+			//byte[] byteArrays_i= new byte[0];
+			try {
+				byte[] byteArrays_i = byteArrays[i];
+				if (Utils.compare(byteArrays_i, key)<=0) {
+					break;
+				}
+				byteArrays[i+1]=byteArrays[i];
+			} catch (Throwable thr) {}			
+			
 		}
+		return i;
+	}
 	
-	}	
+	
+	
 	/**
 	 * Returns a new object which is a copy of arr.
 	 */
