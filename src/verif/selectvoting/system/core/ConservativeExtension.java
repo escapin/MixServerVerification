@@ -73,6 +73,66 @@ public class ConservativeExtension{
 		}
 	
 	}
+	
+	
+	/*@
+	  public normal_behaviour
+	  requires 0 <= fromIndex && fromIndex <= byteArrays.length;
+	  requires 0 <= sorted && sorted < byteArrays.length;
+	  requires (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  requires fromIndex <= sorted;
+	  requires (\forall int i; fromIndex <= i && i < sorted-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+	  ensures  (\forall int i; fromIndex <= i && i < sorted; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+	  ensures   \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
+	  ensures (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i] != null);
+	  assignable byteArrays[fromIndex..sorted];	  
+	@*/	
+	private /*@helper@*/static void selSort(byte[][] byteArrays, int fromIndex, int sorted) {		
+		try {
+			byte[] key = byteArrays[sorted]; // the item to be inserted
+			int i = shiftRight(byteArrays, fromIndex, sorted, key);
+			byteArrays[i]=key;
+		} catch (Throwable t) {}		
+	}
+	
+	/*@
+  public normal_behaviour
+  requires 0 <= fromIndex && fromIndex <= byteArrays.length;
+  requires 0 <= sorted && sorted < byteArrays.length;
+  requires fromIndex <= sorted; 
+  requires key == byteArrays[sorted];   
+  ensures (\forall int i; fromIndex <= i && i <= \result; byteArrays[i] == \old(byteArrays[i]));
+  ensures (\forall int i; \result < i && i <= sorted; byteArrays[i] == \old(byteArrays[i-1]));    
+  ensures fromIndex <= \result && \result <=sorted; 
+  ensures fromIndex < \result ==> compare(byteArrays[\result - 1], key) <= 0;
+  ensures \result < sorted ==> compare(key, byteArrays[\result + 1]) <= 0;    
+  assignable byteArrays[fromIndex..sorted];
+  @*/
+	private static int shiftRight(byte[][] byteArrays, int fromIndex, int sorted, byte[] key) {
+		int i;
+		/*@
+		 loop_invariant i <= sorted-1 && i >= fromIndex - 1;
+		 loop_invariant (\forall int j; i + 2 <= j && j <= sorted;  byteArrays[j] == \old(byteArrays[j-1]));
+		 loop_invariant (\forall int j; fromIndex <= j && j <= i+1;  byteArrays[j] == \old(byteArrays[j]));                 
+		 loop_invariant (\forall int j; i + 1 <= j && j <= sorted; compare(key, byteArrays[j]) <= 0 );                
+		 assignable byteArrays[fromIndex..sorted]; 
+		 decreases i+1;
+		 @*/
+		for(i=sorted-1; i>=fromIndex; --i) {
+			//byte[] byteArrays_i= new byte[0];
+			try {				
+				if (Utils.compare(byteArrays[i], key)<=0) {
+					break;
+				}
+				byteArrays[i+1]=byteArrays[i];
+			} catch (Throwable thr) {}			
+			
+		}
+		return i+1;
+	}
+	
+	
+	
 	/**
 	 * KeY:
 	 * We only specify the case when the result of compare is smaller or equal to 0,

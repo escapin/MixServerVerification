@@ -95,6 +95,13 @@ public class MixServer
 	  ensures \result;
 	  public static model two_state boolean trans(byte[] a, byte[] b, byte[] c); 
 	 @*/
+	
+	/*@	  
+	  requires Utils.compare(a,b) > 0;	  
+	  ensures  Utils.compare(b,a) <= 0;
+	  ensures \result;
+	  public static model two_state boolean total(byte[] a, byte[] b); 
+	 @*/
 	/**
 	 * Split equality in two gte.
 	 */
