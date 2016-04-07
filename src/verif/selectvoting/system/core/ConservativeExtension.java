@@ -46,35 +46,28 @@ public class ConservativeExtension{
 	public /*@helper@*/static void sort(byte[][] byteArrays, int fromIndex, int toIndex) {
 		if (byteArrays != null) {
 			if(fromIndex>=0 && toIndex<=byteArrays.length && fromIndex<toIndex){
-				for(int sorted=fromIndex+1; sorted<toIndex; ++sorted){
-					byte[] key = new byte[0];
-					try {
-						key = byteArrays[sorted]; // the item to be inserted
-					} catch (Throwable t) {}
-					// insert key into the sorted sequence A[fomIndex, ..., sorted-1]
-					int i;
-					for(i=sorted-1; i>=fromIndex; --i) {
-						byte[] byteArrays_i= new byte[0];
-						try {
-							byteArrays_i = byteArrays[i];
-						} catch (Throwable thr) {}
-						if (compare(byteArrays_i, key)<=0) {
-							break;
-						}
-						try {
-							byteArrays[i+1]=byteArrays[i];
-						} catch (Throwable t) {}
-					}
-					try {
-						byteArrays[i+1]=key;
-					} catch (Throwable t) {}
+				/*@
+				  loop_invariant (\forall int i; fromIndex <= i && i < sorted-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
+
+				  loop_invariant 0 <= fromIndex && fromIndex <= byteArrays.length;
+				  loop_invariant 0 <= toIndex && toIndex <= byteArrays.length;
+				  loop_invariant fromIndex <= toIndex;
+				  loop_invariant fromIndex <= sorted && sorted <= toIndex;
+
+				  loop_invariant \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
+				  loop_invariant byteArrays != null && (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i]!=null);
+				  assignable byteArrays[sorted..toIndex];
+				  decreases toIndex - sorted;
+				  @*/
+				for(int sorted=fromIndex; sorted<toIndex; ++sorted){					
+					selSort(byteArrays, fromIndex, sorted);
 				}
 			}
 		}
-	
+
 	}
-	
-	
+
+
 	/*@
 	  public normal_behaviour
 	  requires 0 <= fromIndex && fromIndex <= byteArrays.length;
@@ -94,7 +87,7 @@ public class ConservativeExtension{
 			byteArrays[i]=key;
 		} catch (Throwable t) {}		
 	}
-	
+
 	/*@
   public normal_behaviour
   requires 0 <= fromIndex && fromIndex <= byteArrays.length;
@@ -108,7 +101,7 @@ public class ConservativeExtension{
   ensures \result < sorted ==> compare(key, byteArrays[\result + 1]) <= 0;    
   assignable byteArrays[fromIndex..sorted];
   @*/
-	private static int shiftRight(byte[][] byteArrays, int fromIndex, int sorted, byte[] key) {
+	private static/*@helper@*/ int shiftRight(byte[][] byteArrays, int fromIndex, int sorted, byte[] key) {
 		int i;
 		/*@
 		 loop_invariant i <= sorted-1 && i >= fromIndex - 1;
@@ -126,13 +119,13 @@ public class ConservativeExtension{
 				}
 				byteArrays[i+1]=byteArrays[i];
 			} catch (Throwable thr) {}			
-			
+
 		}
 		return i+1;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * KeY:
 	 * We only specify the case when the result of compare is smaller or equal to 0,
@@ -141,14 +134,14 @@ public class ConservativeExtension{
 	 */
 	/*@
 	   public normal_behaviour
-	 
+
 	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] < a2[i] && 
 	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
 	            || 
 	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
 	                && a1.length <= a2.length) )   
 	            <==> \result <= 0;
-	            	   
+
 	   assignable \strictly_nothing;   
 	 @*/
 	public /*@helper@*/static int compare(byte[] a1, byte[] a2) {
@@ -202,24 +195,24 @@ public class ConservativeExtension{
 	  @ assignable \nothing;
 	  @*/
 	public /*@helper@*/static byte[][] copyOf(byte[][] arr) {
-	    if (arr==null) return arr;
-	    byte[][] copy = new byte[arr.length][];
-	    /*@
+		if (arr==null) return arr;
+		byte[][] copy = new byte[arr.length][];
+		/*@
 	      loop_invariant 0 <= i && i <= arr.length 
 	      && copy.length == arr.length 
 	      && arr != copy && copy !=null;
 	      loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(copy[j]) == \dl_array2seq(arr[j]));
-	     
+
 	      loop_invariant \fresh(copy);
 	      loop_invariant (\forall int j; 0 <= j && j < i; copy[j] != null);
 	      assignable copy[*];
 	      decreases arr.length - i;
 	     @*/
-	    for (int i = 0; i < arr.length; i++)
-	            copy[i] = copyOf(arr[i]);
-	    return copy;	
+		for (int i = 0; i < arr.length; i++)
+			copy[i] = copyOf(arr[i]);
+		return copy;	
 	}
-	
+
 	/**
 	 * Returns a new object which is a copy of message.
 	 */
@@ -228,21 +221,21 @@ public class ConservativeExtension{
 	  @ ensures (\fresh(\result) && \dl_array2seq(\result) == \dl_array2seq(\old(message)));	  
 	  @ assignable \nothing;
 	  @*/
-  public /*@helper@*/static byte[] copyOf(/*@ nullable @*/ byte[] message) {
-      if (message==null) return null;
-      byte[] copy = new byte[message.length];
-      /*@ loop_invariant 0 <= i && i <= message.length
+	public /*@helper@*/static byte[] copyOf(/*@ nullable @*/ byte[] message) {
+		if (message==null) return null;
+		byte[] copy = new byte[message.length];
+		/*@ loop_invariant 0 <= i && i <= message.length
       @ 		&& copy != null && copy != message && \fresh(copy)
       @ 		&& copy.length == message.length
       @ 		&& (\forall int j; 0 <= j && j < i; copy[j] == message[j]);
       @ assignable copy[*];
       @ decreases message.length - i;
       @*/
-      for (int i = 0; i < message.length; i++) {
-          copy[i] = message[i];
-      }
-      return copy;
-  }
-	
-	
+		for (int i = 0; i < message.length; i++) {
+			copy[i] = message[i];
+		}
+		return copy;
+	}
+
+
 }
