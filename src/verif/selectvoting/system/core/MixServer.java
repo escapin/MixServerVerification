@@ -110,7 +110,9 @@ public class MixServer
 	  ensures  Utils.compare(a,b) <= 0;
 	  ensures  Utils.compare(b,a) <= 0;
 	  ensures \result;
-	  public static model two_state boolean antiSym2(byte[] a, byte[] b); 
+	  public static model two_state boolean antiSym2(byte[] a, byte[] b){
+	     return Utils.compare(a,b) <= 0 && Utils.compare(b,a) <= 0;
+	  } 
 	 @*/
 	/**
 	 * If a is sorted then a[j] is smaller or equal than all elements with an index >= j.
@@ -120,7 +122,9 @@ public class MixServer
 	  requires (\forall int i; 0 <= i && i < a.length-1; Utils.compare(a[i],a[i+1]) <= 0);
 	  ensures (\forall int i; j <= i && i < a.length; Utils.compare(a[j],a[i]) <= 0);
 	  ensures \result;
-	  public static model two_state boolean minEl(byte[][] a,int j); 
+	  public static model two_state boolean minEl(byte[][] a,int j){
+	     return (\forall int i; j <= i && i < a.length; Utils.compare(a[j],a[i]) <= 0);
+	  } 
 	 @*/	
 	/**
 	 * If a and b are permutations of each other and both are sorted, then a is a copy of b.
@@ -131,7 +135,9 @@ public class MixServer
 	  requires (\forall int i; 0 <= i && i < b.length-1; Utils.compare(b[i],b[i+1]) <= 0);
 	  ensures  (\dl_array2seq2d(a) == \dl_array2seq2d(b));
 	  ensures \result;
-	  public static model two_state boolean sortedPermIsEqual(byte[][] a, byte[][] b); 
+	  public static model two_state boolean sortedPermIsEqual(byte[][] a, byte[][] b) {
+	    return (\dl_array2seq2d(a) == \dl_array2seq2d(b));
+	  } 
 	 @*/
 
 

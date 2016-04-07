@@ -175,7 +175,7 @@ public class Utils
 			int i = shiftRight(byteArrays, fromIndex, sorted, key);
 			byteArrays[i]=key;
 		} catch (Throwable t) {}		
-	}
+	}	
 	
 	/*@
     public normal_behaviour
@@ -190,7 +190,7 @@ public class Utils
     ensures \result < sorted ==> compare(key, byteArrays[\result + 1]) <= 0;    
     assignable byteArrays[fromIndex..sorted];
     @*/
-	private static int shiftRight(byte[][] byteArrays, int fromIndex, int sorted, byte[] key) {
+	private static/*@helper@*/ int shiftRight(byte[][] byteArrays, int fromIndex, int sorted, byte[] key) {
 		int i;
 		/*@
 		 loop_invariant i <= sorted-1 && i >= fromIndex - 1;
