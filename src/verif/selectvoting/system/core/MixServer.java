@@ -75,7 +75,9 @@ public class MixServer
 	  requires Utils.compare(b,a) <= 0;
 	  ensures  (\dl_array2seq(a) == \dl_array2seq(b));
 	  ensures \result;
-	  public static model two_state boolean antiSym(byte[] a, byte[] b); 
+	  public static model two_state boolean antiSym(byte[] a, byte[] b){
+	     return (\dl_array2seq(a) == \dl_array2seq(b));
+	  }
 	 @*/
 	/**
 	 * Reflexivity of compare <= 0
@@ -83,7 +85,9 @@ public class MixServer
 	/*@	  
 	  ensures Utils.compare(a,a) <= 0;
 	  ensures \result;
-	  public static model two_state boolean refl(byte[] a); 
+	  public static model two_state boolean refl(byte[] a){
+	     return Utils.compare(a,a) <= 0;
+	  } 
 	 @*/
 	/**
 	 * Transitivity of compare <= 0
@@ -93,14 +97,18 @@ public class MixServer
 	  requires Utils.compare(b,c) <= 0;
 	  ensures  Utils.compare(a,c) <= 0;
 	  ensures \result;
-	  public static model two_state boolean trans(byte[] a, byte[] b, byte[] c); 
+	  public static model two_state boolean trans(byte[] a, byte[] b, byte[] c){
+	     return Utils.compare(a,c) <= 0;
+	  }
 	 @*/
 	
 	/*@	  
 	  requires Utils.compare(a,b) > 0;	  
 	  ensures  Utils.compare(b,a) <= 0;
 	  ensures \result;
-	  public static model two_state boolean total(byte[] a, byte[] b); 
+	  public static model two_state boolean total(byte[] a, byte[] b){
+	     return Utils.compare(b,a) <= 0;
+	  }
 	 @*/
 	/**
 	 * Split equality in two gte.
