@@ -177,32 +177,97 @@ public class MessageTools {
         return project(in, 1);
     }
 
-    /*@ public behaviour
-      @ signals_only NullPointerException, ArrayIndexOutOfBoundsException;
-      @ diverges true;
-      @ ensures true;
-      @ signals (NullPointerException e) true;
-      @ signals (ArrayIndexOutOfBoundsException e) true;
-      @*/
-    public static final /*@ pure helper @*/ int byteArrayToInt(/*@ nullable @*/ byte [] b) {
-        return (b[0]  << 24)
-                + ((b[1] & 0xFF) << 16)
-                + ((b[2] & 0xFF) << 8)
-                + (b[3] & 0xFF);
-    }
-
-
     /*@ public normal_behaviour
-      @ ensures \result.length == 4 && \fresh(\result) && \typeof(\result) == \type(byte[])
-      @         && (\forall Object o; o != \result; !\fresh(o));
+      @ requires b.length >= 4;
+      @ ensures \result == 16777216 * unsign(b[0]) + 65536 * unsign(b[1])+ 256 * unsign(b[2])+ unsign(b[3]);
       @*/
-    public static final /*@ pure helper @*/ byte[] intToByteArray(int value) {
-        return new byte[] {
-                (byte)(value >>> 24),
-                (byte)(value >>> 16),
-                (byte)(value >>> 8),
-                (byte)value};
+    public static final /*@ pure helper @*/ int byteArrayToInt(byte [] b) {
+    	int result = 0;
+    	result += 16777216 * unsign(b[0]);
+    	result += 65536 * unsign(b[1]);
+    	result += 256 * unsign(b[2]);
+    	result += unsign(b[3]);
+    	return result;   	
+
+    	
+//        return (b[0]  << 24)
+//                + ((b[1] & 0xFF) << 16)
+//                + ((b[2] & 0xFF) << 8)
+//                + (b[3] & 0xFF);
     }
+    /*@
+      public normal_behaviour
+      ensures \result == (b < 0 ? b + 256 : b);
+      assignable \strictly_nothing;
+     @*/
+    public static final int /*@pure helper@*/ unsign(byte b){
+    	if(b<0){
+    		return (int) b + 256;
+    	}
+    	return b;
+    }
+    
+    /**
+	 * Antisimmetry of compare <= 0
+	 */
+	/*@
+	  requires value >= 0;	  
+	  requires isByteArrOfInt(a,value);
+	  ensures byteArrayToInt(a) == value;
+	  ensures \result;
+	  public static model boolean reverseByteArrOfInt(byte[] a, int value){
+	     return true;
+	  }
+	 @*/
+    
+    /*@	
+      public model_behaviour 
+      requires value >= 0; 
+	  ensures \result ==> a.length >= 4;       
+      ensures \result ==> a[0] == ((value / 16777216) % 256);
+      ensures \result ==> a[1] == ((value / 65536) % 256);
+      ensures \result ==> a[2] == ((value / 256) % 256);
+      ensures \result ==> a[3] == (value % 256);	  
+	  public static model boolean isByteArrOfInt(byte[] a, int value){
+	     return a.length >= 4 && a[0] == ((value / 16777216) % 256) && 
+	             a[1] == ((value / 65536) % 256) && a[2] == ((value / 256) % 256)
+	             && a[3] == (value % 256);
+	  }
+	 @*/
+
+
+    /*@ 
+       public normal_behaviour
+       requires value >= 0;
+       ensures isByteArrOfInt(\result, value);
+       ensures \fresh(\result); 
+      @*/
+    public static final /*@ pure helper @*/ byte[] intToByteArray(int value) {    	
+    	byte[] result = new byte[4];
+    	result[3] = (byte) (value % 256);
+    	
+    	result[2] = (byte) ((value / 256) % 256);
+    	
+    	result[1] = (byte) ((value / 65536) % 256);
+    	
+    	result[0] = (byte) ((value / 16777216) % 256);    	
+    	return result;
+//        return new byte[] {
+//                (byte)(value >>> 24),
+//                (byte)(value >>> 16),
+//                (byte)(value >>> 8),
+//                (byte)value};
+    }
+    
+    
+//    public static void main(String[] args){
+//    	System.out.println(byteArrayToInt(intToByteArray(25555666)));
+//    	System.out.println(byteArrayToInt(intToByteArray(0)));
+//    	System.out.println(byteArrayToInt(intToByteArray(1)));
+//    	System.out.println(byteArrayToInt(intToByteArray(123456)));
+//    	System.out.println(byteArrayToInt(intToByteArray(654321)));
+//    	System.out.println(byteArrayToInt(intToByteArray(112233)));
+//    }
 
 
     /*@ public normal_behaviour
