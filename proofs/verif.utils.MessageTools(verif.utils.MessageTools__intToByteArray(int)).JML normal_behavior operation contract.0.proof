@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Sat Jul 30 08:41:30 CEST 2016
+#Sat Jul 30 10:45:40 CEST 2016
 [StrategyProperty]VBT_PHASE=VBT_SYM_EX
 [SMTSettings]useUninterpretedMultiplication=true
 [SMTSettings]SelectedTaclets=\\#begexpand_inByte\\#end,\\#begexpand_inChar\\#end,\\#begexpand_inShort\\#end,\\#begexpand_inInt\\#end,\\#begexpand_inLong\\#end
@@ -39,10 +39,10 @@
 "
 }
 
-\javaSource "src";
+\javaSource "../src";
 
 \proofObligation "#Proof Obligation Settings
-#Sat Jul 30 08:41:30 CEST 2016
+#Sat Jul 30 10:45:40 CEST 2016
 name=verif.utils.MessageTools[verif.utils.MessageTools\\:\\:intToByteArray(int)].JML normal_behavior operation contract.0
 contract=verif.utils.MessageTools[verif.utils.MessageTools\\:\\:intToByteArray(int)].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
@@ -51,7 +51,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 \proof {
 (keyLog "0" (keyUser "mihai" ) (keyVersion "6bc7ade97061383f11985e24decf735b7f2f0af2"))
 
-(autoModeTime "1073")
+(autoModeTime "2462")
 
 (branch "dummy ID"
 (builtin "One Step Simplification" (formula "1") (newnames "value,result,exc,heapAtPre,o,f"))

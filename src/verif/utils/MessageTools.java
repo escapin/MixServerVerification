@@ -56,25 +56,35 @@ public class MessageTools {
         }
         return zeroVector;
     }
+    
+    /*@
+      public model_behaviour
+	  requires offset >= 0;
+	  requires offset + b.length < a.length;  
+	  ensures  \result ==> (\forall int i; 0 <= i && i < b.length; b[i] == a[offset+i]);
+	  public static model boolean isIdentical(byte[] a, byte[] b, int offset){
+	     return (\forall int i; 0 <= i && i < b.length; b[i] == a[offset+i]);
+	  }
+	 @*/
 
     /**
      * Concatenates messages in a way that makes it possible to unambiguously
      * split the message into the original messages (it adds length of the
      * first message at the beginning of the returned message).
      */
-    /*@ public behaviour
-      @ diverges true;
-      @ signals_only NullPointerException;
-      @ ensures \typeof(\result) == \type(byte[])
-      @ 	&& ((m1 != null && m2 != null)
-      @ 		==> (\result.length == m1.length + m2.length + 4))
-      @         && \fresh(\result);
-      @ signals (NullPointerException e) true;
+    /*@ 
+      public normal_behaviour      
+      ensures \result.length == m1.length + m2.length + 4; 
+      ensures isByteArrOfInt(\result, m1.length);
+      ensures isIdentical(\result, m1, 4); 
+      ensures isIdentical(\result, m2, 4 + m1.length);   
+      ensures \fresh(\result);     
       @*/
-    public static /*@ pure helper @*/ byte[] concatenate(/*@ nullable @*/ byte[] m1,
-                                                         /*@ nullable @*/ byte[] m2) {
+    public static /*@ pure helper @*/ byte[] concatenate( byte[] m1,
+                                                          byte[] m2) {
         // Concatenated Message --> byte[0-3] = Integer, Length of Message 1
-        byte[] out = new byte[m1.length + m2.length + 4];
+    	int length = m1.length + m2.length + 4;
+        byte[] out = new byte[length];
 
         // 4 bytes for length
         byte[] len = intToByteArray(m1.length);
@@ -82,32 +92,38 @@ public class MessageTools {
         // copy all bytes to output array
         int j = 0;
         int i = 0;
-        /*@ loop_invariant 0 <= i && len != null && out != null && m1 != null && m2 != null
-          @             && \typeof(out) == \type(byte[]) && \typeof(len) == \type(byte[])
-          @             && 0 <= j && j <= len.length && j <= out.length
-          @             && len.length == 4 && out.length == m1.length + m2.length + 4
-          @             && j == i;
-          @ assignable out[*], j;
-          @ decreases len.length - i;
-          @*/
+        /*@
+         loop_invariant 0 <= i && i <= len.length;
+         loop_invariant j == i;
+         loop_invariant (\forall int k; 0 <= k && k < i; len[k] == out[k]);
+         loop_invariant isByteArrOfInt(len, m1.length);
+         loop_invariant len.length == 4 && out.length == m1.length + m2.length + 4;
+         assignable out[0..3];
+         decreases len.length - i;
+         @*/
         for( i=0; i<len.length; ++i ) out[j++] = len[i];
-        /*@ loop_invariant 0 <= i && m1 != null && out != null && m1 != null && m2 != null
-          @             && \typeof(out) == \type(byte[]) && \typeof(len) == \type(byte[])
-          @             && 4 <= j && j <= m1.length + 4 && j <= out.length
-          @             && out.length == m1.length + m2.length + 4
-          @             && j == i + 4;
-          @ assignable out[*], j;
-          @ decreases m1.length - i;
-          @*/
+        /*@
+        loop_invariant 0 <= i && i <= m1.length;
+        loop_invariant j == i + 4;
+        loop_invariant (\forall int k; 0 <= k && k < i; m1[k] == out[k+4]);
+        loop_invariant isByteArrOfInt(len, m1.length);
+        loop_invariant isByteArrOfInt(out, m1.length);
+        loop_invariant len.length == 4 && out.length == m1.length + m2.length + 4;
+        assignable out[4..3+m1.length];
+        decreases m1.length - i;
+        @*/
         for( i=0; i<m1.length;  ++i ) out[j++] = m1[i];
-        /*@ loop_invariant 0 <= i && m2 != null && out != null && m1 != null && m2 != null
-          @             && \typeof(out) == \type(byte[]) && \typeof(len) == \type(byte[])
-          @             && m1.length + 4 <= j && j <= m2.length + m1.length + 4 && j <= out.length
-          @             && out.length == m1.length + m2.length + 4
-          @             && j == i + m1.length + 4;
-          @ assignable out[*], j;
-          @ decreases m2.length - i;
-          @*/
+        /*@
+        loop_invariant 0 <= i && i <= m2.length;
+        loop_invariant j == i + 4 + m1.length;
+        loop_invariant (\forall int k; 0 <= k && k < i; m2[k] == out[k+4+m1.length]);
+        loop_invariant isByteArrOfInt(len, m1.length);
+        loop_invariant isByteArrOfInt(out, m1.length);
+        loop_invariant isIdentical(out, m1, 4);
+        loop_invariant len.length == 4 && out.length == m1.length + m2.length + 4;
+        assignable out[4+m1.length..out.length];
+        decreases m2.length - i;
+        @*/
         for( i=0; i<m2.length;  ++i ) out[j++] = m2[i];
 
         return out;
@@ -130,9 +146,11 @@ public class MessageTools {
      * length of m1, m1, m2
      */
     /*@ private normal_behaviour
-      @ ensures \fresh(\result);
+      ensures 
+      ensures position == 0 ==> \result.length == byteArrayToInt(message);
+      ensures \fresh(\result);
       @*/
-    private static /*@ pure helper @*/ byte[] project(/*@ nullable @*/ byte[] message, int position) {
+    private static /*@ pure helper @*/ byte[] project(byte[] message, int position) {
         try {
             int len = byteArrayToInt(message);
             if (len > (message.length - 4)) return new byte[]{}; // Something is wrong with the message!
@@ -167,14 +185,51 @@ public class MessageTools {
       @ ensures \fresh(\result);
       @*/
     public static /*@ pure helper @*/ byte[] first(/*@ nullable @*/ byte[] in) {
-        return project(in, 0);
+    	try{
+    		int len = byteArrayToInt(in);
+        	if (len > (in.length - 4)) return new byte[]{}; // Something is wrong with the message!
+        	
+        	byte[] m1 = new byte[len];
+            /*@ loop_invariant 0 <= i && i <= len && \fresh(m1) && m1 != len
+              @ 		&& m1.length == len && len <= message.length - 4
+              @ 		&& (\forall int j; 0 <= j && j < i; m1[j] == message[j + 4]);
+              @ assignable m1[*];
+              @ decreases len - i;
+              @*/
+            for (int i = 0; i < len; i ++){
+            	m1[i] = in[i + 4];
+            }
+            return m1;
+    	}catch(Exception e){
+    		return new byte[]{};
+    	} 
+    	
+        //return project(in, 0);
     }
 
     /*@ private normal_behaviour
       @ ensures \fresh(\result);
       @*/
     public static /*@ pure helper @*/ byte[] second(/*@ nullable @*/ byte[] in) {
-        return project(in, 1);
+    	try{
+    		int len = byteArrayToInt(in);
+        	if (len > (in.length - 4)) return new byte[]{}; // Something is wrong with the message!
+        	
+        	byte[] m2 = new byte[in.length - len - 4];
+            /*@ loop_invariant 0 <= i && i <= message.length - len - 4 && \fresh(m2)
+              @ 		&& m2 != len && m2.length == message.length - len - 4
+              @ 		&& len <= message.length - 4
+              @ 		&& (\forall int j; 0 <= j && j < i; m2[j] == message[j + 4 + len]);
+              @ assignable m2[*];
+              @ decreases message.length - len - 4 - i;
+              @*/
+            for (int i = 0; i < in.length - len - 4; i ++) m2[i] = in[i + 4 + len];
+            return m2;
+    	}catch(Exception e){
+    		return new byte[]{};
+    	}   	
+        
+        //return project(in, 1);
     }
     /**
      * Transforms a 4 byte array back to int. 
@@ -277,6 +332,7 @@ public class MessageTools {
        public normal_behaviour
        requires value >= 0;
        ensures isByteArrOfInt(\result, value);
+       ensures \result.length == 4;
        ensures \fresh(\result); 
       @*/
     public static final /*@ pure helper @*/ byte[] intToByteArray(int value) {    	
