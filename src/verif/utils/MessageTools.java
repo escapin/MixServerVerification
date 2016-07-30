@@ -176,15 +176,19 @@ public class MessageTools {
     public static /*@ pure helper @*/ byte[] second(/*@ nullable @*/ byte[] in) {
         return project(in, 1);
     }
-
+    /**
+     * Transforms a 4 byte array back to int. 
+     * Since bitwise operators are not sufficiently supported 
+     * in KeY, I have replaced them with other operators. 
+     */
     /*@ public normal_behaviour
       @ requires b.length >= 4;
-      @ ensures \result == 16777216 * unsign(b[0]) + 65536 * unsign(b[1])+ 256 * unsign(b[2])+ unsign(b[3]);
+      @ ensures \result == 256 * 256 * 256 * unsign(b[0]) + 256 * 256 * unsign(b[1])+ 256 * unsign(b[2])+ unsign(b[3]);
       @*/
     public static final /*@ pure helper @*/ int byteArrayToInt(byte [] b) {
     	int result = 0;
-    	result += 16777216 * unsign(b[0]);
-    	result += 65536 * unsign(b[1]);
+    	result += 256 * 256 * 256 * unsign(b[0]);
+    	result += 256 * 256 * unsign(b[1]);
     	result += 256 * unsign(b[2]);
     	result += unsign(b[3]);
     	return result;   	
@@ -195,6 +199,10 @@ public class MessageTools {
 //                + ((b[2] & 0xFF) << 8)
 //                + (b[3] & 0xFF);
     }
+    /**
+     * Transforms a signed byte value (range -128 to 127) to an unsigned 
+     * byte value (range 0 to 255).         
+     */      
     /*@
       public normal_behaviour
       ensures \result == (b < 0 ? b + 256 : b);
@@ -208,10 +216,31 @@ public class MessageTools {
     }
     
     /**
-	 * Antisimmetry of compare <= 0
+	 * Model method (lemma) stating that if a is the representation of value,
+     * then byteArrayToInt will return value value. We need to make an additional 
+     * assumption that value is less than or equal to int_MAX otherwise a 4 byte 
+     * array will not be enough to store value and the higher bytes of data would 
+     * be lost.
 	 */
 	/*@
-	  requires value >= 0;	  
+	  requires value >= 0;
+	  requires value <= \dl_int_MAX;	  
+	  requires isByteArrOfInt(a,value);
+	  ensures byteArrayToInt(a) == value;
+	  ensures \result;
+	  public static model boolean reverseByteArrOfInt2(byte[] a, int value){
+	     return true;
+	  }
+	 @*/
+    /**
+     * Model method (lemma) stating that if a is the representation of value,
+     * then byteArrayToInt will return value value. This lemma has been proven using 
+     * the Java Integer Semantics(ass opposed to the default KeY Integer Semantics) since in
+     * this semantics value will automatically be less than or equal to int_MAX. The model method
+     * reverseByteArrOfInt2 is used in the proof.
+     */
+    /*@
+	  requires value >= 0;	  	  
 	  requires isByteArrOfInt(a,value);
 	  ensures byteArrayToInt(a) == value;
 	  ensures \result;
@@ -219,23 +248,31 @@ public class MessageTools {
 	     return true;
 	  }
 	 @*/
-    
+    /**
+     * Model method which returns true if the first 4 bytes of byte array a
+     * are the representation of int value value.
+     */
     /*@	
       public model_behaviour 
-      requires value >= 0; 
-	  ensures \result ==> a.length >= 4;       
-      ensures \result ==> a[0] == ((value / 16777216) % 256);
-      ensures \result ==> a[1] == ((value / 65536) % 256);
-      ensures \result ==> a[2] == ((value / 256) % 256);
-      ensures \result ==> a[3] == (value % 256);	  
+      requires value >= 0;           
+	  ensures \result ==> a.length >= 4;	       
+      ensures \result ==> a[0] == (byte)((value / 256 / 256 / 256) % 256);
+      ensures \result ==> a[1] == (byte)((value / 256 / 256) % 256);
+      ensures \result ==> a[2] == (byte)((value / 256) % 256);
+      ensures \result ==> a[3] == (byte)(value % 256);	  
 	  public static model boolean isByteArrOfInt(byte[] a, int value){
-	     return a.length >= 4 && a[0] == ((value / 16777216) % 256) && 
-	             a[1] == ((value / 65536) % 256) && a[2] == ((value / 256) % 256)
-	             && a[3] == (value % 256);
+	     return a.length >= 4 && a[0] == (byte)((value / 256 / 256 / 256) % 256) && 
+	             a[1] == (byte)((value / 256 / 256) % 256) && a[2] == (byte)((value / 256) % 256)
+	             && a[3] == (byte)(value % 256);
 	  }
-	 @*/
+	 @*/   
 
-
+    /**
+     * Transforms an int value into a 4 byte array. 
+     * We require that the value is greater or equal to 0.
+     * Since bitwise operators are not sufficiently supported 
+     * in KeY, I have replaced them with other operators.      
+     */
     /*@ 
        public normal_behaviour
        requires value >= 0;
@@ -248,9 +285,9 @@ public class MessageTools {
     	
     	result[2] = (byte) ((value / 256) % 256);
     	
-    	result[1] = (byte) ((value / 65536) % 256);
+    	result[1] = (byte) ((value / 256 / 256) % 256);
     	
-    	result[0] = (byte) ((value / 16777216) % 256);    	
+    	result[0] = (byte) ((value / 256 / 256 / 256) % 256);    	
     	return result;
 //        return new byte[] {
 //                (byte)(value >>> 24),
@@ -259,17 +296,6 @@ public class MessageTools {
 //                (byte)value};
     }
     
-    
-//    public static void main(String[] args){
-//    	System.out.println(byteArrayToInt(intToByteArray(25555666)));
-//    	System.out.println(byteArrayToInt(intToByteArray(0)));
-//    	System.out.println(byteArrayToInt(intToByteArray(1)));
-//    	System.out.println(byteArrayToInt(intToByteArray(123456)));
-//    	System.out.println(byteArrayToInt(intToByteArray(654321)));
-//    	System.out.println(byteArrayToInt(intToByteArray(112233)));
-//    }
-
-
     /*@ public normal_behaviour
       @ ensures \result.length == 8 && \fresh(\result);
       @*/
