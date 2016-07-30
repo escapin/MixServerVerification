@@ -10,8 +10,13 @@ import verif.lib.crypto.CryptoLib;
  * This class is not in the public interface of the corresponding real functionality.
  */	
 public final class UncorruptedEncryptor extends Encryptor {
-	private Decryptor.EncryptionLog log;
+	private /*@spec_public@*/ Decryptor.EncryptionLog log;
 
+	/*@
+	public normal_behaviour
+	ensures this.publicKey == publicKey;
+	ensures this.log == log;
+	@*/
 	UncorruptedEncryptor(byte[] publicKey, Decryptor.EncryptionLog log) {
 		super(publicKey);
 		this.log = log;

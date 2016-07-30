@@ -8,18 +8,18 @@ public class Environment {
 	private /*@ spec_public @*/ static int inputCounter = 0;
 
 
-	/*@ public behavior	  	  
+	/*@ public normal_behavior  	  
 	  @ ensures true;
+	  @ assignable inputCounter;
 	  @*/
 	public static /*@ helper @*/ int untrustedInput()
 	{
 		return inputValues[inputCounter++];
 	}
 
-	/*@ public behavior
-	  @ diverges true;
-	  @ assignable inputCounter;
+	/*@ public normal_behavior	 
 	  @ ensures 0 <= \result && \result < n;
+	  @ assignable inputCounter;
 	  @*/
 	public static /*@ helper @*/ int untrustedInput(int n)
 	{

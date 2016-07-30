@@ -30,6 +30,14 @@ public class Decryptor {
 	}
 
 	/** Returns a new uncorrupted encryptor object sharing the same public key, ID, and log. */
+	/*@
+	   public normal_behaviour
+	   ensures \typeof(\result) == \type(UncorruptedEncryptor);
+	   ensures \fresh(\result);
+	   ensures \result.publicKey == publicKey;
+	   ensures \result.log == log;
+	   assignable \nothing;
+	@*/
 	public Encryptor getEncryptor() {
 		return new UncorruptedEncryptor(publicKey, log);
 	}

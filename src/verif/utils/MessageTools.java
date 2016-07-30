@@ -145,11 +145,7 @@ public class MessageTools {
      * Projection of the message to its two parts (part 1 = position 0, part 2 = position 1) Structure of the expected data: 1 Byte Identifier [0x01], 4 Byte
      * length of m1, m1, m2
      */
-    /*@ private normal_behaviour
-      ensures 
-      ensures position == 0 ==> \result.length == byteArrayToInt(message);
-      ensures \fresh(\result);
-      @*/
+    
     private static /*@ pure helper @*/ byte[] project(byte[] message, int position) {
         try {
             int len = byteArrayToInt(message);
@@ -191,8 +187,8 @@ public class MessageTools {
         	
         	byte[] m1 = new byte[len];
             /*@ loop_invariant 0 <= i && i <= len && \fresh(m1) && m1 != len
-              @ 		&& m1.length == len && len <= message.length - 4
-              @ 		&& (\forall int j; 0 <= j && j < i; m1[j] == message[j + 4]);
+              @ 		&& m1.length == len && len <= in.length - 4
+              @ 		&& (\forall int j; 0 <= j && j < i; m1[j] == in[j + 4]);
               @ assignable m1[*];
               @ decreases len - i;
               @*/
@@ -216,12 +212,12 @@ public class MessageTools {
         	if (len > (in.length - 4)) return new byte[]{}; // Something is wrong with the message!
         	
         	byte[] m2 = new byte[in.length - len - 4];
-            /*@ loop_invariant 0 <= i && i <= message.length - len - 4 && \fresh(m2)
-              @ 		&& m2 != len && m2.length == message.length - len - 4
-              @ 		&& len <= message.length - 4
-              @ 		&& (\forall int j; 0 <= j && j < i; m2[j] == message[j + 4 + len]);
+            /*@ loop_invariant 0 <= i && i <= in.length - len - 4 && \fresh(m2)
+              @ 		&& m2 != len && m2.length == in.length - len - 4
+              @ 		&& len <= in.length - 4
+              @ 		&& (\forall int j; 0 <= j && j < i; m2[j] == in[j + 4 + len]);
               @ assignable m2[*];
-              @ decreases message.length - len - 4 - i;
+              @ decreases in.length - len - 4 - i;
               @*/
             for (int i = 0; i < in.length - len - 4; i ++) m2[i] = in[i + 4 + len];
             return m2;
