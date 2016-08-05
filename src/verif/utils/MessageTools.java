@@ -177,17 +177,21 @@ public class MessageTools {
         }
     }
 
-    /*@ private normal_behaviour
-      @ ensures \fresh(\result);
-      @*/
-    public static /*@ pure helper @*/ byte[] first(/*@ nullable @*/ byte[] in) {
+    /*@ public normal_behaviour
+        requires in.length >= 4 + byteArrayToInt(in);
+        requires byteArrayToInt(in) >= 0;
+        ensures isIdentical(in,\result,4);
+        ensures \result.length == byteArrayToInt(in);
+        ensures \fresh(\result);
+    @*/
+    public static /*@ pure helper @*/ byte[] first(byte[] in) {
     	try{
     		int len = byteArrayToInt(in);
-        	if (len > (in.length - 4)) return new byte[]{}; // Something is wrong with the message!
+        	if (len < 0 || len > (in.length - 4)) return new byte[]{}; // Something is wrong with the message!
         	
         	byte[] m1 = new byte[len];
             /*@ loop_invariant 0 <= i && i <= len && \fresh(m1) && m1 != len
-              @ 		&& m1.length == len && len <= in.length - 4
+              @ 		&& m1.length == len && len <= in.length - 4 && len == byteArrayToInt(in)
               @ 		&& (\forall int j; 0 <= j && j < i; m1[j] == in[j + 4]);
               @ assignable m1[*];
               @ decreases len - i;
@@ -203,13 +207,17 @@ public class MessageTools {
         //return project(in, 0);
     }
 
-    /*@ private normal_behaviour
-      @ ensures \fresh(\result);
+    /*@ public normal_behaviour      
+      requires in.length >= 4 + byteArrayToInt(in);
+      requires byteArrayToInt(in) >= 0;
+      ensures isIdentical(in,\result,4);
+      ensures \result.length == in.length -byteArrayToInt(in)-4;
+      ensures \fresh(\result);
       @*/
-    public static /*@ pure helper @*/ byte[] second(/*@ nullable @*/ byte[] in) {
+    public static /*@ pure helper @*/ byte[] second(byte[] in) {
     	try{
     		int len = byteArrayToInt(in);
-        	if (len > (in.length - 4)) return new byte[]{}; // Something is wrong with the message!
+        	if (len < 0 || len > (in.length - 4)) return new byte[]{}; // Something is wrong with the message!
         	
         	byte[] m2 = new byte[in.length - len - 4];
             /*@ loop_invariant 0 <= i && i <= in.length - len - 4 && \fresh(m2)
@@ -235,6 +243,10 @@ public class MessageTools {
     /*@ public normal_behaviour
       @ requires b.length >= 4;
       @ ensures \result == 256 * 256 * 256 * unsign(b[0]) + 256 * 256 * unsign(b[1])+ 256 * unsign(b[2])+ unsign(b[3]);
+      @ also
+      @ public normal_behaviour
+      @ requires b.length >= 4;
+      @ ensures \result == byteArrayToInt(b);
       @*/
     public static final /*@ pure helper @*/ int byteArrayToInt(byte [] b) {
     	int result = 0;
@@ -295,6 +307,7 @@ public class MessageTools {
 	  requires isByteArrOfInt(a,value);
 	  ensures byteArrayToInt(a) == value;
 	  ensures \result;
+	  accessible a, value;
 	  public static model boolean reverseByteArrOfInt(byte[] a, int value){
 	     return true;
 	  }
@@ -330,6 +343,7 @@ public class MessageTools {
        ensures isByteArrOfInt(\result, value);
        ensures \result.length == 4;
        ensures \fresh(\result); 
+       accessible value;
       @*/
     public static final /*@ pure helper @*/ byte[] intToByteArray(int value) {    	
     	byte[] result = new byte[4];

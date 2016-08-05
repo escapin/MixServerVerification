@@ -35,7 +35,7 @@ public class Decryptor {
 	   ensures \typeof(\result) == \type(UncorruptedEncryptor);
 	   ensures \fresh(\result);
 	   ensures \result.publicKey == publicKey;
-	   ensures \result.log == log;
+	   ensures ((UncorruptedEncryptor)\result).log == log;
 	   assignable \nothing;
 	@*/
 	public Encryptor getEncryptor() {
