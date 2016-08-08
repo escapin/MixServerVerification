@@ -210,7 +210,7 @@ public class MessageTools {
     /*@ public normal_behaviour      
       requires in.length >= 4 + byteArrayToInt(in);
       requires byteArrayToInt(in) >= 0;
-      ensures isIdentical(in,\result,4);
+      ensures isIdentical(in,\result,4 + byteArrayToInt(in));
       ensures \result.length == in.length -byteArrayToInt(in)-4;
       ensures \fresh(\result);
       @*/
