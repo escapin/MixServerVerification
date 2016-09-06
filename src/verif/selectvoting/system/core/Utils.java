@@ -4,9 +4,9 @@ import verif.utils.MessageTools;
 
 public class Utils 
 {
-	public static byte[] concatenateMessageArrayWithDuplicateElimination(byte[][] messages) {
-		return concatenateMessageArray(messages, messages.length);
-	}
+//	public static byte[] concatenateMessageArrayWithDuplicateElimination(byte[][] messages) {
+//		return concatenateMessageArray(messages, messages.length);
+//	}
 	
 	// we assume messages[][] is sorted
 	public static byte[] concatenateMessageArrayWithDuplicateElimination(byte[][] messages, int len) {
@@ -23,15 +23,29 @@ public class Utils
 	}
 
 
-	public static byte[] concatenateMessageArray(byte[][] messages, int len) {
-		byte[] msg = new byte[0];
-		for (int i=len-1; i>=0; --i) { // from the last to the first
-		    try {
-			msg = MessageTools.concatenate(messages[i], msg);
-		    } catch (Throwable t) {}
-		}
-		return msg;
-	}	
+//	public static byte[] concatenateMessageArray(byte[][] messages, int len) {
+//		byte[] msg = new byte[0];
+//		for (int i=len-1; i>=0; --i) { // from the last to the first
+//		    try {
+//			msg = MessageTools.concatenate(messages[i], msg);
+//		    } catch (Throwable t) {}
+//		}
+//		return msg;
+//	}
+	
+	public static byte[] concatenateMessageArray(int i, byte[][] messages){
+		try{
+			
+			if(i == messages.length){
+				return new byte[0];
+			}
+			else{
+				return MessageTools.concatenate(messages[i], concatenateMessageArray(i+1, messages));
+			}
+			
+		}catch(Throwable t){}
+		return new byte[0];
+	}
 
 	public static class MessageSplitIter {
 		byte[] rest;
