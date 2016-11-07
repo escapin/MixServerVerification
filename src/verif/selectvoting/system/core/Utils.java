@@ -33,7 +33,16 @@ public class Utils
 //		return msg;
 //	}
 	
-	public static byte[] concatenateMessageArray(int i, byte[][] messages){
+	/*@
+	  public normal_behaviour
+	  requires 0 <= i && i <= messages.length;
+	  ensures i == messages.length ==> \result.length == 0;
+	  ensures i < messages.length ==> \dl_array2seq(\result) == \dl_array2seq(MessageTools.concatenate(messages[i],concatenateMessageArray(i+1, messages)));
+	  ensures \fresh(\result);
+	  measured_by messages.length - i + 1;
+	  assignable \nothing;   
+	@*/	
+	public static byte[]/*@ helper @*/ concatenateMessageArray(int i, byte[][] messages){
 		try{
 			
 			if(i == messages.length){

@@ -78,7 +78,12 @@ public class MessageTools {
       ensures isByteArrOfInt(\result, m1.length);
       ensures isIdentical(\result, m1, 4); 
       ensures isIdentical(\result, m2, 4 + m1.length);   
-      ensures \fresh(\result);     
+      ensures \fresh(\result); 
+      
+      also
+      
+      public normal_behaviour
+      ensures \dl_array2seq(\result) == \dl_array2seq(concatenate(m1,m2));
       @*/
     public static /*@ pure helper @*/ byte[] concatenate( byte[] m1,
                                                           byte[] m2) {
