@@ -72,20 +72,13 @@ public class MessageTools {
      * split the message into the original messages (it adds length of the
      * first message at the beginning of the returned message).
      */
-    /*@ 
+    /*@     
       public normal_behaviour      
-      ensures \result.length == m1.length + m2.length + 4; 
-      ensures isByteArrOfInt(\result, m1.length);
-      ensures isIdentical(\result, m1, 4); 
-      ensures isIdentical(\result, m2, 4 + m1.length);   
-      ensures \fresh(\result); 
-      
-      also
-      
-      public normal_behaviour
-      ensures \dl_array2seq(\result) == \dl_array2seq(concatenate(m1,m2));
+      ensures \dl_array2seq(\result) == \dl_mConcat(\dl_array2seq(m1), \dl_array2seq(m2));
+      ensures \fresh(\result);
+      assignable \nothing;  
       @*/
-    public static /*@ pure helper @*/ byte[] concatenate( byte[] m1,
+    public static /*@ helper @*/ byte[] concatenate( byte[] m1,
                                                           byte[] m2) {
         // Concatenated Message --> byte[0-3] = Integer, Length of Message 1
     	int length = m1.length + m2.length + 4;
@@ -345,10 +338,8 @@ public class MessageTools {
     /*@ 
        public normal_behaviour
        requires value >= 0;
-       ensures isByteArrOfInt(\result, value);
-       ensures \result.length == 4;
-       ensures \fresh(\result); 
-       accessible value;
+       ensures \dl_array2seq(\result) == \dl_int2seq(value);
+       ensures \fresh(\result);
       @*/
     public static final /*@ pure helper @*/ byte[] intToByteArray(int value) {    	
     	byte[] result = new byte[4];

@@ -4,10 +4,10 @@ import verif.utils.MessageTools;
 
 public class Utils 
 {
-//	public static byte[] concatenateMessageArrayWithDuplicateElimination(byte[][] messages) {
-//		return concatenateMessageArray(messages, messages.length);
-//	}
-	
+	//	public static byte[] concatenateMessageArrayWithDuplicateElimination(byte[][] messages) {
+	//		return concatenateMessageArray(messages, messages.length);
+	//	}
+
 	// we assume messages[][] is sorted
 	public static byte[] concatenateMessageArrayWithDuplicateElimination(byte[][] messages, int len) {
 		byte[] msg = new byte[0];
@@ -22,39 +22,54 @@ public class Utils
 		return msg;
 	}
 
+	/*@
+	  public normal_behaviour	  	  
+	  ensures \dl_array2seq(\result) == \dl_arrConcat(0, \dl_array2seq2d(messages));
+	  ensures \fresh(\result);	  
+	  assignable \nothing;	  
+	@*/
+	public static byte[] concatenateMessageArray(byte[][] messages) {
+		byte[] msg = new byte[0];
+		int i = messages.length - 1;
+		/*@
+		  loop_invariant -1 <= i && i < messages.length;	  	  
+		  loop_invariant \dl_array2seq(msg) == \dl_arrConcat(i+1, \dl_array2seq2d(messages));
+		  loop_invariant \fresh(msg);	  
+		  assignable \nothing;
+		  decreases i+1;	  
+		@*/
+		while(i >= 0){
+			try {
+				msg = MessageTools.concatenate(messages[i], msg);
+			} catch (Throwable t) {}
+			i--;
+		}
 
-//	public static byte[] concatenateMessageArray(byte[][] messages, int len) {
-//		byte[] msg = new byte[0];
-//		for (int i=len-1; i>=0; --i) { // from the last to the first
-//		    try {
-//			msg = MessageTools.concatenate(messages[i], msg);
-//		    } catch (Throwable t) {}
-//		}
-//		return msg;
-//	}
-	
+		return msg;
+	}
+
 	/*@
 	  public normal_behaviour
-	  requires 0 <= i && i <= messages.length;
+	  requires 0 <= i && i <= messages.length;	  
 	  ensures i == messages.length ==> \result.length == 0;
 	  ensures i < messages.length ==> \dl_array2seq(\result) == \dl_array2seq(MessageTools.concatenate(messages[i],concatenateMessageArray(i+1, messages)));
 	  ensures \fresh(\result);
 	  measured_by messages.length - i + 1;
-	  assignable \nothing;   
+	  assignable \nothing;	  
 	@*/	
-	public static byte[]/*@ helper @*/ concatenateMessageArray(int i, byte[][] messages){
-		try{
-			
-			if(i == messages.length){
-				return new byte[0];
-			}
-			else{
-				return MessageTools.concatenate(messages[i], concatenateMessageArray(i+1, messages));
-			}
-			
-		}catch(Throwable t){}
-		return new byte[0];
-	}
+		public static byte[]/*@ helper @*/ concatenateMessageArray(int i, byte[][] messages){
+			try{
+				
+				if(i == messages.length){
+					return new byte[0];
+				}
+				else{
+					return MessageTools.concatenate(messages[i], concatenateMessageArray(i+1, messages));
+				}
+				
+			}catch(Throwable t){}
+			return new byte[0];
+		}
 
 	public static class MessageSplitIter {
 		byte[] rest;
@@ -86,9 +101,9 @@ public class Utils
 		}
 		return b;
 	}
-	
 
-	
+
+
 	/**
 	 * Compares its two array arguments for lexicographic order. 
 	 * 
@@ -106,14 +121,14 @@ public class Utils
 	 */
 	/*@
 	   public normal_behaviour
-	 
+
 	   ensures  ((\exists int i; 0 <= i && i < min(a1.length, a2.length); a1[i] < a2[i] && 
 	               (\forall int j; 0 <= j && j < i; a1[j] == a2[j]))
 	            || 
 	            ((\forall int j; 0 <= j && j < min(a1.length,a2.length); a1[j] == a2[j])
 	                && a1.length <= a2.length) )   
 	            <==> \result <= 0;
-	            	   
+
 	   assignable \strictly_nothing;   
 	 @*/
 	public /*@helper@*/static int compare(byte[] a1, byte[] a2) {
@@ -143,7 +158,7 @@ public class Utils
 		}
 		return 0;
 	}
-	
+
 	/*@
 	  public normal_behaviour
 	  requires byteArrays != null;
@@ -162,12 +177,12 @@ public class Utils
 
 				/*@
 				  loop_invariant (\forall int i; fromIndex <= i && i < sorted-1; compare(byteArrays[i],byteArrays[i+1]) <= 0);
-				  
+
 				  loop_invariant 0 <= fromIndex && fromIndex <= byteArrays.length;
 				  loop_invariant 0 <= toIndex && toIndex <= byteArrays.length;
 				  loop_invariant fromIndex <= toIndex;
 				  loop_invariant fromIndex <= sorted && sorted <= toIndex;
-				  
+
 				  loop_invariant \dl_seqPerm(\dl_array2seq(byteArrays), \old(\dl_array2seq(byteArrays)));
 				  loop_invariant byteArrays != null && (\forall int i; 0 <= i && i < byteArrays.length; byteArrays[i]!=null);
 				  assignable byteArrays[sorted..toIndex];
@@ -199,7 +214,7 @@ public class Utils
 			byteArrays[i]=key;
 		} catch (Throwable t) {}		
 	}	
-	
+
 	/*@
     public normal_behaviour
     requires 0 <= fromIndex && fromIndex <= byteArrays.length;
@@ -231,15 +246,15 @@ public class Utils
 				}
 				byteArrays[i+1]=byteArrays[i];
 			} catch (Throwable thr) {}			
-			
+
 		}
 		return i+1;
 	}	
-	
-	
-	
-	
-	
+
+
+
+
+
 
 	/**
 	 * Returns a new object which is a copy of arr.
@@ -265,26 +280,26 @@ public class Utils
 		 * it could be easy to integrate this optimization into WALA to overcome
 		 * this problem.
 		 */
-	    if (arr==null) return arr;
-	    byte[][] copy = new byte[arr.length][];;
-	    /*@
+		if (arr==null) return arr;
+		byte[][] copy = new byte[arr.length][];;
+		/*@
 	      loop_invariant 0 <= i && i <= arr.length 
 	      && copy.length == arr.length 
 	      && arr != copy && copy !=null;
 	      loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(copy[j]) == \dl_array2seq(arr[j]));
-	     
+
 	      loop_invariant \fresh(copy);
 	      loop_invariant (\forall int j; 0 <= j && j < i; copy[j] != null);
 	      assignable copy[*];
 	      decreases arr.length - i;
 	     @*/
-	    for (int i = 0; i < arr.length; i++){
-//	    	copy[i] = arr[i];
-	    	try {
-	            copy[i] = MessageTools.copyOf(arr[i]);
-	        } catch (Throwable t) {}
-	    }
-	    return copy;	
+		for (int i = 0; i < arr.length; i++){
+			//	    	copy[i] = arr[i];
+			try {
+				copy[i] = MessageTools.copyOf(arr[i]);
+			} catch (Throwable t) {}
+		}
+		return copy;	
 	}	
-		
+
 }

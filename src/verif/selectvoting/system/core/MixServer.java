@@ -318,7 +318,7 @@ public class MixServer
 		
 		// format entries as one message
 		//byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr, entr_arr.length);
-		byte[] entriesAsAMessage = Utils.concatenateMessageArray(0,entr_arr);
+		byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr);
 
 
 		// add election id, tag and sign
