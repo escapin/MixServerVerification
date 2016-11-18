@@ -2,10 +2,10 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Tue Nov 08 13:14:19 CET 2016
+#Fri Nov 18 18:40:46 CET 2016
 [StrategyProperty]VBT_PHASE=VBT_SYM_EX
 [SMTSettings]useUninterpretedMultiplication=true
-[SMTSettings]SelectedTaclets=
+[SMTSettings]SelectedTaclets=\\#begexpand_inByte\\#end,\\#begexpand_inChar\\#end,\\#begexpand_inShort\\#end,\\#begexpand_inInt\\#end,\\#begexpand_inLong\\#end
 [StrategyProperty]METHOD_OPTIONS_KEY=METHOD_CONTRACT
 [StrategyProperty]USER_TACLETS_OPTIONS_KEY3=USER_TACLETS_OFF
 [StrategyProperty]SYMBOLIC_EXECUTION_ALIAS_CHECK_OPTIONS_KEY=SYMBOLIC_EXECUTION_ALIAS_CHECK_NEVER
@@ -42,26 +42,39 @@
 \javaSource "../src";
 
 \proofObligation "#Proof Obligation Settings
-#Tue Nov 08 13:14:19 CET 2016
+#Fri Nov 18 18:40:46 CET 2016
 name=verif.utils.MessageTools[verif.utils.MessageTools\\:\\:intToByteArray(int)].JML normal_behavior operation contract.0
 contract=verif.utils.MessageTools[verif.utils.MessageTools\\:\\:intToByteArray(int)].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 ";
 
 \proof {
-(keyLog "0" (keyUser "mihai" ) (keyVersion "796a45c33263bea49efe849c61f69175f8e7c46c"))
-(keyLog "1" (keyUser "mihai" ) (keyVersion "796a45c33263bea49efe849c61f69175f8e7c46c"))
+(keyLog "0" (keyUser "mihai" ) (keyVersion "b47d5398afca7e5b5ae9d483bbd792dd953e71bc"))
 
-(autoModeTime "4061")
+(autoModeTime "4566")
 
 (branch "dummy ID"
 (rule "defOfint2seq" (formula "1") (term "1,0,0,0,0,1,1") (newnames "value,result,exc,heapAtPre,o,f") (userinteraction))
 (builtin "One Step Simplification" (formula "1"))
+(rule "translateJavaCastByte" (formula "1") (term "0,0,1,0,0,0,0,1,1"))
+(rule "translateJavaCastByte" (formula "1") (term "0,1,1,1,1,0,0,0,0,1,1"))
+(rule "translateJavaCastByte" (formula "1") (term "0,0,1,1,0,0,0,0,1,1"))
+(rule "translateJavaCastByte" (formula "1") (term "0,0,1,1,1,0,0,0,0,1,1"))
+(rule "translateJavaMod" (formula "1") (term "0,0,1,0,0,0,0,1,1"))
+(rule "translateJavaMod" (formula "1") (term "0,1,1,1,1,0,0,0,0,1,1"))
+(rule "translateJavaMod" (formula "1") (term "0,0,1,1,0,0,0,0,1,1"))
+(rule "translateJavaMod" (formula "1") (term "0,0,1,1,1,0,0,0,0,1,1"))
+(rule "translateJavaDivInt" (formula "1") (term "0,0,0,1,0,0,0,0,1,1"))
+(rule "translateJavaDivInt" (formula "1") (term "0,0,0,1,1,0,0,0,0,1,1"))
+(rule "translateJavaDivInt" (formula "1") (term "0,0,0,1,1,1,0,0,0,0,1,1"))
+(rule "translateJavaDivInt" (formula "1") (term "0,0,0,0,1,0,0,0,0,1,1"))
+(rule "translateJavaDivInt" (formula "1") (term "0,0,0,0,1,1,0,0,0,0,1,1"))
+(rule "translateJavaDivInt" (formula "1") (term "0,0,0,0,0,1,0,0,0,0,1,1"))
 (rule "impRight" (formula "1"))
 (rule "andLeft" (formula "1"))
 (rule "andLeft" (formula "1"))
-(rule "eqSymm" (formula "4") (term "1,0,0,1,0,1"))
 (rule "eqSymm" (formula "4") (term "0,0,0,0,1"))
+(rule "eqSymm" (formula "4") (term "1,0,0,1,0,1"))
 (rule "assignment" (formula "4") (term "1"))
 (builtin "One Step Simplification" (formula "4"))
 (rule "array2seqDef" (formula "4") (term "1,0,0,0,0,1") (inst "u=u"))
@@ -361,6 +374,23 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (rule "sub_literals" (formula "4") (term "1,0,0,1,0,1,1,0,0,0,0,1"))
 (rule "less_literals" (formula "4") (term "0,0,1,0,1,1,0,0,0,0,1"))
 (builtin "One Step Simplification" (formula "4"))
+(rule "getOfSeqSub" (formula "4") (term "0,1,0,1,1,0,0,0,0,1"))
+(rule "castDel" (formula "4") (term "2,0,1,0,1,1,0,0,0,0,1"))
+(rule "add_zero_left" (formula "4") (term "1,1,0,1,0,1,1,0,0,0,0,1"))
+(rule "leq_literals" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
+(builtin "One Step Simplification" (formula "4"))
+(rule "polySimp_elimSub" (formula "4") (term "1,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "mul_literals" (formula "4") (term "1,1,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "polySimp_addComm0" (formula "4") (term "1,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "inEqSimp_ltToLeq" (formula "4") (term "0,0,1,0,1,1,0,0,0,0,1"))
+(rule "add_zero_right" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "polySimp_rightDist" (formula "4") (term "1,0,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "mul_literals" (formula "4") (term "0,1,0,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "polySimp_addAssoc" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "add_literals" (formula "4") (term "0,0,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "inEqSimp_sepNegMonomial0" (formula "4") (term "0,0,1,0,1,1,0,0,0,0,1"))
+(rule "polySimp_mulLiterals" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
+(rule "polySimp_elimOne" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
 (rule "getOfSeqSub" (formula "4") (term "0,1,1,1,1,0,0,0,0,1"))
 (rule "castDel" (formula "4") (term "2,0,1,1,1,1,0,0,0,0,1"))
 (rule "leq_literals" (formula "4") (term "0,0,0,1,1,1,1,0,0,0,0,1"))
@@ -378,41 +408,6 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (rule "inEqSimp_sepNegMonomial0" (formula "4") (term "0,0,1,1,1,1,0,0,0,0,1"))
 (rule "polySimp_mulLiterals" (formula "4") (term "0,0,0,1,1,1,1,0,0,0,0,1"))
 (rule "polySimp_elimOne" (formula "4") (term "0,0,0,1,1,1,1,0,0,0,0,1"))
-(rule "getOfSeqSub" (formula "4") (term "0,1,0,1,1,0,0,0,0,1"))
-(rule "castDel" (formula "4") (term "2,0,1,0,1,1,0,0,0,0,1"))
-(rule "leq_literals" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
-(builtin "One Step Simplification" (formula "4"))
-(rule "add_zero_left" (formula "4") (term "1,1,0,1,0,1,1,0,0,0,0,1"))
-(rule "polySimp_elimSub" (formula "4") (term "1,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "mul_literals" (formula "4") (term "1,1,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "polySimp_addComm0" (formula "4") (term "1,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "inEqSimp_ltToLeq" (formula "4") (term "0,0,1,0,1,1,0,0,0,0,1"))
-(rule "add_zero_right" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "polySimp_rightDist" (formula "4") (term "1,0,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "mul_literals" (formula "4") (term "0,1,0,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "polySimp_addAssoc" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "add_literals" (formula "4") (term "0,0,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "inEqSimp_sepNegMonomial0" (formula "4") (term "0,0,1,0,1,1,0,0,0,0,1"))
-(rule "polySimp_mulLiterals" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "polySimp_elimOne" (formula "4") (term "0,0,0,1,0,1,1,0,0,0,0,1"))
-(rule "getOfSeqSub" (formula "4") (term "1,0,1,1,1,1,0,0,0,0,1"))
-(rule "castDel" (formula "4") (term "2,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "leq_literals" (formula "4") (term "0,0,1,0,1,1,1,1,0,0,0,0,1"))
-(builtin "One Step Simplification" (formula "4"))
-(rule "add_literals" (formula "4") (term "1,1,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "polySimp_elimSub" (formula "4") (term "1,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "mul_literals" (formula "4") (term "1,1,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "polySimp_addComm0" (formula "4") (term "1,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "inEqSimp_ltToLeq" (formula "4") (term "0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "polySimp_rightDist" (formula "4") (term "1,0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "mul_literals" (formula "4") (term "0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "polySimp_addAssoc" (formula "4") (term "0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "add_literals" (formula "4") (term "0,0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "polySimp_addComm1" (formula "4") (term "0,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "add_literals" (formula "4") (term "0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "inEqSimp_sepNegMonomial0" (formula "4") (term "0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "polySimp_mulLiterals" (formula "4") (term "0,0,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "polySimp_elimOne" (formula "4") (term "0,0,1,0,1,1,1,1,0,0,0,0,1"))
 (rule "getOfSeqSub" (formula "4") (term "1,0,1,0,1,1,0,0,0,0,1"))
 (rule "castDel" (formula "4") (term "2,1,0,1,0,1,1,0,0,0,0,1"))
 (rule "leq_literals" (formula "4") (term "0,0,1,0,1,0,1,1,0,0,0,0,1"))
@@ -447,6 +442,24 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (rule "inEqSimp_sepNegMonomial0" (formula "4") (term "0,1,1,0,1,0,1,1,0,0,0,0,1"))
 (rule "polySimp_mulLiterals" (formula "4") (term "0,0,1,1,0,1,0,1,1,0,0,0,0,1"))
 (rule "polySimp_elimOne" (formula "4") (term "0,0,1,1,0,1,0,1,1,0,0,0,0,1"))
+(rule "getOfSeqSub" (formula "4") (term "1,0,1,1,1,1,0,0,0,0,1"))
+(rule "castDel" (formula "4") (term "2,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "add_literals" (formula "4") (term "1,1,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "leq_literals" (formula "4") (term "0,0,1,0,1,1,1,1,0,0,0,0,1"))
+(builtin "One Step Simplification" (formula "4"))
+(rule "polySimp_elimSub" (formula "4") (term "1,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "mul_literals" (formula "4") (term "1,1,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "polySimp_addComm0" (formula "4") (term "1,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "inEqSimp_ltToLeq" (formula "4") (term "0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "polySimp_rightDist" (formula "4") (term "1,0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "mul_literals" (formula "4") (term "0,1,0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "polySimp_addAssoc" (formula "4") (term "0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "add_literals" (formula "4") (term "0,0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "polySimp_addComm1" (formula "4") (term "0,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "add_literals" (formula "4") (term "0,0,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "inEqSimp_sepNegMonomial0" (formula "4") (term "0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "polySimp_mulLiterals" (formula "4") (term "0,0,1,0,1,1,1,1,0,0,0,0,1"))
+(rule "polySimp_elimOne" (formula "4") (term "0,0,1,0,1,1,1,1,0,0,0,0,1"))
 (rule "getOfSeqSub" (formula "4") (term "1,1,0,1,1,1,1,0,0,0,0,1"))
 (rule "castDel" (formula "4") (term "2,1,1,0,1,1,1,1,0,0,0,0,1"))
 (rule "leq_literals" (formula "4") (term "0,0,1,1,0,1,1,1,1,0,0,0,0,1"))
@@ -481,17 +494,17 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (rule "inEqSimp_sepNegMonomial0" (formula "4") (term "0,1,1,1,0,1,1,1,1,0,0,0,0,1"))
 (rule "polySimp_mulLiterals" (formula "4") (term "0,0,1,1,1,0,1,1,1,1,0,0,0,0,1"))
 (rule "polySimp_elimOne" (formula "4") (term "0,0,1,1,1,0,1,1,1,1,0,0,0,0,1"))
-(rule "applyEq_and_int0" (formula "4") (term "0,0,0,0,0,0,1"))
-(rule "qeq_literals" (formula "4") (term "0,0,0,0,0,0,0,1"))
+(rule "applyEq_and_int0" (formula "4") (term "1,1,0,0,1,1,0,0,0,0,1"))
+(rule "qeq_literals" (formula "4") (term "0,1,1,0,0,1,1,0,0,0,0,1"))
 (builtin "One Step Simplification" (formula "4"))
 (rule "applyEq_and_int0" (formula "4") (term "1,1,1,0,1,1,1,0,0,0,0,1"))
 (rule "qeq_literals" (formula "4") (term "0,1,1,1,0,1,1,1,0,0,0,0,1"))
 (builtin "One Step Simplification" (formula "4"))
-(rule "applyEq_and_int0" (formula "4") (term "1,1,0,0,1,1,0,0,0,0,1"))
-(rule "qeq_literals" (formula "4") (term "0,1,1,0,0,1,1,0,0,0,0,1"))
-(builtin "One Step Simplification" (formula "4"))
 (rule "applyEq_and_int0" (formula "4") (term "1,0,0,1,0,0,0,0,1"))
 (rule "qeq_literals" (formula "4") (term "0,1,0,0,1,0,0,0,0,1"))
+(builtin "One Step Simplification" (formula "4"))
+(rule "applyEq_and_int0" (formula "4") (term "0,0,0,0,0,0,1"))
+(rule "qeq_literals" (formula "4") (term "0,0,0,0,0,0,0,1"))
 (builtin "One Step Simplification" (formula "4"))
 (rule "methodBodyExpand" (formula "4") (term "1") (newnames "heapBefore_intToByteArray,savedHeapBefore_intToByteArray"))
 (builtin "One Step Simplification" (formula "4"))
@@ -1466,7 +1479,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                          (builtin "One Step Simplification" (formula "25"))
                                                          (rule "notRight" (formula "25"))
                                                          (rule "ifthenelse_split" (formula "2") (term "0"))
-                                                         (branch "f_0 = java.lang.Object::<created> & o_0 = x_arr_2 TRUE"
+                                                         (branch "f_0 = java.lang.Object::<created> ∧ o_0 = x_arr_2 TRUE"
                                                             (rule "andLeft" (formula "2"))
                                                             (rule "applyEqReverse" (formula "5") (term "2,0") (ifseqformula "4"))
                                                             (rule "hideAuxiliaryEq" (formula "4"))
@@ -1529,7 +1542,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                             (rule "eqSymm" (formula "17"))
                                                             (rule "close" (formula "17") (ifseqformula "1"))
                                                          )
-                                                         (branch "f_0 = java.lang.Object::<created> & o_0 = x_arr_2 FALSE"
+                                                         (branch "f_0 = java.lang.Object::<created> ∧ o_0 = x_arr_2 FALSE"
                                                             (rule "applyEqReverse" (formula "3") (term "2,0") (ifseqformula "2"))
                                                             (rule "hideAuxiliaryEq" (formula "2"))
                                                             (rule "div_axiom" (formula "9") (term "1") (inst "quotient=quotient_1"))
