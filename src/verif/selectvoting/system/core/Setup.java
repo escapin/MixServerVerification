@@ -219,30 +219,25 @@ public final class Setup {
     private static void innerMain(Encryptor mixEncr, Signer precServSign, byte[] electionID, MixServer mixServ,
                                   int numberOfMessages, int lengthOfTheMessages, byte[][] chosen)
                     throws MalformedData, ServerMisbehavior {
-        // encrypt each message, along with the election ID as expected by the mix server
-    	
-    	
-		
-		
-		
-		byte[][] encrMsg = new byte[numberOfMessages][];
-		for(int i=0; i<numberOfMessages; ++i){
-			encrMsg[i] = mixEncr.encrypt(MessageTools.concatenate(electionID, chosen[i]));
-		}
-			
-		
-		// FORMAT THE DATA FOR THE MIX SERVER
-		
+ 	
+    	//1
+    	byte[][] idMsg = addIdToMsg(electionID, numberOfMessages, chosen);
+		//2
+		byte[][] encrMsg = encryptMsg(mixEncr, numberOfMessages, idMsg);			
+		//3
 		Utils.sort(encrMsg, 0, encrMsg.length);
-		
-		//byte[] asAMessage=Utils.concatenateMessageArray(encrMsg, encrMsg.length);
+		//4
 		byte[] asAMessage=Utils.concatenateMessageArray(encrMsg);
-		
+		//5
 		// add election id, tag and sign
 		byte[] elID_ballots = MessageTools.concatenate(electionID, asAMessage);
+		//6
 		byte[] input = MessageTools.concatenate(Tag.BALLOTS, elID_ballots);
+		//7
 		byte[] signatureOnInput = precServSign.sign(input);
+
 		byte[] signedInput = MessageTools.concatenate(input, signatureOnInput);
+		//8
 		
 		
 		// MODEL THE NETWORK
@@ -264,6 +259,24 @@ public final class Setup {
 		// send the output of the mix server over the network
 		Environment.untrustedOutputMessage(mixServerOutput);
     }
+    
+    
+	private static byte[][] encryptMsg(Encryptor mixEncr, int numberOfMessages, byte[][] idMsg) {
+		byte[][] encrMsg = new byte[numberOfMessages][];
+		for(int i=0; i<numberOfMessages; ++i){
+			encrMsg[i] = mixEncr.encrypt(idMsg[i]);
+		}
+		return encrMsg;
+	}
+	
+	
+	private static byte[][] addIdToMsg(byte[] electionID, int numberOfMessages, byte[][] chosen) {
+		byte[][] idMsg = new byte[numberOfMessages][];
+    	for(int i=0; i<numberOfMessages; ++i){
+			idMsg[i] = MessageTools.concatenate(electionID, chosen[i]);
+		}
+		return idMsg;
+	}
     /**
      *If secret is set returns a copy of msg1 otherwise returns a copy of msg2.     
      */

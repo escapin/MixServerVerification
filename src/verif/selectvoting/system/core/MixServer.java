@@ -16,7 +16,7 @@ public class MixServer
 	private final byte[] electionID;
 	// private final int numberOfVoters;
 
-	 
+
 
 	// PUBLIC CLASSES
 	/**
@@ -55,8 +55,8 @@ public class MixServer
 		this.electionID = electionID;
 		this.precServVerif = precServVerif;
 	}
-	
-	
+
+
 
 	// this is the randomly chosen message array
 	//@ public ghost instance byte[][] msg;
@@ -101,7 +101,7 @@ public class MixServer
 	     return Utils.compare(a,c) <= 0;
 	  }
 	 @*/
-	
+
 	/*@	  
 	  requires Utils.compare(a,b) > 0;	  
 	  ensures  Utils.compare(b,a) <= 0;
@@ -178,7 +178,7 @@ public class MixServer
 	 @*/	
 	public byte[] processBallots(byte[] data) throws MalformedData, ServerMisbehavior {
 
-		
+
 
 
 		byte[] ballotsAsAMessage = checkAndGetBallots(data);
@@ -200,7 +200,7 @@ public class MixServer
 
 
 		entr_arr = sort(entr_arr); 
-		
+
 		/** 
 		 * We show that this statement does not change any locations of already created objects on the heap.
 		 * Also we show that the values of entr_arr before the statement and after the statement fulfill the requirements
@@ -220,9 +220,9 @@ public class MixServer
 		 assignable \nothing;
 		 @*/
 		{
-		entr_arr = ConservativeExtension.retrieveSortedMessages();
+			entr_arr = ConservativeExtension.retrieveSortedMessages();
 		}
-		
+
 
 		byte[] signedResult = postProcess(entr_arr);
 
@@ -244,9 +244,9 @@ public class MixServer
 	  assignable \nothing;	    
 	@*/	
 	private byte[][] sort(byte[][] entr_arr) {
-		
+
 		byte[][] result = Utils.copyOf(entr_arr);
-		
+
 		if (result != null) {
 			Utils.sort(result, 0, result.length);
 			return result;
@@ -254,6 +254,85 @@ public class MixServer
 			return new byte[][] {};
 		}
 	}
+	
+	public byte[][] decryptBallots(byte[][] msg){
+		byte[][] res= new byte[msg.length][];
+		for (int i = 0; i < msg.length; i++) {
+			try{
+				res[i] = decryptor.decrypt(msg[i]);
+			}catch(Throwable t){}
+		}
+		return res;
+	}
+	
+	public void checkBallots(byte[][] msg) throws ServerMisbehavior{
+		for (int i = 0; i < msg.length-1; i++) {
+			
+			byte[] first = null;
+			byte[] second = null;
+			
+			try{
+				first = msg[i];
+				second = msg[i+1];
+			}catch(Throwable t){}
+			
+			
+			if(! (Utils.compare(first, second) <= 0)){
+				throw new ServerMisbehavior(-2, "Ballots not sorted");
+			}
+			if((Utils.compare(first, second) == 0)){
+				throw new ServerMisbehavior(-3, "Duplicate ballots");
+			}
+		}
+	}
+	
+	public byte[][] checkandRemoveElectionId(byte[][] msg){
+		byte[][] res = new byte[msg.length][];
+		for (int i = 0; i < msg.length; i++) {
+			byte[] elId = MessageTools.first(msg[i]);			
+			if(MessageTools.equal(elId, electionID)){
+				try{
+					res[i] = MessageTools.second(msg[i]);
+				}catch(Throwable t){}
+			}
+		}
+		return res;
+	}
+
+	public byte[][] split(byte [] ballots){
+		byte[][] messages = new byte[0][];
+		byte[] bal  = ballots;
+		while(bal.length >= 0){
+			byte[] first = MessageTools.first(bal);
+			bal = MessageTools.second(bal);
+			messages = addEntry(messages, first);
+		}
+		return messages;
+	}
+
+	public byte[][] addEntry(byte[][] messages, byte[] m){
+
+		byte[][] res = new byte[messages.length+1][];
+		try{
+			for(int i = 0 ; i <messages.length; i++){
+				res[i] = messages[i];
+			}
+			res[messages.length] = MessageTools.copyOf(m);
+		}catch(Throwable t){}
+		return res;
+
+	}
+	
+	
+	public byte[][] extractBallots(byte[] msg) throws ServerMisbehavior{
+		byte[][] res = split(msg);
+		checkBallots(res);
+		res = decryptBallots(res);
+		res = checkandRemoveElectionId(res);
+		return res;
+	}
+
+
 	/**
 	 * We assume this method returns a permutation of the array 'msg'.
 	 */
@@ -267,7 +346,7 @@ public class MixServer
 	  ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	   
 	  assignable \strictly_nothing; 
 	 @*/
-	private byte[][] extractBallots(byte[] ballotsAsAMessage) throws ServerMisbehavior{
+	private byte[][] extractBallots3(byte[] ballotsAsAMessage) throws ServerMisbehavior{
 		//ArrayList<byte[]> entries = new ArrayList<byte[]>();
 		EntryList entries = new EntryList();
 
@@ -311,11 +390,11 @@ public class MixServer
 	  assignable \strictly_nothing;
 	 @*/
 	private byte[] postProcess(byte[][] entr_arr) {
-		
+
 		if(entr_arr == null){
 			return null;
 		}
-		
+
 		// format entries as one message
 		//byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr, entr_arr.length);
 		byte[] entriesAsAMessage = Utils.concatenateMessageArray(entr_arr);
@@ -328,7 +407,7 @@ public class MixServer
 		byte[] signedResult = MessageTools.concatenate(result, signatureOnResult);
 		return signedResult;
 	}
-	
+
 	/**
 	 * We assume it doesn't change any fields.
 	 */

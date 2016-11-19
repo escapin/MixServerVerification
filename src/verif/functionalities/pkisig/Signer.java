@@ -11,8 +11,8 @@ import verif.utils.MessageTools;
  * is stores in the log.
  */
 final public class Signer {
-	private byte[] verifKey;
-	private byte[] signKey;
+	private byte[] /*@nullable@*/ verifKey;
+	private byte[] /*@nullable@*/signKey;
 	private Log log;
 
 	public Signer() {
@@ -21,22 +21,37 @@ final public class Signer {
 		this.verifKey = MessageTools.copyOf(keypair.publicKey);
 		this.log = new Log();
 	}
-
+	
 	/*@ public behaviour
-	  @ requires message != null;
-	  @ signals_only Error;
-	  @ diverges true;
-	  @ ensures true;
-	  @*/
-	public /*@ strictly_pure helper nullable @// to be proven with JOANA */ byte[]
-			sign(byte[] message) {
+	    requires message != null;
+	    ensures log != null;
+	    diverges true;
+	    assignable verif.environment.Environment.inputCounter, verif.environment.Environment.result;	  
+	@*/
+	public byte[] getSignature(byte[] message){
 		byte[] signature = CryptoLib.sign(MessageTools.copyOf(message), MessageTools.copyOf(signKey));
 		// we make sure that the signing has not failed
 		if (signature == null) return null;
 		// and that the signature is correct
 		if( !CryptoLib.verify(MessageTools.copyOf(message), MessageTools.copyOf(signature), MessageTools.copyOf(verifKey)) )
 			return null;
-		// now we log the message (only!) as signed and return the signature
+		return signature;
+	}
+
+	/*@ public behaviour
+	    requires message != null;
+	    requires log != null;
+	    requires log.messages != null;	    
+	    ensures \result != null ==> log.contains(message);
+	    diverges true;
+	    assignable log.messages, verif.environment.Environment.inputCounter, verif.environment.Environment.result;
+	  @*/
+	public /*@ helper nullable @*/  byte[]
+			sign(byte[] message) {
+		byte[] signature = getSignature(message);
+		if(signature == null){
+			return null;
+		}
 		log.add(MessageTools.copyOf(message));
 		return MessageTools.copyOf(MessageTools.copyOf(signature));
 	}
@@ -44,33 +59,66 @@ final public class Signer {
 	public Verifier getVerifier() {
 		return new UncorruptedVerifier(verifKey, log);
 	}
-	
+
 	///// IMPLEMENTATION /////
-	
+
 	static class Log {
 
-		private static class MessageList {
-			byte[] message;
-			MessageList next;
-			public MessageList(byte[] message, MessageList next) {
-				this.message = message;
-				this.next = next;
-			}
+		private /*@spec_public@*/ byte[][] messages;
+        /*@ public normal_behaviour
+            ensures messages != null;
+            assignable messages;
+        @*/
+		public Log(){
+			messages = new byte[0][];
 		}
+        /*@public normal_behaviour
+           requires messages != null;
+           ensures (\forall int i; 0 <= i && i < messages.length-1; \old(messages[i]) == messages[i]);
+           ensures messages.length == \old(messages.length) + 1;
+           ensures \dl_array2seq(messages[messages.length-1]) == \dl_array2seq(message);
+           assignable messages;
+        @*/
+		public void /*@helper@*/add(byte[] message) {
+			try{
+				byte[][] res = new byte[messages.length+1][];
+                /*@
+                loop_invariant 0 <= i && i <= messages.length;
+                loop_invariant res.length == messages.length + 1;
+                loop_invariant (\forall int j; 0 <= j && j < i; res[j] == messages[j]);
+                decreases messages.length - i;
+                assignable res[0..messages.length];
+                @*/
+				for(int i= 0; i < messages.length; i++){
+					res[i] = messages[i];
+				}
 
-		private MessageList first = null;
-
-		public void add(byte[] message) {
-			first = new MessageList(message, first);
+				res[res.length-1] = MessageTools.copyOf(message);
+				messages = res;
+			}catch(Throwable t){}
 		}
-
-		boolean contains(byte[] message) {
-			for( MessageList node = first;  node != null;  node = node.next ) {
-				if( MessageTools.equal(node.message, message) )
+		
+		
+		
+		/*@public normal_behaviour
+		   requires messages != null;		   
+           ensures \result <==> (\exists int i; 0 <= i && i < messages.length; \dl_array2seq(messages[i]) == \dl_array2seq(message) );
+           assignable \strictly_nothing;
+        @*/
+		boolean /*@helper@*/ contains(byte[] message) {
+			/*@
+            loop_invariant 0 <= i && i <= messages.length;           
+            loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(messages[j]) != \dl_array2seq(message));
+            loop_invariant messages != null;
+            decreases messages.length - i;
+            assignable \strictly_nothing;
+            @*/
+			for( int i = 0; i < messages.length; i++ ) {
+				if( MessageTools.equal(messages[i], message) )
 					return true;
 			}
 			return false;
 		}
 	}
-	
+
 }

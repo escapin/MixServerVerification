@@ -7,12 +7,18 @@ public class MessageTools {
 	  @ requires message != null;
 	  @ ensures (\fresh(\result) && \dl_array2seq(\result) == \dl_array2seq(\old(message)));	  
 	  @ assignable \nothing;
+	  @
+	  @ also
+	  @ public normal_behaviour
+	  @ requires message == null;
+	  @ ensures  \result == null;
+	  @ assignable \strictly_nothing;
 	  @*/
-    public static /*@helper @*/ byte[] copyOf(byte[] message) {
+    public static /*@helper nullable@*/ byte[] copyOf(byte[] /*@nullable@*/ message) {
         if (message==null) return null;
         byte[] copy = new byte[message.length];
         /*@ loop_invariant 0 <= i && i <= message.length
-          @ 		&& copy != null && copy != message && \fresh(copy)
+          @ 		&& copy != null && copy != message && \fresh(copy) && message != null
           @ 		&& copy.length == message.length
           @ 		&& (\forall int j; 0 <= j && j < i; copy[j] == message[j]);
           @ assignable copy[*];
@@ -27,8 +33,14 @@ public class MessageTools {
 	  @ requires a != null && b!= null;
 	  @ ensures \result <==> \dl_array2seq(a) == \dl_array2seq(b);	  
 	  @ assignable \strictly_nothing;
+	  @
+	  @ also
+	  @ public normal_behaviour
+	  @ requires a == null || b == null;
+	  @ ensures \result == false;
+	  @ assignable \strictly_nothing;
 	  @*/
-    public static/*@helper@*/ boolean equal(byte[] a, byte[] b) {
+    public static/*@helper@*/ boolean equal(byte[] /*@nullable@*/ a, byte[]/*@nullable@*/ b) {
         if (a != null && b != null) {
             if( a.length != b.length ) return false;
             /*@ loop_invariant 0 <= i && i <= a.length
@@ -94,7 +106,7 @@ public class MessageTools {
          loop_invariant 0 <= i && i <= len.length;
          loop_invariant j == i;
          loop_invariant (\forall int k; 0 <= k && k < i; len[k] == out[k]);
-         loop_invariant isByteArrOfInt(len, m1.length);
+         loop_invariant \dl_array2seq(len) == \dl_int2seq(m1.length);
          loop_invariant len.length == 4 && out.length == m1.length + m2.length + 4;
          assignable out[0..3];
          decreases len.length - i;
@@ -104,8 +116,8 @@ public class MessageTools {
         loop_invariant 0 <= i && i <= m1.length;
         loop_invariant j == i + 4;
         loop_invariant (\forall int k; 0 <= k && k < i; m1[k] == out[k+4]);
-        loop_invariant isByteArrOfInt(len, m1.length);
-        loop_invariant isByteArrOfInt(out, m1.length);
+        loop_invariant (\forall int k; 0 <= k && k < 4; len[k] == out[k]);
+        loop_invariant \dl_array2seq(len) == \dl_int2seq(m1.length);        
         loop_invariant len.length == 4 && out.length == m1.length + m2.length + 4;
         assignable out[4..3+m1.length];
         decreases m1.length - i;
@@ -115,9 +127,9 @@ public class MessageTools {
         loop_invariant 0 <= i && i <= m2.length;
         loop_invariant j == i + 4 + m1.length;
         loop_invariant (\forall int k; 0 <= k && k < i; m2[k] == out[k+4+m1.length]);
-        loop_invariant isByteArrOfInt(len, m1.length);
-        loop_invariant isByteArrOfInt(out, m1.length);
-        loop_invariant isIdentical(out, m1, 4);
+        loop_invariant \dl_array2seq(len) == \dl_int2seq(m1.length);
+        loop_invariant (\forall int k; 0 <= k && k < 4; len[k] == out[k]);
+        loop_invariant (\forall int k; 0 <= k && k < m1.length; out[k+4] == m1[k]);        
         loop_invariant len.length == 4 && out.length == m1.length + m2.length + 4;
         assignable out[4+m1.length..out.length];
         decreases m2.length - i;
@@ -240,11 +252,8 @@ public class MessageTools {
      */
     /*@ public normal_behaviour
       @ requires b.length >= 4;
-      @ ensures \result == 256 * 256 * 256 * unsign(b[0]) + 256 * 256 * unsign(b[1])+ 256 * unsign(b[2])+ unsign(b[3]);
-      @ also
-      @ public normal_behaviour
-      @ requires b.length >= 4;
-      @ ensures \result == byteArrayToInt(b);
+      @ ensures \result == \dl_seq2int(\dl_array2seq(b));
+      @ assignable \strictly_nothing;
       @*/
     public static final /*@ pure helper @*/ int byteArrayToInt(byte [] b) {
     	int result = 0;
@@ -266,7 +275,7 @@ public class MessageTools {
      */      
     /*@
       public normal_behaviour
-      ensures \result == (b < 0 ? b + 256 : b);
+      ensures \result == \dl_unsign(b);
       assignable \strictly_nothing;
      @*/
     public static final int /*@pure helper@*/ unsign(byte b){
