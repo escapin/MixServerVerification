@@ -190,8 +190,7 @@ public class MessageTools {
     /*@ public normal_behaviour
         requires in.length >= 4 + byteArrayToInt(in);
         requires byteArrayToInt(in) >= 0;
-        ensures isIdentical(in,\result,4);
-        ensures \result.length == byteArrayToInt(in);
+        ensures \dl_array2seq(\result) == \dl_mFirst(\dl_array2seq(in));        
         ensures \fresh(\result);
     @*/
     public static /*@ pure helper @*/ byte[] first(byte[] in) {
@@ -220,8 +219,7 @@ public class MessageTools {
     /*@ public normal_behaviour      
       requires in.length >= 4 + byteArrayToInt(in);
       requires byteArrayToInt(in) >= 0;
-      ensures isIdentical(in,\result,4 + byteArrayToInt(in));
-      ensures \result.length == in.length -byteArrayToInt(in)-4;
+      ensures \dl_array2seq(\result) == \dl_mSecond(\dl_array2seq(in));
       ensures \fresh(\result);
       @*/
     public static /*@ pure helper @*/ byte[] second(byte[] in) {
@@ -232,7 +230,7 @@ public class MessageTools {
         	byte[] m2 = new byte[in.length - len - 4];
             /*@ loop_invariant 0 <= i && i <= in.length - len - 4 && \fresh(m2)
               @ 		&& m2 != len && m2.length == in.length - len - 4
-              @ 		&& len <= in.length - 4
+              @ 		&& len <= in.length - 4 && len == byteArrayToInt(in)
               @ 		&& (\forall int j; 0 <= j && j < i; m2[j] == in[j + 4 + len]);
               @ assignable m2[*];
               @ decreases in.length - len - 4 - i;
