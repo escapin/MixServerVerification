@@ -64,6 +64,11 @@ public class MixServer
 	//@ public ghost instance byte[][] a;
 	// this is the value of entr_arr after the call to ConservativeExtenson.getRandomMessages
 	//@ public ghost instance byte[][] b;
+	
+	//@ public ghost byte[][] sorted;
+	
+	//@ public ghost byte[] concatenated;
+	
 	/**
 	 * Here are some model methods which are used as lemmas.
 	 */
@@ -298,22 +303,47 @@ public class MixServer
 		}
 		return res;
 	}
-
+    /*@ public normal_behaviour
+        requires \dl_array2seq(ballots) == \dl_arrConcat(0, \dl_array2seq2d(sorted));
+        ensures  \dl_array2seq2d(\result) == \dl_array2seq2d(sorted);
+        assignable \nothing;
+    @*/
 	public byte[][] split(byte [] ballots){
 		byte[][] messages = new byte[0][];
 		byte[] bal  = ballots;
+		
+		/*@ loop_invariant \dl_array2seq2d(messages) == \dl_seqSub(\dl_array2seq2d(sorted),0, messages.length);
+		    loop_invariant \fresh(messages);
+		    loop_invariant \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
+		    loop_invariant \dl_array2seq(ballots) == \dl_arrConcat(0, \dl_array2seq2d(sorted));
+		    loop_invariant bal != null;
+		    assignable messages, bal;
+		    decreases sorted.length - messages.length;
+		@*/
 		while(bal.length >= 0){
 			byte[] first = MessageTools.first(bal);
 			bal = MessageTools.second(bal);
-			messages = addEntry(messages, first);
+			messages = addEntry(messages, first);			
 		}
 		return messages;
 	}
-
+    
+	/*@public normal_behaviour
+	   ensures \dl_array2seq2d(\result) == \dl_seqConcat(\dl_array2seq2d(messages), \dl_seqSingleton(\dl_array2seq(m)));
+	   ensures \fresh(\result); 
+	   assignable \nothing;
+	@*/
 	public byte[][] addEntry(byte[][] messages, byte[] m){
 
 		byte[][] res = new byte[messages.length+1][];
+		
 		try{
+			/*@ loop_invariant 0 <= i && i <= messages.length;
+		        loop_invariant res.length == messages.length + 1;
+		        loop_invariant \fresh(res);
+		        assignable res[*];
+		        decreases messages.length - i; 
+		    @*/
 			for(int i = 0 ; i <messages.length; i++){
 				res[i] = messages[i];
 			}
