@@ -2,10 +2,10 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Mon Nov 28 17:26:10 CET 2016
+#Sun Dec 04 16:32:06 CET 2016
 [StrategyProperty]VBT_PHASE=VBT_SYM_EX
 [SMTSettings]useUninterpretedMultiplication=true
-[SMTSettings]SelectedTaclets=
+[SMTSettings]SelectedTaclets=\\#begexpand_inByte\\#end,\\#begexpand_inChar\\#end,\\#begexpand_inShort\\#end,\\#begexpand_inInt\\#end,\\#begexpand_inLong\\#end
 [StrategyProperty]METHOD_OPTIONS_KEY=METHOD_CONTRACT
 [StrategyProperty]USER_TACLETS_OPTIONS_KEY3=USER_TACLETS_OFF
 [StrategyProperty]SYMBOLIC_EXECUTION_ALIAS_CHECK_OPTIONS_KEY=SYMBOLIC_EXECUTION_ALIAS_CHECK_NEVER
@@ -24,7 +24,7 @@
 [Strategy]Timeout=-1
 [Strategy]MaximumNumberOfAutomaticApplications=5000
 [SMTSettings]integersMaximum=2147483645
-[Choice]DefaultChoices=assertions-assertions\\:on , initialisation-initialisation\\:disableStaticInitialisation , intRules-intRules\\:arithmeticSemanticsIgnoringOF , programRules-programRules\\:Java , runtimeExceptions-runtimeExceptions\\:allow , JavaCard-JavaCard\\:on , Strings-Strings\\:on , modelFields-modelFields\\:treatAsAxiom , bigint-bigint\\:on , sequences-sequences\\:on , moreSeqRules-moreSeqRules\\:on , reach-reach\\:on , integerSimplificationRules-integerSimplificationRules\\:full , wdOperator-wdOperator\\:L , wdChecks-wdChecks\\:off , permissions-permissions\\:off , joinGenerateIsWeakeningGoal-joinGenerateIsWeakeningGoal\\:off
+[Choice]DefaultChoices=assertions-assertions\\:on , initialisation-initialisation\\:disableStaticInitialisation , intRules-intRules\\:arithmeticSemanticsIgnoringOF , programRules-programRules\\:Java , runtimeExceptions-runtimeExceptions\\:allow , JavaCard-JavaCard\\:on , Strings-Strings\\:on , modelFields-modelFields\\:treatAsAxiom , bigint-bigint\\:on , sequences-sequences\\:on , moreSeqRules-moreSeqRules\\:on , reach-reach\\:on , integerSimplificationRules-integerSimplificationRules\\:full , permissions-permissions\\:off , wdOperator-wdOperator\\:L , wdChecks-wdChecks\\:off , joinGenerateIsWeakeningGoal-joinGenerateIsWeakeningGoal\\:off
 [SMTSettings]useConstantsForBigOrSmallIntegers=true
 [StrategyProperty]STOPMODE_OPTIONS_KEY=STOPMODE_DEFAULT
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
@@ -42,16 +42,16 @@
 \javaSource "../src";
 
 \proofObligation "#Proof Obligation Settings
-#Mon Nov 28 17:26:10 CET 2016
+#Sun Dec 04 16:32:06 CET 2016
 name=verif.selectvoting.system.core.MixServer[verif.selectvoting.system.core.MixServer\\:\\:addEntry([[B,[B)].JML normal_behavior operation contract.0
 contract=verif.selectvoting.system.core.MixServer[verif.selectvoting.system.core.MixServer\\:\\:addEntry([[B,[B)].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 ";
 
 \proof {
-(keyLog "0" (keyUser "mihai" ) (keyVersion "09f735064ff7095c3fc50fbed0305eab50b24aa5"))
+(keyLog "0" (keyUser "mihai" ) (keyVersion "467f4054054b19a48d0d06e2e8bae6f9716b2959"))
 
-(autoModeTime "6023")
+(autoModeTime "2619")
 
 (branch "dummy ID"
 (builtin "One Step Simplification" (formula "1") (newnames "messages,m,self,result,exc,heapAtPre,o,f"))
@@ -851,28 +851,24 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                 (rule "emptyModality" (formula "51") (term "1"))
                                                 (builtin "One Step Simplification" (formula "51") (ifInst ""  (formula "37")) (ifInst ""  (formula "38")) (ifInst ""  (formula "38")))
                                                 (rule "eqSymm" (formula "51") (term "1,0,0,1"))
-                                                (rule "dismissNonSelectedField" (formula "51") (term "2,0,1,0,0,0"))
                                                 (rule "dismissNonSelectedField" (formula "51") (term "0,0,1,0,1,1,0"))
                                                 (rule "dismissNonSelectedField" (formula "51") (term "2,0,1,0,0,0"))
                                                 (rule "dismissNonSelectedField" (formula "51") (term "0,0,1,0,1,1,0"))
                                                 (rule "dismissNonSelectedField" (formula "51") (term "2,0,1,0,0,0"))
                                                 (rule "dismissNonSelectedField" (formula "51") (term "0,0,1,0,1,1,0"))
-                                                (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,0,0,0,0,1,0") (ifseqformula "5"))
-                                                (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,0,0,0,0,1,0"))
-                                                (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,0,0,0,0,1,0"))
-                                                (rule "add_zero_left" (formula "51") (term "2,1,0,0,0,0,0,0,0,0,1,0"))
-                                                (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,0,0,1,0,1,1,0") (ifseqformula "5"))
-                                                (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,0,0,1,0,1,1,0"))
-                                                (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,0,0,1,0,1,1,0"))
-                                                (rule "add_zero_left" (formula "51") (term "2,1,0,0,0,0,0,0,1,0,1,1,0"))
-                                                (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,2,0,1,0,0,0") (ifseqformula "5"))
-                                                (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,2,0,1,0,0,0"))
-                                                (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,2,0,1,0,0,0"))
-                                                (rule "add_zero_left" (formula "51") (term "2,1,0,0,0,0,2,0,1,0,0,0"))
+                                                (rule "dismissNonSelectedField" (formula "51") (term "2,0,1,0,0,0"))
                                                 (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,0,0,0,0,1,0,0,1") (ifseqformula "5"))
                                                 (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,0,0,0,0,1,0,0,1"))
                                                 (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,0,0,0,0,1,0,0,1"))
                                                 (rule "add_zero_left" (formula "51") (term "2,1,0,0,0,0,0,0,0,0,1,0,0,1"))
+                                                (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,2,0,1,0,0,0") (ifseqformula "5"))
+                                                (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,2,0,1,0,0,0"))
+                                                (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,2,0,1,0,0,0"))
+                                                (rule "add_zero_left" (formula "51") (term "2,1,0,0,0,0,2,0,1,0,0,0"))
+                                                (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,0,0,1,0,1,1,0") (ifseqformula "5"))
+                                                (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,0,0,1,0,1,1,0"))
+                                                (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,0,0,1,0,1,1,0"))
+                                                (rule "add_zero_left" (formula "51") (term "2,1,0,0,0,0,0,0,1,0,1,1,0"))
                                                 (rule "applyEq" (formula "2") (term "0") (ifseqformula "5"))
                                                 (rule "inEqSimp_homoInEq0" (formula "2"))
                                                 (rule "polySimp_mulComm0" (formula "2") (term "1,0"))
@@ -880,12 +876,12 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                 (rule "mul_literals" (formula "2") (term "0,1,0"))
                                                 (rule "polySimp_addAssoc" (formula "2") (term "0"))
                                                 (rule "polySimp_addComm0" (formula "2") (term "0,0"))
-                                                (rule "applyEq" (formula "4") (term "0") (ifseqformula "5"))
                                                 (rule "applyEq" (formula "51") (term "1,1,0,0,1,1,0") (ifseqformula "5"))
-                                                (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,0,0,0,0,0,0,0") (ifseqformula "5"))
-                                                (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,0,0,0,0,0,0,0"))
-                                                (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,0,0,0,0,0,0,0"))
-                                                (rule "add_zero_left" (formula "51") (term "2,1,0,0,0,0,0,0,0,0,0,0,0"))
+                                                (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,0,0,0,0,1,0") (ifseqformula "5"))
+                                                (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,0,0,0,0,1,0"))
+                                                (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,0,0,0,0,1,0"))
+                                                (rule "add_zero_left" (formula "51") (term "2,1,0,0,0,0,0,0,0,0,1,0"))
+                                                (rule "applyEq" (formula "4") (term "0") (ifseqformula "5"))
                                                 (rule "applyEq" (formula "51") (term "1,2,1,0,0,0,0,0,0,0,1,0,0") (ifseqformula "5"))
                                                 (rule "polySimp_addAssoc" (formula "51") (term "2,1,0,0,0,0,0,0,0,1,0,0"))
                                                 (rule "add_literals" (formula "51") (term "0,2,1,0,0,0,0,0,0,0,1,0,0"))
@@ -895,21 +891,21 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                                 (rule "polySimp_elimOne" (formula "2") (term "0"))
                                                 (rule "inEqSimp_sepPosMonomial1" (formula "4"))
                                                 (rule "mul_literals" (formula "4") (term "1"))
-                                                (rule "inEqSimp_contradInEq1" (formula "2") (ifseqformula "3"))
-                                                (rule "andLeft" (formula "2"))
-                                                (rule "inEqSimp_homoInEq1" (formula "2"))
-                                                (rule "polySimp_mulComm0" (formula "2") (term "1,0"))
-                                                (rule "polySimp_rightDist" (formula "2") (term "1,0"))
-                                                (rule "mul_literals" (formula "2") (term "0,1,0"))
-                                                (rule "polySimp_addAssoc" (formula "2") (term "0"))
-                                                (rule "polySimp_addComm1" (formula "2") (term "0,0"))
-                                                (rule "add_literals" (formula "2") (term "0,0,0"))
-                                                (rule "polySimp_pullOutFactor1b" (formula "2") (term "0"))
-                                                (rule "add_literals" (formula "2") (term "1,1,0"))
-                                                (rule "times_zero_1" (formula "2") (term "1,0"))
-                                                (rule "add_zero_right" (formula "2") (term "0"))
-                                                (rule "leq_literals" (formula "2"))
-                                                (rule "closeFalse" (formula "2"))
+                                                (rule "inEqSimp_contradInEq0" (formula "3") (ifseqformula "2"))
+                                                (rule "andLeft" (formula "3"))
+                                                (rule "inEqSimp_homoInEq1" (formula "3"))
+                                                (rule "polySimp_mulComm0" (formula "3") (term "1,0"))
+                                                (rule "polySimp_rightDist" (formula "3") (term "1,0"))
+                                                (rule "mul_literals" (formula "3") (term "0,1,0"))
+                                                (rule "polySimp_addAssoc" (formula "3") (term "0"))
+                                                (rule "polySimp_addComm1" (formula "3") (term "0,0"))
+                                                (rule "add_literals" (formula "3") (term "0,0,0"))
+                                                (rule "polySimp_pullOutFactor1b" (formula "3") (term "0"))
+                                                (rule "add_literals" (formula "3") (term "1,1,0"))
+                                                (rule "times_zero_1" (formula "3") (term "1,0"))
+                                                (rule "add_zero_right" (formula "3") (term "0"))
+                                                (rule "leq_literals" (formula "3"))
+                                                (rule "closeFalse" (formula "3"))
                                              )
                                              (branch "ClassCastException (!(thrownExc instanceof Throwable))"
                                                 (builtin "One Step Simplification" (formula "52"))

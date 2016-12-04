@@ -315,20 +315,41 @@ public class MixServer
 		
 		/*@ loop_invariant (\forall int i; 0 <= i && i < messages.length; \dl_array2seq(messages[i]) == \dl_array2seq(sorted[i]));
 		    loop_invariant \fresh(messages);
-		    loop_invariant \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));		    
+		    loop_invariant \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
+		    loop_invariant messages.length <= sorted.length;		    
 		    loop_invariant bal != null;
-		    assignable messages, bal;		    
+		    assignable messages, bal;		    		    
 		@*/
-		while(bal.length >= 0){
-			byte[] first = MessageTools.first(bal);
-			bal = MessageTools.second(bal);
-			messages = addEntry(messages, first);			
+		while(bal.length >= 4){
+			messages = getFirst(messages, bal);
+			bal = MessageTools.second(bal);			
+			
 		}
 		return messages;
 	}
+
+
+	/*@public normal_behaviour
+	   requires bal.length >= 4 + \dl_seq2int(\dl_array2seq(bal));
+       requires \dl_seq2int(\dl_array2seq(bal)) >= 0;
+       requires \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
+       requires (\forall int i; 0 <= i && i < messages.length; \dl_array2seq(messages[i]) == \dl_array2seq(sorted[i]));
+       requires messages.length <= sorted.length;
+       ensures (\forall int i; 0 <= i && i < \result.length; \dl_array2seq(\result[i]) == \dl_array2seq(sorted[i]));
+       ensures \result.length == messages.length + 1;
+       assignable \nothing;  
+	@*/
+	private byte[][] getFirst(byte[][] messages, byte[] bal) {
+		byte[] first = MessageTools.first(bal);	
+		messages = addEntry(messages, first);
+		return messages;
+	}
+	
+	
+	
     
 	/*@public normal_behaviour
-	   ensures \dl_array2seq2d(\result) == \dl_seqConcat(\dl_array2seq2d(messages), \dl_seqSingleton(\dl_array2seq(m)));
+	   ensures \dl_array2seq2d(\result) == \dl_seqConcat(\old(\dl_array2seq2d(messages)), \dl_seqSingleton(\dl_array2seq(m)));
 	   ensures \fresh(\result); 
 	   assignable \nothing;
 	@*/
