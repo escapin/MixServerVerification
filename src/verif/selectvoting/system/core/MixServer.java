@@ -337,6 +337,7 @@ public class MixServer
        requires messages.length <= sorted.length;
        ensures (\forall int i; 0 <= i && i < \result.length; \dl_array2seq(\result[i]) == \dl_array2seq(sorted[i]));
        ensures \result.length == messages.length + 1;
+       ensures \fresh(\result);
        assignable \nothing;  
 	@*/
 	private byte[][] getFirst(byte[][] messages, byte[] bal) {

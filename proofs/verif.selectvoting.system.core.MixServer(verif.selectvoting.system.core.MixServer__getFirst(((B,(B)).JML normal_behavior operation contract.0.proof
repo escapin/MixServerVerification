@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Sun Dec 04 18:17:18 CET 2016
+#Sun Dec 04 18:37:21 CET 2016
 [StrategyProperty]VBT_PHASE=VBT_SYM_EX
 [SMTSettings]useUninterpretedMultiplication=true
 [SMTSettings]SelectedTaclets=\\#begexpand_inByte\\#end,\\#begexpand_inChar\\#end,\\#begexpand_inShort\\#end,\\#begexpand_inInt\\#end,\\#begexpand_inLong\\#end
@@ -42,7 +42,7 @@
 \javaSource "../src";
 
 \proofObligation "#Proof Obligation Settings
-#Sun Dec 04 18:17:18 CET 2016
+#Sun Dec 04 18:37:21 CET 2016
 name=verif.selectvoting.system.core.MixServer[verif.selectvoting.system.core.MixServer\\:\\:getFirst([[B,[B)].JML normal_behavior operation contract.0
 contract=verif.selectvoting.system.core.MixServer[verif.selectvoting.system.core.MixServer\\:\\:getFirst([[B,[B)].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
@@ -54,8 +54,9 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (keyLog "2" (keyUser "mihai" ) (keyVersion "467f4054054b19a48d0d06e2e8bae6f9716b2959"))
 (keyLog "3" (keyUser "mihai" ) (keyVersion "467f4054054b19a48d0d06e2e8bae6f9716b2959"))
 (keyLog "4" (keyUser "mihai" ) (keyVersion "467f4054054b19a48d0d06e2e8bae6f9716b2959"))
+(keyLog "5" (keyUser "mihai" ) (keyVersion "467f4054054b19a48d0d06e2e8bae6f9716b2959"))
 
-(autoModeTime "331765")
+(autoModeTime "331821")
 
 (branch "dummy ID"
 (rule "impRight" (formula "1") (newnames "messages,bal,self,result,exc,heapAtPre,o,f") (userinteraction))
@@ -11386,12 +11387,12 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                         (rule "add_zero_right" (formula "26") (term "0,2,1,0") (userinteraction))
                         (rule "getOfSeqConcat" (formula "26") (term "1") (userinteraction))
                         (rule "ifthenelse_split" (formula "26") (term "1") (userinteraction))
-                        (branch
+                        (branch "i_5 < array2seq2d(heapAfter_first, messages).length TRUE"
                            (rule "cut" (inst "cutFormula=  array2seq(heap,
             byte[]::select(heap, messages, arr(i_5)))
 = any::seqGet(array2seq2d(heapAfter_first, messages),
               i_5)") (userinteraction))
-                           (branch
+                           (branch "CUT: array2seq(heap, messages[i_5]) = array2seq2d(heapAfter_first, messages)[i_5] TRUE"
                               (rule "cut" (inst "cutFormula=  array2seq(heapAfter_addEntry,
             byte[]::select(heapAfter_addEntry,
                            byte[][]::select(heapAfter_addEntry,
@@ -11404,7 +11405,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                             self,
                                             verif.selectvoting.system.core.MixServer::$sorted),
                            arr(i_5)))") (userinteraction))
-                              (branch
+                              (branch "CUT: array2seq(heapAfter_addEntry, self.sorted[i_5]@heapAfter_addEntry) = array2seq(heap, self.sorted[i_5]) TRUE"
                                  (rule "applyEq" (formula "40") (term "1") (ifseqformula "1") (userinteraction))
                                  (rule "applyEq" (formula "40") (term "0") (ifseqformula "29") (userinteraction))
                                  (rule "applyEqReverse" (formula "40") (term "0") (ifseqformula "2") (userinteraction))
@@ -12763,7 +12764,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                                        (rule "closeFalse" (formula "5"))
                                     )
                                  )
-                                 (branch
+                                 (branch "Case 2"
                                     (rule "allRight" (formula "33") (inst "sk=iv_9") (userinteraction))
                                     (rule "impRight" (formula "33") (userinteraction))
                                     (rule "getOfArray2seq" (formula "34") (term "0") (userinteraction))
@@ -19015,8 +19016,60 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
                )
             )
             (branch "Case 2"
-               (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "7")))
-               (rule "closeFalse" (formula "6"))
+               (builtin "One Step Simplification" (formula "6"))
+               (builtin "One Step Simplification" (formula "4"))
+               (builtin "One Step Simplification" (formula "2"))
+               (rule "andLeft" (formula "6"))
+               (rule "selectCreatedOfAnonAsFormulaEQ" (formula "7") (term "1,1,0") (ifseqformula "6"))
+               (rule "andLeft" (formula "4"))
+               (rule "selectCreatedOfAnonAsFormulaEQ" (formula "5") (term "1,1,0") (ifseqformula "4"))
+               (rule "selectCreatedOfAnonAsFormulaEQ" (formula "8") (term "0,1,1,0") (ifseqformula "4"))
+               (rule "selectCreatedOfAnonAsFormulaEQ" (formula "8") (term "0,0,0,1,0,1") (ifseqformula "4"))
+               (rule "andLeft" (formula "2"))
+               (rule "andLeft" (formula "6"))
+               (rule "andLeft" (formula "10"))
+               (rule "andLeft" (formula "3"))
+               (rule "andLeft" (formula "2"))
+               (rule "andLeft" (formula "8"))
+               (rule "andLeft" (formula "10"))
+               (rule "andLeft" (formula "13"))
+               (rule "andLeft" (formula "15"))
+               (rule "andLeft" (formula "5"))
+               (rule "andLeft" (formula "2"))
+               (rule "andLeft" (formula "12"))
+               (rule "andLeft" (formula "18"))
+               (rule "andLeft" (formula "7"))
+               (rule "andLeft" (formula "3"))
+               (rule "andLeft" (formula "2"))
+               (rule "andLeft" (formula "16"))
+               (rule "andLeft" (formula "23"))
+               (rule "andLeft" (formula "10"))
+               (rule "andLeft" (formula "2"))
+               (rule "notLeft" (formula "19"))
+               (rule "notLeft" (formula "18"))
+               (rule "andLeft" (formula "24"))
+               (rule "andLeft" (formula "23"))
+               (rule "andLeft" (formula "12"))
+               (rule "andLeft" (formula "2"))
+               (rule "notLeft" (formula "26"))
+               (rule "notLeft" (formula "25"))
+               (rule "andLeft" (formula "14"))
+               (rule "notLeft" (formula "3"))
+               (rule "orRight" (formula "28"))
+               (rule "andLeft" (formula "14"))
+               (rule "notLeft" (formula "15"))
+               (rule "eqSymm" (formula "24"))
+               (rule "eqSymm" (formula "10"))
+               (rule "eqSymm" (formula "11") (term "1,0"))
+               (rule "replace_known_right" (formula "6") (term "0") (ifseqformula "27"))
+               (builtin "One Step Simplification" (formula "6"))
+               (rule "replace_known_right" (formula "18") (term "0") (ifseqformula "33"))
+               (builtin "One Step Simplification" (formula "18") (ifInst ""  (formula "32")))
+               (rule "replace_known_right" (formula "23") (term "0") (ifseqformula "31"))
+               (builtin "One Step Simplification" (formula "23") (ifInst ""  (formula "29")) (ifInst ""  (formula "30")))
+               (rule "replace_known_right" (formula "34") (term "0,1,0") (ifseqformula "31"))
+               (builtin "One Step Simplification" (formula "34") (ifInst ""  (formula "29")) (ifInst ""  (formula "25")) (ifInst ""  (formula "26")))
+               (rule "closeTrue" (formula "34"))
             )
          )
          (branch "CUT: result_1.length = javaAddInt(messages.length, 1) FALSE"
