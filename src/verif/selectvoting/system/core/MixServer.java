@@ -303,11 +303,12 @@ public class MixServer
 		}
 		return res;
 	}
-    /*@ public normal_behaviour
+    /*@ public behaviour
         requires \dl_array2seq(ballots) == \dl_arrConcat(0, \dl_array2seq2d(sorted));
         ensures  \dl_array2seq2d(\result) == \dl_array2seq2d(sorted);
-        assignable \nothing;  
-        diverges true;      
+        ensures  \fresh(\result);
+        assignable \nothing;
+        diverges true;            
     @*/
 	public byte[][] split(byte [] ballots){
 		byte[][] messages = new byte[0][];
@@ -316,14 +317,13 @@ public class MixServer
 		/*@ loop_invariant (\forall int i; 0 <= i && i < messages.length; \dl_array2seq(messages[i]) == \dl_array2seq(sorted[i]));
 		    loop_invariant \fresh(messages);
 		    loop_invariant \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
-		    loop_invariant messages.length <= sorted.length;		    
-		    loop_invariant bal != null;
+		    loop_invariant messages.length <= sorted.length;	
+		    loop_invariant (\forall int i; 0 <= i && i < messages.length; messages[i] != null);		    	    
 		    assignable messages, bal;		    		    
 		@*/
 		while(bal.length >= 4){
 			messages = getFirst(messages, bal);
 			bal = MessageTools.second(bal);			
-			
 		}
 		return messages;
 	}
