@@ -303,27 +303,43 @@ public class MixServer
 		}
 		return res;
 	}
-    /*@ public behaviour
+    /*@ public normal_behaviour
         requires \dl_array2seq(ballots) == \dl_arrConcat(0, \dl_array2seq2d(sorted));
-        ensures  \dl_array2seq2d(\result) == \dl_array2seq2d(sorted);
+        ensures  \dl_array2seq2d(\result) == \dl_arrSplit(sorted.length, \dl_array2seq(ballots));
         ensures  \fresh(\result);
-        assignable \nothing;
-        diverges true;            
+        assignable \nothing;       
     @*/
 	public byte[][] split(byte [] ballots){
 		byte[][] messages = new byte[0][];
 		byte[] bal  = ballots;
 		
-		/*@ loop_invariant (\forall int i; 0 <= i && i < messages.length; \dl_array2seq(messages[i]) == \dl_array2seq(sorted[i]));
-		    loop_invariant \fresh(messages);
-		    loop_invariant \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
-		    loop_invariant messages.length <= sorted.length;	
-		    loop_invariant (\forall int i; 0 <= i && i < messages.length; messages[i] != null);		    	    
-		    assignable messages, bal;		    		    
+		/*@ loop_invariant \dl_array2seq2d(messages) == \dl_arrSplit(messages.length, \dl_array2seq(ballots));
+		    loop_invariant \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted)); 
+		    loop_invariant \dl_array2seq(ballots) == \dl_arrConcat(0, \dl_array2seq2d(sorted)); 
+		    loop_invariant messages.length <= sorted.length;
+		    loop_invariant \fresh(messages); 
+		    assignable messages, bal;		 
+		    decreases sorted.length - messages.length;   		    
 		@*/
 		while(bal.length >= 4){
-			messages = getFirst(messages, bal);
-			bal = MessageTools.second(bal);			
+			/*@ public normal_behaviour
+			    requires bal.length >= 4 + \dl_seq2int(\dl_array2seq(bal));
+                requires \dl_seq2int(\dl_array2seq(bal)) >= 0;
+                requires \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
+			    requires \dl_array2seq(messages) == \dl_arrSplit(messages.length, \dl_array2seq(ballots));
+			    requires messages.length < sorted.length;
+			    ensures \dl_array2seq(messages) == \dl_arrSplit(messages.length, \dl_array2seq(ballots));
+			    ensures \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
+			    ensures messages.length == \old(messages.length) + 1;
+			    ensures \fresh(messages);
+			    assignable messages, bal;
+			@*/
+			{
+			byte[] first = MessageTools.first(bal);	
+			messages = addEntry(messages, first);
+			bal = MessageTools.second(bal);	
+			}
+			
 		}
 		return messages;
 	}
