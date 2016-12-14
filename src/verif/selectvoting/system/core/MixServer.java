@@ -305,65 +305,88 @@ public class MixServer
 	}
     /*@ public normal_behaviour
         requires \dl_array2seq(ballots) == \dl_arrConcat(0, \dl_array2seq2d(sorted));
-        ensures  \dl_array2seq2d(\result) == \dl_arrSplit(sorted.length, \dl_array2seq(ballots));
+        requires n == sorted.length;
+        ensures  \dl_array2seq2d(\result) == \dl_array2seq2d(sorted);
         ensures  \fresh(\result);
         assignable \nothing;       
     @*/
-	public byte[][] split(byte [] ballots){
-		byte[][] messages = new byte[0][];
+	public byte[][] split(int n, byte [] ballots){
+		byte[][] messages = newArray(n);
 		byte[] bal  = ballots;
-		
-		/*@ loop_invariant \dl_array2seq2d(messages) == \dl_arrSplit(messages.length, \dl_array2seq(ballots));
-		    loop_invariant \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted)); 
-		    loop_invariant \dl_array2seq(ballots) == \dl_arrConcat(0, \dl_array2seq2d(sorted)); 
-		    loop_invariant messages.length <= sorted.length;
-		    loop_invariant \fresh(messages); 
-		    assignable messages, bal;		 
-		    decreases sorted.length - messages.length;   		    
+		int i = 0;
+		/*@ loop_invariant 0 <= i && i <= n && n == messages.length && n == sorted.length && messages != sorted;
+		    loop_invariant \dl_array2seq(bal) == \dl_arrConcat(i, \dl_array2seq2d(sorted)) && bal != null;
+		    loop_invariant messages != null && (\forall int k; 0 <= k && k < messages.length; messages[k] != null);		     		    
+		    loop_invariant \fresh(messages);
+		    loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(messages[j]) == \dl_array2seq(sorted[j])); 
+		    assignable messages[*], bal;		 
+		    decreases n - i;   		    
 		@*/
-		while(bal.length >= 4){
-			/*@ public normal_behaviour
-			    requires bal.length >= 4 + \dl_seq2int(\dl_array2seq(bal));
-                requires \dl_seq2int(\dl_array2seq(bal)) >= 0;
-                requires \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
-			    requires \dl_array2seq(messages) == \dl_arrSplit(messages.length, \dl_array2seq(ballots));
-			    requires messages.length < sorted.length;
-			    ensures \dl_array2seq(messages) == \dl_arrSplit(messages.length, \dl_array2seq(ballots));
-			    ensures \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
-			    ensures messages.length == \old(messages.length) + 1;
-			    ensures \fresh(messages);
-			    assignable messages, bal;
-			@*/
-			{
-			byte[] first = MessageTools.first(bal);	
-			messages = addEntry(messages, first);
-			bal = MessageTools.second(bal);	
-			}
-			
+		while(i < n){		
+			bal = split(messages, bal, i);
+			i++;
 		}
 		return messages;
 	}
 
 
-	/*@public normal_behaviour
-	   requires bal.length >= 4 + \dl_seq2int(\dl_array2seq(bal));
-       requires \dl_seq2int(\dl_array2seq(bal)) >= 0;
-       requires \dl_array2seq(bal) == \dl_arrConcat(messages.length, \dl_array2seq2d(sorted));
-       requires (\forall int i; 0 <= i && i < messages.length; \dl_array2seq(messages[i]) == \dl_array2seq(sorted[i]));
-       requires messages.length <= sorted.length;
-       ensures (\forall int i; 0 <= i && i < \result.length; \dl_array2seq(\result[i]) == \dl_array2seq(sorted[i]));
-       ensures \result.length == messages.length + 1;
-       ensures \fresh(\result);
-       assignable \nothing;  
-	@*/
-	private byte[][] getFirst(byte[][] messages, byte[] bal) {
-		byte[] first = MessageTools.first(bal);	
-		messages = addEntry(messages, first);
-		return messages;
+    /*@public normal_behaviour
+    requires bal.length >= 4 + \dl_seq2int(\dl_array2seq(bal));
+    requires \dl_seq2int(\dl_array2seq(bal)) >= 0; 
+    requires \dl_array2seq(bal) == \dl_arrConcat(i,\dl_array2seq2d(sorted));
+    requires 0 <= i && i < messages.length;
+    requires messages != sorted && messages.length == sorted.length;
+    requires (\forall int j; 0 <= j && j < i; \dl_array2seq(messages[j]) == \dl_array2seq(sorted[j]));
+    ensures (\forall int j; 0 <= j && j <= i; \dl_array2seq(messages[j]) == \dl_array2seq(sorted[j]));
+    ensures (\forall int k; 0 <= k && k < messages.length; messages[k] != null);
+    ensures \dl_array2seq(\result) == \dl_arrConcat(i+1, \dl_array2seq2d(sorted));
+    assignable messages[i];     
+    @*/
+	private byte[] split(byte[][] messages, byte[] bal, int i) {
+		getFirst(messages, bal, i);
+		bal = MessageTools.second(bal);
+		return bal;
 	}
-	
-	
-	
+	/*@public normal_behaviour
+	   requires n >= 0;
+	   ensures \fresh(\result);
+	   ensures \result.length == n;
+	   assignable \nothing;
+	@*/
+	private byte[][] newArray(int n){
+		byte[][] res = new byte[n][];
+		/*@ loop_invariant 0 <= i & i <= res.length;
+		    loop_invariant (\forall int j; 0 <=j && j < i; res[j] != null);
+		    loop_invariant res.length == n;
+		    loop_invariant \fresh(res);
+		    assignable res[*];
+		    decreases res.length - i;
+		@*/
+		for (int i = 0; i < res.length; i++) {
+			res[i] = new byte[0];
+		}
+		return res;
+	}
+
+
+    /*@public normal_behaviour
+       requires bal.length >= 4 + \dl_seq2int(\dl_array2seq(bal));
+       requires \dl_seq2int(\dl_array2seq(bal)) >= 0; 
+       requires \dl_array2seq(bal) == \dl_arrConcat(i,\dl_array2seq2d(sorted));
+       requires 0 <= i && i < messages.length;
+       requires (\forall int j; 0 <= j && j < i; \dl_array2seq(messages[j]) == \dl_array2seq(sorted[j]));
+       ensures (\forall int j; 0 <= j && j <= i; \dl_array2seq(messages[j]) == \dl_array2seq(sorted[j]));
+       ensures messages[i] != null;
+       assignable messages[i];     
+    @*/
+	private byte[] getFirst(byte[][] messages, byte[] bal, int i) {
+		byte[] first = MessageTools.first(bal);	
+		try{
+			messages[i] = MessageTools.copyOf(first);
+		}catch(Throwable t){}
+		
+		return bal;
+	}
     
 	/*@public normal_behaviour
 	   ensures \dl_array2seq2d(\result) == \dl_seqConcat(\old(\dl_array2seq2d(messages)), \dl_seqSingleton(\dl_array2seq(m)));
@@ -390,9 +413,24 @@ public class MixServer
 
 	}
 	
+	public int readLength(byte[] msg) throws ServerMisbehavior{
+		byte[] lenArray = MessageTools.first(msg);
+		int len = MessageTools.byteArrayToInt(lenArray);
+		if(len < 0){
+			throw new ServerMisbehavior(-4, "Negative length");
+		}
+		return len;
+	}
+	
+	public byte[] removeLength(byte[] msg){
+		return MessageTools.second(msg);
+	}
+	
 	
 	public byte[][] extractBallots(byte[] msg) throws ServerMisbehavior{
-		byte[][] res = split(msg);
+		int len = readLength(msg);
+		byte[] removedLen = removeLength(msg);
+		byte[][] res = split(len,removedLen);
 		checkBallots(res);
 		res = decryptBallots(res);
 		res = checkandRemoveElectionId(res);

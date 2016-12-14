@@ -228,6 +228,8 @@ public final class Setup {
 		Utils.sort(encrMsg, 0, encrMsg.length);
 		//4
 		byte[] asAMessage=Utils.concatenateMessageArray(encrMsg);
+		asAMessage=MessageTools.concatenate(MessageTools.intToByteArray(encrMsg.length), asAMessage);
+		
 		//5
 		// add election id, tag and sign
 		byte[] elID_ballots = MessageTools.concatenate(electionID, asAMessage);
