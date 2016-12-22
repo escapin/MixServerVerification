@@ -9,8 +9,11 @@ public class Verifier {
 	public Verifier(byte[] verifKey) {
 		this.verifKey = verifKey;
 	}
-
-	public boolean verify(byte[] signature, byte[] message) {
+    /*@ public normal_behaviour
+        ensures \result == \dl_mSigOf(\dl_array2seq(signature), \dl_array2seq(message));
+        assignable \nothing;
+    @*/
+	public /*@helper@*/boolean verify(byte[] signature, byte[] message) {
 		return CryptoLib.verify(message, signature, verifKey);
 	}
 

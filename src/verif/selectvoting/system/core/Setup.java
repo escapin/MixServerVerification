@@ -219,27 +219,10 @@ public final class Setup {
     private static void innerMain(Encryptor mixEncr, Signer precServSign, byte[] electionID, MixServer mixServ,
                                   int numberOfMessages, int lengthOfTheMessages, byte[][] chosen)
                     throws MalformedData, ServerMisbehavior {
- 	
-    	//1
-    	byte[][] idMsg = addIdToMsg(electionID, numberOfMessages, chosen);
-		//2
-		byte[][] encrMsg = encryptMsg(mixEncr, numberOfMessages, idMsg);			
-		//3
-		Utils.sort(encrMsg, 0, encrMsg.length);
-		//4
-		byte[] asAMessage=Utils.concatenateMessageArray(encrMsg);
-		asAMessage=MessageTools.concatenate(MessageTools.intToByteArray(encrMsg.length), asAMessage);
-		
-		//5
-		// add election id, tag and sign
-		byte[] elID_ballots = MessageTools.concatenate(electionID, asAMessage);
-		//6
-		byte[] input = MessageTools.concatenate(Tag.BALLOTS, elID_ballots);
-		//7
-		byte[] signatureOnInput = precServSign.sign(input);
+    	
+    	
+ 	    byte[] signedInput = prepareInput(mixEncr, precServSign, electionID, chosen);
 
-		byte[] signedInput = MessageTools.concatenate(input, signatureOnInput);
-		//8
 		
 		
 		// MODEL THE NETWORK
@@ -261,20 +244,60 @@ public final class Setup {
 		// send the output of the mix server over the network
 		Environment.untrustedOutputMessage(mixServerOutput);
     }
+	private static byte[] prepareInput(Encryptor mixEncr, Signer precServSign, byte[] electionID,
+			byte[][] chosen) {
+		//@set MixServer.chosen = chosen;
+    	byte[][] encrMsg = encryptMessages(mixEncr, electionID, chosen);			
+    	//@set MixServer.encrypted = encrMsg;
+		Utils.sort(encrMsg, 0, encrMsg.length);
+		/*@set MixServer.sorted = encrMsg;@*/
+		byte[] asAMessage = concatenateMessages(encrMsg);
+		//@set MixServer.concatenated = asAMessage;
+		byte[] signedInput = idTagSignMessages(precServSign, electionID, asAMessage);
+		
+		return signedInput;
+	}
+	private static byte[] idTagSignMessages(Signer precServSign, byte[] electionID, byte[] asAMessage) {
+		//5
+		// add election id, tag and sign
+		byte[] elID_ballots = MessageTools.concatenate(electionID, asAMessage);
+		
+		//6
+		byte[] input = MessageTools.concatenate(Tag.BALLOTS, elID_ballots);
+		//@set MixServer.unsigned = input;
+		byte[] signatureOnInput = precServSign.sign(input);
+
+		byte[] signedInput = MessageTools.concatenate(input, signatureOnInput);
+		return signedInput;
+	}
+	
+	private static byte[] concatenateMessages(byte[][] encrMsg) {
+		byte[] asAMessage=Utils.concatenateMessageArray(encrMsg);
+		asAMessage=MessageTools.concatenate(MessageTools.intToByteArray(encrMsg.length), asAMessage);
+		return asAMessage;
+	}
+	
+	private static byte[][] encryptMessages(Encryptor mixEncr, byte[] electionID, byte[][] chosen) {
+		//1
+    	byte[][] idMsg = addIdToMsg(electionID, chosen);
+		//2
+		byte[][] encrMsg = encryptMsg(mixEncr, idMsg);
+		return encrMsg;
+	}
     
     
-	private static byte[][] encryptMsg(Encryptor mixEncr, int numberOfMessages, byte[][] idMsg) {
-		byte[][] encrMsg = new byte[numberOfMessages][];
-		for(int i=0; i<numberOfMessages; ++i){
+	private static byte[][] encryptMsg(Encryptor mixEncr, byte[][] idMsg) {
+		byte[][] encrMsg = new byte[idMsg.length][];
+		for(int i=0; i<idMsg.length; ++i){
 			encrMsg[i] = mixEncr.encrypt(idMsg[i]);
 		}
 		return encrMsg;
 	}
 	
 	
-	private static byte[][] addIdToMsg(byte[] electionID, int numberOfMessages, byte[][] chosen) {
-		byte[][] idMsg = new byte[numberOfMessages][];
-    	for(int i=0; i<numberOfMessages; ++i){
+	private static byte[][] addIdToMsg(byte[] electionID, byte[][] chosen) {
+		byte[][] idMsg = new byte[chosen.length][];
+    	for(int i=0; i<chosen.length; ++i){
 			idMsg[i] = MessageTools.concatenate(electionID, chosen[i]);
 		}
 		return idMsg;

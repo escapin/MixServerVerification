@@ -65,9 +65,17 @@ public class MixServer
 	// this is the value of entr_arr after the call to ConservativeExtenson.getRandomMessages
 	//@ public ghost instance byte[][] b;
 	
+	
+	
+	//@ public ghost byte[][] chosen;
+	
+	//@ public ghost byte[][] encrypted;
+	
 	//@ public ghost byte[][] sorted;
 	
 	//@ public ghost byte[] concatenated;
+	
+	//@ public ghost byte[] unsigned;
 	
 	/**
 	 * Here are some model methods which are used as lemmas.
@@ -186,9 +194,7 @@ public class MixServer
 
 
 
-		byte[] ballotsAsAMessage = checkAndGetBallots(data);
-
-		byte[][] entr_arr = extractBallots(ballotsAsAMessage);
+		byte[][] entr_arr = reconstructBallotArray(data);
 
 
 		/**
@@ -234,6 +240,15 @@ public class MixServer
 		return signedResult;
 	}
 
+
+
+	private byte[][] reconstructBallotArray(byte[] data) throws MalformedData, ServerMisbehavior {
+		byte[] ballotsAsAMessage = checkAndGetBallots(data);
+
+		byte[][] entr_arr = extractBallots(ballotsAsAMessage);
+		return entr_arr;
+	}
+
 	/**
 	 * Returns a sorted copy of entr_arr.
 	 */
@@ -269,12 +284,19 @@ public class MixServer
 		}
 		return res;
 	}
-	
+	/*@ public behaviour
+	    assignable \nothing;
+	@*/
 	public void checkBallots(byte[][] msg) throws ServerMisbehavior{
+		/*@
+		loop_invariant true;
+		assignable \nothing;
+		decreases msg.length + 1 - i;
+		@*/
 		for (int i = 0; i < msg.length-1; i++) {
 			
-			byte[] first = null;
-			byte[] second = null;
+			byte[] first = new byte[0];
+			byte[] second = new byte[0];
 			
 			try{
 				first = msg[i];
@@ -412,7 +434,11 @@ public class MixServer
 		return res;
 
 	}
-	
+	/*@ public normal_behaviour
+        requires \dl_array2seq(msg) == \dl_mConcat(\dl_int2seq(sorted.length), \dl_arrConcat(0, \dl_array2seq2d(sorted)));
+        ensures \result == sorted.length;
+        assignable \nothing;
+    @*/
 	public int readLength(byte[] msg) throws ServerMisbehavior{
 		byte[] lenArray = MessageTools.first(msg);
 		int len = MessageTools.byteArrayToInt(lenArray);
@@ -421,19 +447,36 @@ public class MixServer
 		}
 		return len;
 	}
-	
+	/*@ public normal_behaviour
+	    requires \dl_array2seq(msg) == \dl_mConcat(\dl_int2seq(sorted.length), \dl_arrConcat(0, \dl_array2seq2d(sorted)));
+	    ensures \dl_array2seq(\result) == \dl_arrConcat(0, \dl_array2seq2d(sorted));
+	    ensures \fresh(\result);
+	    assignable \nothing;
+	@*/
 	public byte[] removeLength(byte[] msg){
 		return MessageTools.second(msg);
 	}
 	
 	
 	public byte[][] extractBallots(byte[] msg) throws ServerMisbehavior{
+		byte[][] res = splidAndCheck(msg);
+		res = decryptBallots(res);
+		res = checkandRemoveElectionId(res);
+		return res;
+	}
+
+
+    /*@ public behaviour
+        requires \dl_array2seq(msg) == \dl_mConcat(\dl_int2seq(sorted.length), \dl_arrConcat(0, \dl_array2seq2d(sorted)));
+        ensures  \dl_array2seq2d(\result) == \dl_array2seq2d(sorted);
+        ensures  \fresh(\result);
+        assignable \nothing;    
+    @*/
+	private byte[][] splidAndCheck(byte[] msg) throws ServerMisbehavior {
 		int len = readLength(msg);
 		byte[] removedLen = removeLength(msg);
 		byte[][] res = split(len,removedLen);
 		checkBallots(res);
-		res = decryptBallots(res);
-		res = checkandRemoveElectionId(res);
 		return res;
 	}
 
@@ -525,18 +568,17 @@ public class MixServer
 	  assignable \strictly_nothing; 
 	 @*/
 	private byte[] checkAndGetBallots(byte[] data) throws MalformedData {
-		// verify the signature of previous server
-		byte[] tagged_payload = MessageTools.first(data);
-		byte[] signature = MessageTools.second(data);
-		if (!precServVerif.verify(signature, tagged_payload))
-			throw new MalformedData(1, "Wrong signature");
+		byte[] tagged_payload = checkAndRemoveSignature(data);
 
-		// check the tag
-		byte[] tag = MessageTools.first(tagged_payload);
-		if (!MessageTools.equal(tag, Tag.BALLOTS))
-			throw new MalformedData(2, "Wrong tag");		
-		byte[] payload = MessageTools.second(tagged_payload);
+		byte[] payload = checkAndRemoveTag(tagged_payload);
 
+		byte[] ballotsAsAMessage = checkAndRemoveElectionId(payload);
+		return ballotsAsAMessage;
+	}
+
+
+
+	private byte[] checkAndRemoveElectionId(byte[] payload) throws MalformedData {
 		// check the election id 
 		byte[] el_id = MessageTools.first(payload);
 		if (!MessageTools.equal(el_id, electionID))
@@ -545,6 +587,65 @@ public class MixServer
 		// retrieve and process ballots (store decrypted entries in 'entries')
 		byte[] ballotsAsAMessage = MessageTools.second(payload);
 		return ballotsAsAMessage;
+	}
+
+
+
+	private byte[] checkAndRemoveTag(byte[] tagged_payload) throws MalformedData {
+		// check the tag
+		byte[] tag = MessageTools.first(tagged_payload);
+		if (!MessageTools.equal(tag, Tag.BALLOTS))
+			throw new MalformedData(2, "Wrong tag");		
+		byte[] payload = MessageTools.second(tagged_payload);
+		return payload;
+	}
+
+
+    /*@public behaviour
+       ensures \dl_mSigOf(\dl_mSecond(\dl_array2seq(data)), \dl_mFirst(\dl_array2seq(data)));
+       ensures \dl_array2seq(\result) == \dl_mFirst(\dl_array2seq(data));
+       assignable \nothing;
+    @*/
+	private byte[] checkAndRemoveSignature(byte[] data) throws MalformedData {
+		/*
+		 * We need data to be at least 4 bytes long (as a precondition for other methods).
+		 */
+		if(data.length < 4){
+			throw new MalformedData(5,"Message too short");
+		}
+		byte[] tagged_payload = getPayLoad(data);
+		byte[] signature = getSignature(data);
+		if (!precServVerif.verify(signature, tagged_payload))
+			throw new MalformedData(1, "Wrong signature");
+		return tagged_payload;
+	}
+
+
+	/*@public behaviour
+       requires data.length >= 4;
+       ensures \dl_array2seq(\result) == \dl_mSecond(\dl_array2seq(data));
+       assignable \nothing;
+    @*/
+	private byte[] getSignature(byte[] data) throws MalformedData {
+		byte[] signature = MessageTools.second(data);
+		if(signature.length == 0){
+			throw new MalformedData(5,"Message too short");
+		}
+		return signature;
+	}
+
+
+    /*@public behaviour
+       requires data.length >= 4;
+       ensures \dl_array2seq(\result) == \dl_mFirst(\dl_array2seq(data));
+       assignable \nothing;
+    @*/
+	private byte[] getPayLoad(byte[] data) throws MalformedData {
+		byte[] tagged_payload = MessageTools.first(data);
+		if(tagged_payload.length == 0){
+			throw new MalformedData(5,"Message too short");
+		}
+		return tagged_payload;
 	}
 
 

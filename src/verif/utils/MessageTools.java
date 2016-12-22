@@ -192,6 +192,13 @@ public class MessageTools {
         requires byteArrayToInt(in) >= 0;
         ensures \dl_array2seq(\result) == \dl_mFirst(\dl_array2seq(in));        
         ensures \fresh(\result);
+        
+        also
+        public normal_behaviour
+        requires in.length >= 4;
+        requires in.length < 4 + byteArrayToInt(in) || byteArrayToInt(in) < 0;
+        ensures \dl_array2seq(\result) == \dl_seqEmpty;
+        ensures \fresh(\result);
     @*/
     public static /*@ pure helper @*/ byte[] first(byte[] in) {
     	try{
@@ -221,6 +228,13 @@ public class MessageTools {
       requires byteArrayToInt(in) >= 0;
       ensures \dl_array2seq(\result) == \dl_mSecond(\dl_array2seq(in));
       ensures \fresh(\result);
+      
+       also
+        public normal_behaviour
+        requires in.length >= 4;
+        requires in.length < 4 + byteArrayToInt(in) || byteArrayToInt(in) < 0;
+        ensures \dl_array2seq(\result) == \dl_seqEmpty;
+        ensures \fresh(\result);
       @*/
     public static /*@ pure helper @*/ byte[] second(byte[] in) {
     	try{
