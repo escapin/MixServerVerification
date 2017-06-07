@@ -13,7 +13,7 @@ public class MixServer
 	private final Signer signer;
 	private final Decryptor decryptor;
 	private final Verifier precServVerif;
-	private final byte[] electionID;
+	private /*@spec_public@*/final byte[] electionID;
 	// private final int numberOfVoters;
 
 
@@ -577,26 +577,48 @@ public class MixServer
 	}
 
 
-
+	/*@public behaviour		
+    ensures \dl_mFirst(\dl_array2seq(payload)) == \dl_array2seq(this.electionID);
+    ensures \dl_array2seq(\result) == \dl_mSecond(\dl_array2seq(payload));
+    assignable \nothing;
+    @*/
 	private byte[] checkAndRemoveElectionId(byte[] payload) throws MalformedData {
+		/*
+		 * We need data to be at least 4 bytes long (as a precondition for other methods).
+		 */
+		if(payload.length < 4){
+			throw new MalformedData(5,"Message too short");
+		}
 		// check the election id 
-		byte[] el_id = MessageTools.first(payload);
+		byte[] el_id = getPayLoad(payload);//TODO: rename to getFirst
 		if (!MessageTools.equal(el_id, electionID))
 			throw new MalformedData(3, "Wrong election ID");
 
 		// retrieve and process ballots (store decrypted entries in 'entries')
-		byte[] ballotsAsAMessage = MessageTools.second(payload);
+		byte[] ballotsAsAMessage = getSignature(payload);//TODO: rename to getSecond
 		return ballotsAsAMessage;
 	}
 
 
-
+	/*@public behaviour
+	requires Tag.BALLOTS != null;	
+    ensures \dl_mFirst(\dl_array2seq(tagged_payload)) == \dl_array2seq(Tag.BALLOTS);
+    ensures \dl_array2seq(\result) == \dl_mSecond(\dl_array2seq(tagged_payload));
+    assignable \nothing;
+    @*/
 	private byte[] checkAndRemoveTag(byte[] tagged_payload) throws MalformedData {
-		// check the tag
-		byte[] tag = MessageTools.first(tagged_payload);
+		/*
+		 * We need data to be at least 4 bytes long (as a precondition for other methods).
+		 */
+		if(tagged_payload.length < 4){
+			throw new MalformedData(5,"Message too short");
+		}		
+		//get and check the tag
+		byte[] tag = getPayLoad(tagged_payload);//TODO: rename to getFirst
 		if (!MessageTools.equal(tag, Tag.BALLOTS))
-			throw new MalformedData(2, "Wrong tag");		
-		byte[] payload = MessageTools.second(tagged_payload);
+			throw new MalformedData(2, "Wrong tag");
+		//get the payload
+		byte[] payload = getSignature(tagged_payload);//TODO: rename to getSecond
 		return payload;
 	}
 
@@ -626,7 +648,7 @@ public class MixServer
        ensures \dl_array2seq(\result) == \dl_mSecond(\dl_array2seq(data));
        assignable \nothing;
     @*/
-	private byte[] getSignature(byte[] data) throws MalformedData {
+	private byte[] getSignature(byte[] data) throws MalformedData {//should be renamed to getSecond but it would break some proofs
 		byte[] signature = MessageTools.second(data);
 		if(signature.length == 0){
 			throw new MalformedData(5,"Message too short");
@@ -640,7 +662,7 @@ public class MixServer
        ensures \dl_array2seq(\result) == \dl_mFirst(\dl_array2seq(data));
        assignable \nothing;
     @*/
-	private byte[] getPayLoad(byte[] data) throws MalformedData {
+	private byte[] getPayLoad(byte[] data) throws MalformedData {//should be renamed to getFirst but it would break some proofs
 		byte[] tagged_payload = MessageTools.first(data);
 		if(tagged_payload.length == 0){
 			throw new MalformedData(5,"Message too short");
