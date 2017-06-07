@@ -215,7 +215,11 @@ public final class Setup {
     
     
 
-
+	/* @public normal_behaviour 
+	   requires asAMessage == mixServ.concatenated;
+	   ensures \dl_array2seq(mixServ.unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(this.electionID), \dl_array2seq(mixServ.concatenated)));
+	   assignable  mixServ.unsigned;
+	@*/
     private static void innerMain(Encryptor mixEncr, Signer precServSign, byte[] electionID, MixServer mixServ,
                                   int numberOfMessages, int lengthOfTheMessages, byte[][] chosen)
                     throws MalformedData, ServerMisbehavior {
@@ -257,11 +261,15 @@ public final class Setup {
 		
 		return signedInput;
 	}
+	/*@public normal_behaviour 
+	   requires asAMessage == MixServer.concatenated;
+	   ensures \dl_array2seq(MixServer.unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(electionID), \dl_array2seq(MixServer.concatenated)));
+	   assignable  verif.selectvoting.system.core.MixServer.unsigned;
+	@*/
 	private static byte[] idTagSignMessages(Signer precServSign, byte[] electionID, byte[] asAMessage) {
 		//5
 		// add election id, tag and sign
-		byte[] elID_ballots = MessageTools.concatenate(electionID, asAMessage);
-		
+		byte[] elID_ballots = MessageTools.concatenate(electionID, asAMessage);		
 		//6
 		byte[] input = MessageTools.concatenate(Tag.BALLOTS, elID_ballots);
 		//@set MixServer.unsigned = input;

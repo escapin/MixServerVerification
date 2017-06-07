@@ -38,15 +38,11 @@ final public class Signer {
 		return signature;
 	}
 
-	/*@ public behaviour
-	    requires message != null;
-	    requires log != null;
-	    requires log.messages != null;	    
-	    ensures \result != null ==> log.contains(message);
-	    diverges true;
-	    assignable log.messages, verif.environment.Environment.inputCounter, verif.environment.Environment.result;
+	/*@ public normal_behaviour	    	    
+	    ensures \dl_array2seq(\result) == \dl_mSign(\dl_array2seq(message));	
+	    assignable \nothing;    
 	  @*/
-	public /*@ helper nullable @*/  byte[]
+	public byte[]
 			sign(byte[] message) {
 		byte[] signature = getSignature(message);
 		if(signature == null){

@@ -67,15 +67,29 @@ public class MixServer
 	
 	
 	
-	//@ public ghost byte[][] chosen;
+	//@ public static ghost byte[][] chosen;
 	
-	//@ public ghost byte[][] encrypted;
+	//@ public static ghost byte[][] encrypted;
 	
-	//@ public ghost byte[][] sorted;
+	//@ public static ghost byte[][] sorted;
 	
-	//@ public ghost byte[] concatenated;
+	//@ public static ghost byte[] concatenated;
 	
-	//@ public ghost byte[] unsigned;
+	//@ public static ghost byte[] unsigned;
+	
+	
+	/**
+	 * Assumption:
+	 * There is only one object that has ever been signed, namely the one signed in the Setup.
+	 */
+	/*@
+	  requires (\exists \seq s; s == \dl_mSign(\dl_array2seq(a)));
+	  ensures  \dl_array2seq(a) == \dl_array2seq(unsigned);
+	  ensures \result;
+	  public model boolean uniqueSignedObject(byte[] a) {
+	    return true;
+	  } 
+	 @*/
 	
 	/**
 	 * Here are some model methods which are used as lemmas.
@@ -560,12 +574,11 @@ public class MixServer
 	 * We assume it doesn't change any fields.
 	 */
 	/*@
-	  public normal_behaviour
-	  requires ConservativeExtension.messages != null;
-	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	  
-	  ensures ConservativeExtension.messages != null;
-	  ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);	   
-	  assignable \strictly_nothing; 
+	  public behaviour
+	  requires Tag.BALLOTS != null;
+	  requires \dl_array2seq(unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(this.electionID), \dl_array2seq(concatenated)));
+	  ensures  \dl_array2seq(\result) == \dl_array2seq(concatenated);
+	  assignable \nothing; 
 	 @*/
 	private byte[] checkAndGetBallots(byte[] data) throws MalformedData {
 		byte[] tagged_payload = checkAndRemoveSignature(data);
