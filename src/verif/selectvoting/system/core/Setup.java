@@ -213,7 +213,7 @@ public final class Setup {
 		return chosen;
 	}
     
-    
+    //@public static ghost MixServer mix;
 
 	/* @public normal_behaviour 
 	   requires asAMessage == mixServ.concatenated;
@@ -250,36 +250,43 @@ public final class Setup {
     }
 	private static byte[] prepareInput(Encryptor mixEncr, Signer precServSign, byte[] electionID,
 			byte[][] chosen) {
-		//@set MixServer.chosen = chosen;
+		//@set mix.chosen = chosen;
     	byte[][] encrMsg = encryptMessages(mixEncr, electionID, chosen);			
-    	//@set MixServer.encrypted = encrMsg;
+    	//@set mix.encrypted = encrMsg;
 		Utils.sort(encrMsg, 0, encrMsg.length);
-		/*@set MixServer.sorted = encrMsg;@*/
+		/*@set mix.sorted = encrMsg;@*/
 		byte[] asAMessage = concatenateMessages(encrMsg);
-		//@set MixServer.concatenated = asAMessage;
+		//@set mix.concatenated = asAMessage;
 		byte[] signedInput = idTagSignMessages(precServSign, electionID, asAMessage);
 		
 		return signedInput;
 	}
 	/*@public normal_behaviour 
-	   requires asAMessage == MixServer.concatenated;
-	   ensures \dl_array2seq(MixServer.unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(electionID), \dl_array2seq(MixServer.concatenated)));
-	   assignable  verif.selectvoting.system.core.MixServer.unsigned;
+	   requires Tag.BALLOTS != null && mix != null;
+	   requires asAMessage == mix.concatenated;
+	   ensures \dl_array2seq(mix.unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(electionID), \dl_array2seq(mix.concatenated)));
+	   assignable  mix.unsigned;
 	@*/
-	private static byte[] idTagSignMessages(Signer precServSign, byte[] electionID, byte[] asAMessage) {
+	private static /*@helper@*/ byte[] idTagSignMessages(Signer precServSign, byte[] electionID, byte[] asAMessage) {
 		//5
 		// add election id, tag and sign
 		byte[] elID_ballots = MessageTools.concatenate(electionID, asAMessage);		
 		//6
 		byte[] input = MessageTools.concatenate(Tag.BALLOTS, elID_ballots);
-		//@set MixServer.unsigned = input;
+		//@set mix.unsigned = input;
 		byte[] signatureOnInput = precServSign.sign(input);
 
 		byte[] signedInput = MessageTools.concatenate(input, signatureOnInput);
 		return signedInput;
 	}
-	
-	private static byte[] concatenateMessages(byte[][] encrMsg) {
+	/*@public normal_behaviour 
+	   requires mix != null && mix.sorted != null;
+	   requires encrMsg == mix.sorted;
+	   ensures \dl_array2seq(\result) == \dl_mConcat(\dl_int2seq(mix.sorted.length), \dl_arrConcat(0, \dl_array2seq2d(mix.sorted)));
+	   ensures \fresh(\result);
+	   assignable \nothing;
+	@*/
+	private static /*@ helper @*/byte[] concatenateMessages(byte[][] encrMsg) {
 		byte[] asAMessage=Utils.concatenateMessageArray(encrMsg);
 		asAMessage=MessageTools.concatenate(MessageTools.intToByteArray(encrMsg.length), asAMessage);
 		return asAMessage;
@@ -302,9 +309,21 @@ public final class Setup {
 		return encrMsg;
 	}
 	
-	
-	private static byte[][] addIdToMsg(byte[] electionID, byte[][] chosen) {
+	/*@public normal_behaviour	   
+	   ensures \result.length == chosen.length;
+	   ensures (\forall int i; 0 <= i && i < \result.length; \dl_array2seq(\result[i]) == \dl_mConcat(\dl_array2seq(electionID), \dl_array2seq(chosen[i])));
+	   ensures \fresh(\result);
+	   assignable \nothing;
+	@*/
+	private static/*@helper@*/ byte[][] addIdToMsg(byte[] electionID, byte[][] chosen) {
 		byte[][] idMsg = new byte[chosen.length][];
+		/*@
+		loop_invariant 0 <= i && i <= chosen.length && idMsg.length == chosen.length;
+		loop_invariant (\forall int j; 0 <=j && j < i; \dl_array2seq(idMsg[j]) == \dl_mConcat(\dl_array2seq(electionID), \dl_array2seq(chosen[j])));
+		loop_invariant (\forall int j; 0 <=j && j < i; idMsg[j] != null);
+		assignable idMsg[*];
+		decreases chosen.length - i;
+		@*/
     	for(int i=0; i<chosen.length; ++i){
 			idMsg[i] = MessageTools.concatenate(electionID, chosen[i]);
 		}

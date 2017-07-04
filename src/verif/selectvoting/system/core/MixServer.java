@@ -67,15 +67,15 @@ public class MixServer
 	
 	
 	
-	//@ public static ghost byte[][] chosen;
+	//@ public ghost byte[][] chosen;
 	
-	//@ public static ghost byte[][] encrypted;
+	//@ public ghost byte[][] encrypted;
 	
-	//@ public static ghost byte[][] sorted;
+	//@ public ghost byte[][] sorted;
 	
-	//@ public static ghost byte[] concatenated;
+	//@ public ghost byte[] concatenated;
 	
-	//@ public static ghost byte[] unsigned;
+	//@ public ghost byte[] unsigned;
 	
 	
 	/**

@@ -39,10 +39,11 @@ final public class Signer {
 	}
 
 	/*@ public normal_behaviour	    	    
-	    ensures \dl_array2seq(\result) == \dl_mSign(\dl_array2seq(message));	
+	    ensures \dl_array2seq(\result) == \dl_mSign(\dl_array2seq(message));
+	    ensures \fresh(\result);	
 	    assignable \nothing;    
 	  @*/
-	public byte[]
+	public/*@helper@*/ byte[]
 			sign(byte[] message) {
 		byte[] signature = getSignature(message);
 		if(signature == null){
