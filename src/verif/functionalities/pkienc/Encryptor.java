@@ -17,8 +17,13 @@ public class Encryptor {
 	public Encryptor(byte[] publicKey) {
 		this.publicKey = publicKey;
 	}
-
-	public byte[] encrypt(byte[] message) {
+	/*@
+	public normal_behaviour
+	ensures \dl_array2seq(\result) == \dl_mEncrypt(\dl_array2seq(message));
+	ensures \fresh(\result);
+	assignable \nothing;
+	@*/
+	public byte[]/*@helper@*/ encrypt(byte[] message) {
 		return MessageTools.copyOf(CryptoLib.pke_encrypt(MessageTools.copyOf(message), MessageTools.copyOf(publicKey)));
 	}
 

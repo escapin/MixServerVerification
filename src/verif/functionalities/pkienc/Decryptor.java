@@ -20,7 +20,13 @@ public class Decryptor {
 
 	/** "Decrypts" a message by, first trying to find in in the log (and returning
 	 *   the related plaintext) and, only if this fails, by using real decryption. */
-	public byte[] decrypt(byte[] message) {
+	/*@
+	public normal_behaviour
+	ensures \dl_array2seq(\result) == \dl_mDecrypt(\dl_array2seq(message));
+	ensures \fresh(\result);
+	assignable \nothing;
+	@*/
+	public /*@helper@*/byte[] decrypt(byte[] message) {
 		byte[] messageCopy = MessageTools.copyOf(message);
 		if (!log.containsCiphertext(messageCopy)) {
 			return MessageTools.copyOf( CryptoLib.pke_decrypt(MessageTools.copyOf(privateKey), messageCopy) );

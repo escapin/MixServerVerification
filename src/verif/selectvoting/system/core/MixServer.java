@@ -77,6 +77,50 @@ public class MixServer
 	
 	//@ public ghost byte[] unsigned;
 	
+	/*@
+	  public model_behaviour
+	  ensures \result <==> mix.chosen != null
+	          && mix.encrypted != null
+	          && mix.sorted != null
+	          && mix.concatenated != null
+	          && mix.unsigned != null
+	          && (\forall int i; 0 <= i && i < mix.chosen.length; mix.chosen[i] != null)
+	          && (\forall int i; 0 <= i && i < mix.encrypted.length; mix.encrypted[i] != null)
+	          && (\forall int i; 0 <= i && i < mix.sorted.length; mix.sorted[i] != null);
+	  assignable \strictly_nothing; 
+	  public static model boolean ghostFieldsNonNull(MixServer mix){
+	     return mix.chosen != null
+	            && mix.encrypted != null
+	            && mix.sorted != null
+	            && mix.concatenated != null
+	            && mix.unsigned != null
+	            && (\forall int i; 0 <= i && i < mix.chosen.length; mix.chosen[i] != null)
+	            && (\forall int i; 0 <= i && i < mix.encrypted.length; mix.encrypted[i] != null)
+	            && (\forall int i; 0 <= i && i < mix.sorted.length; mix.sorted[i] != null);
+	  }
+	 @*/
+	
+	/*@
+	  public model_behaviour
+	  ensures \result <==> (ghostFieldsNonNull(mix)
+	          && (\forall int i; 0 <= i && i < mix.encrypted.length; \dl_array2seq(mix.encrypted[i]) == \dl_mEncrypt(\dl_mConcat(\dl_array2seq(mix.electionID), \dl_array2seq(mix.chosen[i]))))
+              && \dl_seqPerm(\dl_array2seq2d(mix.sorted), \dl_array2seq2d(mix.encrypted))
+              && \dl_array2seq(mix.concatenated)==\dl_mConcat(\dl_int2seq(mix.sorted.length), \dl_arrConcat(0, \dl_array2seq2d(mix.sorted)))
+              && \dl_array2seq(mix.unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(mix.electionID), \dl_array2seq(mix.concatenated)))
+              && mix.chosen.length == mix.encrypted.length 
+              && mix.encrypted.length == mix.sorted.length);
+	  assignable \strictly_nothing; 
+	  public static model boolean ghostFieldsPre(MixServer mix){
+	     return (ghostFieldsNonNull(mix)
+	          && (\forall int i; 0 <= i && i < mix.encrypted.length; \dl_array2seq(mix.encrypted[i]) == \dl_mEncrypt(\dl_mConcat(\dl_array2seq(mix.electionID), \dl_array2seq(mix.chosen[i]))))
+              && \dl_seqPerm(\dl_array2seq2d(mix.sorted), \dl_array2seq2d(mix.encrypted))
+              && \dl_array2seq(mix.concatenated)==\dl_mConcat(\dl_int2seq(mix.sorted.length), \dl_arrConcat(0, \dl_array2seq2d(mix.sorted)))
+              && \dl_array2seq(mix.unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(mix.electionID), \dl_array2seq(mix.concatenated)))
+              && mix.chosen.length == mix.encrypted.length 
+              && mix.encrypted.length == mix.sorted.length);
+	  }
+	 @*/
+	
 	
 	/**
 	 * Assumption:
@@ -288,12 +332,32 @@ public class MixServer
 			return new byte[][] {};
 		}
 	}
-	
-	public byte[][] decryptBallots(byte[][] msg){
+	/*@
+	public behaviour
+	requires ghostFieldsPre(this);
+	requires \dl_array2seq2d(msg) == \dl_array2seq2d(this.sorted);
+	ensures \dl_seqPerm(\dl_array2seq2d(\result), \dl_array2seq2d(this.chosen)); 
+	ensures \fresh(\result);
+	assignable \nothing;
+	@*/
+	public byte[][] decryptBallotsAndRemoveElectionId(byte[][] msg){
 		byte[][] res= new byte[msg.length][];
+		/*@
+		loop_invariant res.length == msg.length;
+		loop_invariant 0 <= i && i <= msg.length;
+		loop_invariant ghostFieldsPre(this);
+		loop_invariant (\forall int j; 0 <= j && j < i; res[j] != null);
+		loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(res[j]) == \dl_mSecond(\dl_mDecrypt(\dl_array2seq(msg[i]))));
+		assignable res[*];
+		decreases msg.length - i;
+		@*/
 		for (int i = 0; i < msg.length; i++) {
 			try{
 				res[i] = decryptor.decrypt(msg[i]);
+				byte[] elId = MessageTools.first(res[i]);			
+				if(MessageTools.equal(elId, electionID)){
+					res[i] = MessageTools.second(msg[i]);
+				}
 			}catch(Throwable t){}
 		}
 		return res;
@@ -327,18 +391,18 @@ public class MixServer
 		}
 	}
 	
-	public byte[][] checkandRemoveElectionId(byte[][] msg){
-		byte[][] res = new byte[msg.length][];
-		for (int i = 0; i < msg.length; i++) {
-			byte[] elId = MessageTools.first(msg[i]);			
-			if(MessageTools.equal(elId, electionID)){
-				try{
-					res[i] = MessageTools.second(msg[i]);
-				}catch(Throwable t){}
-			}
-		}
-		return res;
-	}
+//	public byte[][] checkandRemoveElectionId(byte[][] msg){
+//		byte[][] res = new byte[msg.length][];
+//		for (int i = 0; i < msg.length; i++) {
+//			byte[] elId = MessageTools.first(msg[i]);			
+//			if(MessageTools.equal(elId, electionID)){
+//				try{
+//					res[i] = MessageTools.second(msg[i]);
+//				}catch(Throwable t){}
+//			}
+//		}
+//		return res;
+//	}
     /*@ public normal_behaviour
         requires \dl_array2seq(ballots) == \dl_arrConcat(0, \dl_array2seq2d(sorted));
         requires n == sorted.length;
@@ -474,8 +538,7 @@ public class MixServer
 	
 	public byte[][] extractBallots(byte[] msg) throws ServerMisbehavior{
 		byte[][] res = splidAndCheck(msg);
-		res = decryptBallots(res);
-		res = checkandRemoveElectionId(res);
+		res = decryptBallotsAndRemoveElectionId(res);		
 		return res;
 	}
 

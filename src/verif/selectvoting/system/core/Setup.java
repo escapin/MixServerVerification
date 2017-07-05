@@ -248,11 +248,18 @@ public final class Setup {
 		// send the output of the mix server over the network
 		Environment.untrustedOutputMessage(mixServerOutput);
     }
-	private static byte[] prepareInput(Encryptor mixEncr, Signer precServSign, byte[] electionID,
+    /*@
+    public normal_behaviour
+    requires Tag.BALLOTS != null && mix != null;
+    requires electionID == mix.electionID;
+    ensures MixServer.ghostFieldsPre(mix);
+    assignable mix.chosen,mix.encrypted, mix.sorted, mix.sorted, mix.concatenated, mix.unsigned;    
+    @*/
+	private static/*@helper@*/ byte[] prepareInput(Encryptor mixEncr, Signer precServSign, byte[] electionID,
 			byte[][] chosen) {
 		//@set mix.chosen = chosen;
     	byte[][] encrMsg = encryptMessages(mixEncr, electionID, chosen);			
-    	//@set mix.encrypted = encrMsg;
+    	//@set mix.encrypted = Utils.copyOf(encrMsg);
 		Utils.sort(encrMsg, 0, encrMsg.length);
 		/*@set mix.sorted = encrMsg;@*/
 		byte[] asAMessage = concatenateMessages(encrMsg);
@@ -265,6 +272,7 @@ public final class Setup {
 	   requires Tag.BALLOTS != null && mix != null;
 	   requires asAMessage == mix.concatenated;
 	   ensures \dl_array2seq(mix.unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(electionID), \dl_array2seq(mix.concatenated)));
+	   ensures mix.unsigned != null;
 	   assignable  mix.unsigned;
 	@*/
 	private static /*@helper@*/ byte[] idTagSignMessages(Signer precServSign, byte[] electionID, byte[] asAMessage) {
@@ -291,8 +299,14 @@ public final class Setup {
 		asAMessage=MessageTools.concatenate(MessageTools.intToByteArray(encrMsg.length), asAMessage);
 		return asAMessage;
 	}
-	
-	private static byte[][] encryptMessages(Encryptor mixEncr, byte[] electionID, byte[][] chosen) {
+	/*@
+	public normal_behaviour
+	ensures \result.length == chosen.length;
+	ensures (\forall int i; 0 <= i && i < \result.length; \dl_array2seq(\result[i]) == \dl_mEncrypt(\dl_mConcat(\dl_array2seq(electionID), \dl_array2seq(chosen[i]))));
+	ensures \fresh(\result);
+	assignable \nothing;
+	@*/
+	private static/*@helper@*/ byte[][] encryptMessages(Encryptor mixEncr, byte[] electionID, byte[][] chosen) {
 		//1
     	byte[][] idMsg = addIdToMsg(electionID, chosen);
 		//2
@@ -300,9 +314,21 @@ public final class Setup {
 		return encrMsg;
 	}
     
-    
-	private static byte[][] encryptMsg(Encryptor mixEncr, byte[][] idMsg) {
+	/*@public normal_behaviour	   
+	   ensures \result.length == idMsg.length;
+	   ensures (\forall int i; 0 <= i && i < \result.length; \dl_array2seq(\result[i]) == \dl_mEncrypt(\dl_array2seq(idMsg[i])));
+	   ensures \fresh(\result);
+	   assignable \nothing;
+	@*/
+	private static /*@helper@*/ byte[][] encryptMsg(Encryptor mixEncr, byte[][] idMsg) {
 		byte[][] encrMsg = new byte[idMsg.length][];
+		/*@
+		loop_invariant 0 <= i && i <= idMsg.length && idMsg.length == encrMsg.length;
+		loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(encrMsg[j]) == \dl_mEncrypt(\dl_array2seq(idMsg[j])));
+		loop_invariant (\forall int j; 0 <=j && j < i; encrMsg[j] != null);
+		assignable encrMsg[*];
+		decreases idMsg.length - i;
+		@*/
 		for(int i=0; i<idMsg.length; ++i){
 			encrMsg[i] = mixEncr.encrypt(idMsg[i]);
 		}
