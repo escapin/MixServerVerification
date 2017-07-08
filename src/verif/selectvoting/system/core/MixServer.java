@@ -59,11 +59,11 @@ public class MixServer
 
 
 	// this is the randomly chosen message array
-	//@ public ghost instance byte[][] msg;
+	// @ public ghost instance byte[][] msg;
 	// this is the value of entr_arr after the call to Utils.sort
-	//@ public ghost instance byte[][] a;
+	// @ public ghost instance byte[][] a;
 	// this is the value of entr_arr after the call to ConservativeExtenson.getRandomMessages
-	//@ public ghost instance byte[][] b;
+	// @ public ghost instance byte[][] b;
 	
 	
 	
@@ -237,7 +237,7 @@ public class MixServer
 	 * That the values in entr_arr after sort() are equal to the values of entr_arr after 
 	 * ConservativeExtension.retrieveSortetMessages().
 	 */
-	/*@
+	/* @
 	  public normal_behaviour
 	  requires ConservativeExtension.messages != null;
 	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
@@ -343,25 +343,67 @@ public class MixServer
 	public byte[][] decryptBallotsAndRemoveElectionId(byte[][] msg){
 		byte[][] res= new byte[msg.length][];
 		/*@
-		loop_invariant res.length == msg.length;
+		loop_invariant res.length == msg.length && res != msg;
 		loop_invariant 0 <= i && i <= msg.length;
 		loop_invariant ghostFieldsPre(this);
+		loop_invariant \dl_array2seq2d(msg) == \dl_array2seq2d(this.sorted);
 		loop_invariant (\forall int j; 0 <= j && j < i; res[j] != null);
-		loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(res[j]) == \dl_mSecond(\dl_mDecrypt(\dl_array2seq(msg[i]))));
+		loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(res[j]) == \dl_mSecond(\dl_mDecrypt(\dl_array2seq(msg[j]))));
 		assignable res[*];
 		decreases msg.length - i;
 		@*/
 		for (int i = 0; i < msg.length; i++) {
-			try{
-				res[i] = decryptor.decrypt(msg[i]);
-				byte[] elId = MessageTools.first(res[i]);			
-				if(MessageTools.equal(elId, electionID)){
-					res[i] = MessageTools.second(msg[i]);
-				}
-			}catch(Throwable t){}
+			decryptSingleBallot(msg, res, i);
 		}
 		return res;
 	}
+	
+	
+
+    /*@
+    public normal_behaviour    
+    requires msg.length == res.length && res != msg && res != null;
+    requires res != encrypted && res != chosen && res != sorted;
+    requires 0 <= i && i < msg.length;
+    requires \typeof(res) == \type(byte[][]);
+    requires \dl_array2seq2d(msg) == \dl_array2seq2d(this.sorted);
+    requires ghostFieldsPre(this);
+    requires (\forall int j; 0 <= j && j < i; res[j] != null);
+    requires (\forall int j; 0 <= j && j < i; \dl_array2seq(res[j]) == \dl_mSecond(\dl_mDecrypt(\dl_array2seq(msg[j]))));
+    ensures ghostFieldsPre(this);
+    ensures \dl_array2seq2d(msg) == \dl_array2seq2d(this.sorted);
+    ensures (\forall int j; 0 <= j && j <= i; res[j] != null);
+    ensures (\forall int j; 0 <= j && j <= i; \dl_array2seq(res[j]) == \dl_mSecond(\dl_mDecrypt(\dl_array2seq(msg[j]))));
+    assignable res[i];
+    @*/
+	private void decryptSingleBallot(byte[][] msg,/*@nullable@*/ byte[][] res, int i) {
+		try{
+			byte[] decr = decryptor.decrypt(msg[i]);
+			byte[] elId = MessageTools.first(decr);			
+			if(MessageTools.equal(elId, electionID)){
+				res[i] = MessageTools.second(decr);
+			}
+		}catch(Throwable t){}
+	}
+	
+	
+	/*@
+	  public model_behaviour
+	  requires ghostFieldsPre(this);
+	  requires msg.length == res.length;
+	  requires \dl_array2seq2d(msg) == \dl_array2seq2d(this.sorted);
+	  requires (\forall int j; 0 <= j && j < msg.length; \dl_array2seq(res[j]) == \dl_mSecond(\dl_mDecrypt(\dl_array2seq(msg[j]))));
+	  ensures \dl_seqPerm(\dl_array2seq2d(res), \dl_array2seq2d(this.chosen));
+	  ensures \result; 
+	  assignable \strictly_nothing;
+	  public model boolean decryptPermutation(byte[][] msg, byte[][] res){
+	     return \dl_seqPerm(\dl_array2seq2d(res), \dl_array2seq2d(this.chosen));
+	  }
+	 @*/
+	
+	
+	
+	
 	/*@ public behaviour
 	    assignable \nothing;
 	@*/
@@ -561,7 +603,7 @@ public class MixServer
 	/**
 	 * We assume this method returns a permutation of the array 'msg'.
 	 */
-	/*@
+	/* @
 	  public normal_behaviour
 	  requires ConservativeExtension.messages != null;
 	  requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
