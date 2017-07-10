@@ -46,10 +46,9 @@ public class Environment {
 		}
 	}
 
-	/*@ public behavior
-	  @ diverges true;
-	  @ assignable inputCounter;
-	  @ ensures true;
+	/*@ public normal_behavior
+	  @ ensures \fresh(\result);
+	  @ assignable \nothing;
 	  @*/
 	public static /*@ helper nullable @*/ byte[] untrustedInputMessage()
 	{
