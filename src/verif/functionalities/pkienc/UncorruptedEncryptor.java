@@ -12,11 +12,6 @@ import verif.lib.crypto.CryptoLib;
 public final class UncorruptedEncryptor extends Encryptor {
 	private /*@spec_public@*/ Decryptor.EncryptionLog log;
 
-	/*@
-	public normal_behaviour
-	ensures this.publicKey == publicKey;
-	ensures this.log == log;
-	@*/
 	UncorruptedEncryptor(byte[] publicKey, Decryptor.EncryptionLog log) {
 		super(publicKey);
 		this.log = log;

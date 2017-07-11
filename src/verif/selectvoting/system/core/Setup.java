@@ -10,6 +10,8 @@ import verif.functionalities.pkisig.Verifier;
 import verif.utils.MessageTools;
 
 public final class Setup {
+	
+	//@public static ghost MixServer mix;
 
 	// PURE SUPPORT METHODS:
 	
@@ -85,7 +87,8 @@ public final class Setup {
 		// SETUP THE COMPONENTS
 
         byte[] electionID = Environment.untrustedInputMessage();
-
+        
+        
 		// create the cryptographic functionalities
 		Decryptor mixDecr = new Decryptor();
 		Encryptor mixEncr = mixDecr.getEncryptor();
@@ -93,7 +96,10 @@ public final class Setup {
 		
 		Signer precServSign = new Signer();
 		Verifier precServVerif = precServSign.getVerifier(); 
-
+		
+		if(electionID == null || Tag.BALLOTS == null){
+        	throw new Throwable();
+        }
 		main2(mixDecr, mixEncr, mixSign, precServSign, precServVerif, electionID);
 		
 	}
@@ -105,7 +111,7 @@ public final class Setup {
 	 *  are fulfilled.
 	 */
 	
-	/*@
+	/* @
     public exceptional_behaviour
     requires msg==null || msg.length != numberOfMessages || (\exists int i; 0<=i && i < msg.length; msg[i] == null || msg[i].length != lengthOfMessages);
     signals(Throwable);
@@ -119,6 +125,14 @@ public final class Setup {
     ensures true;           
     assignable \strictly_nothing;
   @*/
+
+	/*@
+    public behaviour
+    ensures msg != null;
+    ensures msg.length == numberOfMessages;
+    ensures (\forall int i; 0<=i && i < msg.length; msg[i]!= null && msg[i].length == lengthOfMessages);             
+    assignable \nothing;
+    @*/
 	private static /*@helper@*/void checkMessages(/*@nullable@*/byte[][] msg, int numberOfMessages, int lengthOfMessages) throws Throwable{
 		
 		if(msg==null || msg.length != numberOfMessages){
@@ -128,7 +142,7 @@ public final class Setup {
 		  loop_invariant 0 <= i && i <= numberOfMessages;
 		  loop_invariant numberOfMessages == msg.length;
 		  loop_invariant (\forall int j; 0 <= j && j < i; msg[j] != null && msg[j].length == lengthOfMessages);
-		  assignable \strictly_nothing;
+		  assignable \nothing;
 		  decreases numberOfMessages - i;
 		 @*/
 		for(int i=0; i<numberOfMessages; ++i){	
@@ -148,14 +162,18 @@ public final class Setup {
 
     /*@
     public behaviour
+    requires Tag.BALLOTS != null;
     ensures true;
+    assignable mix, Environment.inputCounter, Environment.result, ConservativeExtension.messages;
     @*/
-    private static void main2(Decryptor mixDecr, Encryptor mixEncr, Signer mixSign,
+    private static/*@helper@*/ void main2(Decryptor mixDecr, Encryptor mixEncr, Signer mixSign,
                               Signer precServSign, Verifier precServVerif, byte[] electionID)
                                       throws Throwable, MalformedData, ServerMisbehavior {
 		MixServer mixServ = 
 				new  MixServer(mixDecr, mixSign, precServVerif, electionID);
-
+         
+		
+		
 		// let the adversary choose how many messages have to 
 		// be sent to the mix server
 		int numberOfMessages = Environment.untrustedInput();
@@ -168,10 +186,26 @@ public final class Setup {
 		// let the environment determine the two arrays of messages
 		byte[][] msg1 = new byte[numberOfMessages][];
 		byte[][] msg2 = new byte[numberOfMessages][];
+		//@set mix = mixServ;
+		byte[][] chosen = initializeAndChooseMessage(numberOfMessages, lengthOfTheMessages, msg1, msg2);
+		
+		innerMain(mixEncr, precServSign, electionID, mixServ, numberOfMessages,
+		          lengthOfTheMessages, chosen);
+    }
+    /*@ public behaviour
+        requires msg1 != null && msg2 != null && msg1.length == numberOfMessages && msg2.length == numberOfMessages;
+        ensures ConservativeExtension.messages != null;
+        ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
+        ensures \dl_seqPerm(\dl_array2seq2d(\result), \dl_array2seq2d(ConservativeExtension.messages)); 
+        assignable msg1[*], msg2[*], Environment.inputCounter,ConservativeExtension.messages;
+    @*/
+	private static /*@helper@*/byte[][] initializeAndChooseMessage(int numberOfMessages, int lengthOfTheMessages, /*@nullable@*/byte[][] msg1,
+			/*@nullable@*/byte[][] msg2) throws Throwable {
 		/*@
 		loop_invariant msg1.length == numberOfMessages;
 		loop_invariant msg2.length == numberOfMessages;
-		assignable msg1[*], msg2[*];
+		assignable msg1[*], msg2[*], Environment.inputCounter;
+		decreases numberOfMessages - i;
 		@*/
 		for(int i=0; i<numberOfMessages; ++i){
 			msg1[i] = Environment.untrustedInputMessage();
@@ -181,12 +215,10 @@ public final class Setup {
 		
 		checkMessages(msg1, numberOfMessages, lengthOfTheMessages);
 		checkMessages(msg2, numberOfMessages, lengthOfTheMessages);
-		
+
 		byte[][] chosen = chooseAndStoreMsg(msg1, msg2);
-		
-		innerMain(mixEncr, precServSign, electionID, mixServ, numberOfMessages,
-		          lengthOfTheMessages, chosen);
-    }
+		return chosen;
+	}
     /**
      * If msg1 and msg2 are not permutations of each other a Throwable is thrown.
      * 
@@ -213,10 +245,11 @@ public final class Setup {
     
     /*@
     public behaviour
-    requires (\forall int i; 0 <= i && i <= msg1.length; msg1[i].length == msg2[i].length);
+    requires (\forall int i; 0 <= i && i < msg1.length; msg1[i].length == msg2[i].length);
     ensures ConservativeExtension.messages != null;
     ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
     ensures \dl_seqPerm(\dl_array2seq2d(\result), \dl_array2seq2d(ConservativeExtension.messages)); 
+    assignable ConservativeExtension.messages;
     @*/
 	private static /*@helper@*/ byte[][] chooseAndStoreMsg(byte[][] msg1, byte[][] msg2) throws Throwable {
 		// the two vectors must be two permutations of the same set
@@ -231,7 +264,7 @@ public final class Setup {
 		return chosen;
 	}
     
-    //@public static ghost MixServer mix;
+    
 
 	/*@public behaviour 
 	   requires mix == mixServ;
@@ -389,7 +422,7 @@ public final class Setup {
     /*@
     public normal_behaviour
     requires msg1 != null && msg2 != null && msg1.length == msg2.length;
-    requires (\forall int i; 0 <= i && i <= msg1.length; msg1[i].length == msg2[i].length);       
+    requires (\forall int i; 0 <= i && i < msg1.length; msg1[i].length == msg2[i].length);       
     ensures secret ==> \dl_array2seq2d(\result) == \dl_array2seq2d(msg1);
     ensures !secret ==> \dl_array2seq2d(\result) == \dl_array2seq2d(msg2);
     ensures \fresh(\result);
@@ -405,7 +438,7 @@ public final class Setup {
 	      loop_invariant (\forall int j; 0 <= j && j < i;!secret ==> \dl_array2seq(chosen[j]) == \dl_array2seq(msg2[j]));
 	      loop_invariant \fresh(chosen);
 	      loop_invariant (\forall int j; 0 <= j && j < i; chosen[j] != null);
-	      loop_invariant (\forall int i; 0 <= i && i <= msg1.length; msg1[i].length == msg2[i].length);
+	      loop_invariant (\forall int i; 0 <= i && i < msg1.length; msg1[i].length == msg2[i].length);
 	      assignable chosen[*];
 	      decreases chosen.length - i;
 	     @*/

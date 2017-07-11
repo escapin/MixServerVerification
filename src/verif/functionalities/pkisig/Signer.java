@@ -14,8 +14,10 @@ final public class Signer {
 	private byte[] /*@nullable@*/ verifKey;
 	private byte[] /*@nullable@*/signKey;
 	private Log log;
-
-	public Signer() {
+	 /*@public behaviour
+    ensures \fresh(this);
+    @*/
+	public/*@helper@*/ Signer() {
 		KeyPair keypair = CryptoLib.generateSignatureKeyPair();
 		this.signKey = MessageTools.copyOf(keypair.privateKey);
 		this.verifKey = MessageTools.copyOf(keypair.publicKey);
@@ -52,8 +54,10 @@ final public class Signer {
 		log.add(MessageTools.copyOf(message));
 		return MessageTools.copyOf(MessageTools.copyOf(signature));
 	}
-
-	public Verifier getVerifier() {
+    /*@public behaviour
+       ensures \fresh(\result);
+    @*/
+	public/*@helper@*/ Verifier getVerifier() {
 		return new UncorruptedVerifier(verifKey, log);
 	}
 

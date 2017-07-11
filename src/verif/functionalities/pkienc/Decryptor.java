@@ -10,8 +10,10 @@ public class Decryptor {
 	private byte[] publicKey;
 	private byte[] privateKey;
 	private EncryptionLog log;
-
-	public Decryptor() {
+    /*@public behaviour
+       ensures \fresh(this);
+    @*/
+	public /*@helper@*/Decryptor() {
 		KeyPair keypair = CryptoLib.pke_generateKeyPair();
 		this.privateKey = MessageTools.copyOf(keypair.privateKey);
 		this.publicKey = MessageTools.copyOf(keypair.publicKey);
@@ -37,14 +39,10 @@ public class Decryptor {
 
 	/** Returns a new uncorrupted encryptor object sharing the same public key, ID, and log. */
 	/*@
-	   public normal_behaviour
-	   ensures \typeof(\result) == \type(UncorruptedEncryptor);
+	   public behaviour
 	   ensures \fresh(\result);
-	   ensures \result.publicKey == publicKey;
-	   ensures ((UncorruptedEncryptor)\result).log == log;
-	   assignable \nothing;
 	@*/
-	public Encryptor getEncryptor() {
+	public /*@helper@*/Encryptor getEncryptor() {
 		return new UncorruptedEncryptor(publicKey, log);
 	}
 	

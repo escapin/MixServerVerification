@@ -50,6 +50,10 @@ public class MixServer
 	// CONSTRUCTORS
     /*@public normal_behaviour
        ensures this.electionID == electionID;
+       ensures this.decryptor == decryptor;
+       ensures this.precServVerif == precServVerif;
+       ensures this.signer == signer;
+       assignable this.electionID, this.decryptor, this.precServVerif, this.electionID;
     @*/
 	public/*@helper@*/ MixServer(Decryptor decryptor, Signer signer, Verifier precServVerif, byte[] electionID) {
 		this.signer = signer;
