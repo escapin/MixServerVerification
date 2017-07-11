@@ -10,9 +10,9 @@ import verif.utils.MessageTools;
 public class MixServer 
 {	
 	// Cryptographic functionalities
-	private final Signer signer;
-	private final Decryptor decryptor;
-	private final Verifier precServVerif;
+	private /*@spec_public@*/final Signer signer;
+	private /*@spec_public@*/final Decryptor decryptor;
+	private /*@spec_public@*/final Verifier precServVerif;
 	private /*@spec_public@*/final byte[] electionID;
 	// private final int numberOfVoters;
 
@@ -48,8 +48,10 @@ public class MixServer
 	}
 
 	// CONSTRUCTORS
-
-	public MixServer(Decryptor decryptor, Signer signer, Verifier precServVerif, byte[] electionID) {
+    /*@public normal_behaviour
+       ensures this.electionID == electionID;
+    @*/
+	public/*@helper@*/ MixServer(Decryptor decryptor, Signer signer, Verifier precServVerif, byte[] electionID) {
 		this.signer = signer;
 		this.decryptor = decryptor;
 		this.electionID = electionID;
@@ -255,10 +257,14 @@ public class MixServer
 	  requires Tag.BALLOTS != null;
 	  requires ghostFieldsPre(this);
 	  requires conservativeExtensionPre(this);
+	  requires signer != null;
+      requires decryptor != null;
+      requires precServVerif != null;
+      requires electionID != null;
 	  assignable \nothing;	  
 	  ensures true;
 	 @*/	
-	public byte[] processBallots(byte[] data) throws MalformedData, ServerMisbehavior {
+	public byte[]/*@helper@*/ processBallots(/*@nullable@*/byte[] data) throws MalformedData, ServerMisbehavior {
 
         
 

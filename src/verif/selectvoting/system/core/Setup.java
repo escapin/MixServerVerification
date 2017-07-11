@@ -77,8 +77,10 @@ public final class Setup {
 	// one secret bit
 	private static/*@spec_public@*/ boolean secret; // the HIGH value
 	
-	
-	public static void main (String[] a) throws Throwable {
+	/*@ public behaviour
+	    ensures true;
+	@*/
+	public static /*@helper@*/ void main (String[] a) throws Throwable {
 
 		// SETUP THE COMPONENTS
 
@@ -144,7 +146,10 @@ public final class Setup {
 		
 	}
 
-
+    /*@
+    public behaviour
+    ensures true;
+    @*/
     private static void main2(Decryptor mixDecr, Encryptor mixEncr, Signer mixSign,
                               Signer precServSign, Verifier precServVerif, byte[] electionID)
                                       throws Throwable, MalformedData, ServerMisbehavior {
@@ -163,6 +168,11 @@ public final class Setup {
 		// let the environment determine the two arrays of messages
 		byte[][] msg1 = new byte[numberOfMessages][];
 		byte[][] msg2 = new byte[numberOfMessages][];
+		/*@
+		loop_invariant msg1.length == numberOfMessages;
+		loop_invariant msg2.length == numberOfMessages;
+		assignable msg1[*], msg2[*];
+		@*/
 		for(int i=0; i<numberOfMessages; ++i){
 			msg1[i] = Environment.untrustedInputMessage();
 			msg2[i] = Environment.untrustedInputMessage();
@@ -185,7 +195,7 @@ public final class Setup {
      * ConservativeExtension.messages we always store a copy of msg1.
      * 
      */
-    /*@
+    /* @
        public exceptional_behaviour
        requires !\dl_seqPerm(\dl_array2seq2d(msg1), \dl_array2seq2d(msg2));
        signals(Throwable);
@@ -200,6 +210,14 @@ public final class Setup {
        ensures !secret ==> \dl_array2seq2d(\result) == \dl_array2seq2d(msg2);       
        assignable ConservativeExtension.messages;
      @*/
+    
+    /*@
+    public behaviour
+    requires (\forall int i; 0 <= i && i <= msg1.length; msg1[i].length == msg2[i].length);
+    ensures ConservativeExtension.messages != null;
+    ensures (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
+    ensures \dl_seqPerm(\dl_array2seq2d(\result), \dl_array2seq2d(ConservativeExtension.messages)); 
+    @*/
 	private static /*@helper@*/ byte[][] chooseAndStoreMsg(byte[][] msg1, byte[][] msg2) throws Throwable {
 		// the two vectors must be two permutations of the same set
 		if(!setEquality(msg1, msg2)){
@@ -215,12 +233,21 @@ public final class Setup {
     
     //@public static ghost MixServer mix;
 
-	/* @public normal_behaviour 
-	   requires asAMessage == mixServ.concatenated;
-	   ensures \dl_array2seq(mixServ.unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(this.electionID), \dl_array2seq(mixServ.concatenated)));
-	   assignable  mixServ.unsigned;
+	/*@public behaviour 
+	   requires mix == mixServ;
+	   requires electionID == mixServ.electionID;
+	   requires ConservativeExtension.messages != null;
+       requires (\forall int i; 0 <= i && i < ConservativeExtension.messages.length; ConservativeExtension.messages[i] != null);
+       requires \dl_seqPerm(\dl_array2seq2d(chosen), \dl_array2seq2d(ConservativeExtension.messages));
+       requires Tag.BALLOTS != null;
+       requires mixServ.signer != null;
+       requires mixServ.decryptor != null;
+       requires mixServ.precServVerif != null;
+       requires mixServ.electionID != null;
+       ensures true;
+	   assignable  mixServ.*, Environment.inputCounter, Environment.result;
 	@*/
-    private static void innerMain(Encryptor mixEncr, Signer precServSign, byte[] electionID, MixServer mixServ,
+    private static /*@helper@*/ void innerMain(Encryptor mixEncr, Signer precServSign, byte[] electionID, MixServer mixServ,
                                   int numberOfMessages, int lengthOfTheMessages, byte[][] chosen)
                     throws MalformedData, ServerMisbehavior {
     	
@@ -253,6 +280,7 @@ public final class Setup {
     requires Tag.BALLOTS != null && mix != null;
     requires electionID == mix.electionID;
     ensures MixServer.ghostFieldsPre(mix);
+    ensures mix.chosen == chosen;
     assignable mix.chosen,mix.encrypted, mix.sorted, mix.sorted, mix.concatenated, mix.unsigned;    
     @*/
 	private static/*@helper@*/ byte[] prepareInput(Encryptor mixEncr, Signer precServSign, byte[] electionID,

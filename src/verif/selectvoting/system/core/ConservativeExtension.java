@@ -8,6 +8,9 @@ public class ConservativeExtension{
 	/*@
 	  public normal_behaviour
 	  ensures \dl_array2seq2d(messages) == \dl_array2seq2d(msg);
+	  ensures messages != null;
+	  ensures (\forall int i; 0<=i && i < messages.length; messages[i]!= null);
+	  ensures \fresh(messages);
 	  assignable messages;
 	 @*/
 	public static/*@helper@*/ void storeMessages(byte[][] msg){
