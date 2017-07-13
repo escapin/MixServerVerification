@@ -15,7 +15,9 @@ final public class Signer {
 	private byte[] /*@nullable@*/signKey;
 	private Log log;
 	 /*@public behaviour
-    ensures \fresh(this);
+	    ensures this.log != null;
+        ensures \fresh(this);
+        assignable verif.environment.Environment.inputCounter, verif.environment.Environment.result;
     @*/
 	public/*@helper@*/ Signer() {
 		KeyPair keypair = CryptoLib.generateSignatureKeyPair();
@@ -25,12 +27,10 @@ final public class Signer {
 	}
 	
 	/*@ public behaviour
-	    requires message != null;
-	    ensures log != null;
-	    diverges true;
+        ensures true;
 	    assignable verif.environment.Environment.inputCounter, verif.environment.Environment.result;	  
 	@*/
-	public byte[] getSignature(byte[] message){
+	public /*@helper nullable@*/byte[] getSignature(byte[] message){
 		byte[] signature = CryptoLib.sign(MessageTools.copyOf(message), MessageTools.copyOf(signKey));
 		// we make sure that the signing has not failed
 		if (signature == null) return null;
@@ -40,12 +40,11 @@ final public class Signer {
 		return signature;
 	}
 
-	/*@ public normal_behaviour	    	    
-	    ensures \dl_array2seq(\result) == \dl_mSign(\dl_array2seq(message));
-	    ensures \fresh(\result);	
-	    assignable \nothing;    
+	/*@ public behaviour	
+	    ensures \result != null ==>	log.messages == message;
+	    assignable verif.environment.Environment.inputCounter, verif.environment.Environment.result, log.messages;    
 	  @*/
-	public/*@helper@*/ byte[]
+	public/*@helper nullable@*/ byte[]
 			sign(byte[] message) {
 		byte[] signature = getSignature(message);
 		if(signature == null){
@@ -55,7 +54,10 @@ final public class Signer {
 		return MessageTools.copyOf(MessageTools.copyOf(signature));
 	}
     /*@public behaviour
+       ensures \typeof(\result) == \type(verif.functionalities.pkisig.UncorruptedVerifier);
+       ensures ((UncorruptedVerifier)\result).log == this.log;
        ensures \fresh(\result);
+       assignable \nothing;
     @*/
 	public/*@helper@*/ Verifier getVerifier() {
 		return new UncorruptedVerifier(verifKey, log);
@@ -65,60 +67,30 @@ final public class Signer {
 
 	static class Log {
 
-		private /*@spec_public@*/ byte[][] messages;
+		private /*@spec_public nullable@*/ byte[] messages;
         /*@ public normal_behaviour
             ensures messages != null;
             assignable messages;
         @*/
 		public Log(){
-			messages = new byte[0][];
+			messages = new byte[0];
 		}
         /*@public normal_behaviour
-           requires messages != null;
-           ensures (\forall int i; 0 <= i && i < messages.length-1; \old(messages[i]) == messages[i]);
-           ensures messages.length == \old(messages.length) + 1;
-           ensures \dl_array2seq(messages[messages.length-1]) == \dl_array2seq(message);
+           ensures this.messages == message;
            assignable messages;
         @*/
 		public void /*@helper@*/add(byte[] message) {
-			try{
-				byte[][] res = new byte[messages.length+1][];
-                /*@
-                loop_invariant 0 <= i && i <= messages.length;
-                loop_invariant res.length == messages.length + 1;
-                loop_invariant (\forall int j; 0 <= j && j < i; res[j] == messages[j]);
-                decreases messages.length - i;
-                assignable res[0..messages.length];
-                @*/
-				for(int i= 0; i < messages.length; i++){
-					res[i] = messages[i];
-				}
-
-				res[res.length-1] = MessageTools.copyOf(message);
-				messages = res;
-			}catch(Throwable t){}
+			this.messages = message;
 		}
 		
 		
 		
-		/*@public normal_behaviour
-		   requires messages != null;		   
-           ensures \result <==> (\exists int i; 0 <= i && i < messages.length; \dl_array2seq(messages[i]) == \dl_array2seq(message) );
+		/*@public normal_behaviour   
+           ensures \result ==>  \dl_array2seq(messages) == \dl_array2seq(message);
            assignable \strictly_nothing;
         @*/
 		boolean /*@helper@*/ contains(byte[] message) {
-			/*@
-            loop_invariant 0 <= i && i <= messages.length;           
-            loop_invariant (\forall int j; 0 <= j && j < i; \dl_array2seq(messages[j]) != \dl_array2seq(message));
-            loop_invariant messages != null;
-            decreases messages.length - i;
-            assignable \strictly_nothing;
-            @*/
-			for( int i = 0; i < messages.length; i++ ) {
-				if( MessageTools.equal(messages[i], message) )
-					return true;
-			}
-			return false;
+            return MessageTools.equal(messages, message);
 		}
 	}
 

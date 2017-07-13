@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Sat Nov 19 11:19:22 CET 2016
+#Thu Jul 13 22:20:28 CEST 2017
 [StrategyProperty]VBT_PHASE=VBT_SYM_EX
 [SMTSettings]useUninterpretedMultiplication=true
 [SMTSettings]SelectedTaclets=\\#begexpand_inByte\\#end,\\#begexpand_inChar\\#end,\\#begexpand_inShort\\#end,\\#begexpand_inInt\\#end,\\#begexpand_inLong\\#end
@@ -22,7 +22,7 @@
 [StrategyProperty]SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OPTIONS_KEY=SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OFF
 [StrategyProperty]QUERY_NEW_OPTIONS_KEY=QUERY_OFF
 [Strategy]Timeout=-1
-[Strategy]MaximumNumberOfAutomaticApplications=80000
+[Strategy]MaximumNumberOfAutomaticApplications=5000
 [SMTSettings]integersMaximum=2147483645
 [Choice]DefaultChoices=assertions-assertions\\:on , initialisation-initialisation\\:disableStaticInitialisation , intRules-intRules\\:arithmeticSemanticsIgnoringOF , programRules-programRules\\:Java , runtimeExceptions-runtimeExceptions\\:allow , JavaCard-JavaCard\\:on , Strings-Strings\\:on , modelFields-modelFields\\:treatAsAxiom , bigint-bigint\\:on , sequences-sequences\\:on , moreSeqRules-moreSeqRules\\:on , reach-reach\\:on , integerSimplificationRules-integerSimplificationRules\\:full , permissions-permissions\\:off , wdOperator-wdOperator\\:L , wdChecks-wdChecks\\:off , joinGenerateIsWeakeningGoal-joinGenerateIsWeakeningGoal\\:off
 [SMTSettings]useConstantsForBigOrSmallIntegers=true
@@ -42,73 +42,68 @@
 \javaSource "../src";
 
 \proofObligation "#Proof Obligation Settings
-#Sat Nov 19 11:19:22 CET 2016
+#Thu Jul 13 22:20:28 CEST 2017
 name=verif.functionalities.pkisig.Signer[verif.functionalities.pkisig.Signer\\:\\:getSignature([B)].JML behavior operation contract.0
 contract=verif.functionalities.pkisig.Signer[verif.functionalities.pkisig.Signer\\:\\:getSignature([B)].JML behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 ";
 
 \proof {
-(keyLog "0" (keyUser "mihai" ) (keyVersion "09f735064ff7095c3fc50fbed0305eab50b24aa5"))
+(keyLog "0" (keyUser "mihai" ) (keyVersion "0814267c8a184b1e7da1309b7a9875095ca72975"))
 
-(autoModeTime "31")
+(autoModeTime "30")
 
 (branch "dummy ID"
-(builtin "One Step Simplification" (formula "1") (newnames "message,self,result,exc,heapAtPre,o,f"))
-(rule "impRight" (formula "1"))
+(rule "impRight" (formula "1") (newnames "message,self,result,exc,heapAtPre,o,f"))
+(rule "andLeft" (formula "1"))
+(rule "notLeft" (formula "2"))
 (rule "andLeft" (formula "1"))
 (rule "andLeft" (formula "1"))
-(rule "andLeft" (formula "3"))
 (rule "andLeft" (formula "1"))
-(rule "notLeft" (formula "4"))
-(rule "andLeft" (formula "4"))
-(rule "andLeft" (formula "1"))
-(rule "notLeft" (formula "6"))
 (rule "andLeft" (formula "1"))
 (rule "andLeft" (formula "1"))
 (rule "notLeft" (formula "2"))
-(rule "eqSymm" (formula "9") (term "1,0,0,1,0,1"))
-(rule "replace_known_right" (formula "4") (term "0") (ifseqformula "8"))
+(rule "eqSymm" (formula "8") (term "1,0,0,1,0,1"))
+(rule "replace_known_right" (formula "4") (term "0") (ifseqformula "7"))
 (builtin "One Step Simplification" (formula "4"))
-(rule "assignment" (formula "9") (term "1"))
-(builtin "One Step Simplification" (formula "9"))
-(rule "elementOfUnion" (formula "9") (term "0,0,0,0,1,0,1"))
-(rule "elementOfSingleton" (formula "9") (term "1,0,0,0,0,1,0,1"))
-(rule "elementOfSingleton" (formula "9") (term "0,0,0,0,0,1,0,1"))
-(rule "Class_invariant_axiom_for_verif_functionalities_pkisig_Signer" (formula "6"))
-(rule "notLeft" (formula "6"))
-(rule "methodBodyExpand" (formula "9") (term "1") (newnames "heapBefore_getSignature,savedHeapBefore_getSignature"))
-(builtin "One Step Simplification" (formula "9"))
-(rule "variableDeclarationAssign" (formula "9") (term "1"))
-(rule "variableDeclaration" (formula "9") (term "1") (newnames "signature"))
-(rule "methodCallWithAssignmentUnfoldArguments" (formula "9") (term "1"))
-(rule "variableDeclarationAssign" (formula "9") (term "1"))
-(rule "variableDeclaration" (formula "9") (term "1") (newnames "var"))
-(builtin "Use Operation Contract" (formula "9") (newnames "heapBefore_copyOf,result_0,exc_0") (contract "verif.utils.MessageTools[verif.utils.MessageTools::copyOf([B)].JML normal_behavior operation contract.0#verif.utils.MessageTools[verif.utils.MessageTools::copyOf([B)].JML normal_behavior operation contract.1"))
+(rule "assignment" (formula "8") (term "1"))
+(builtin "One Step Simplification" (formula "8"))
+(rule "elementOfUnion" (formula "8") (term "0,0,0,0,1,0,1"))
+(rule "elementOfSingleton" (formula "8") (term "0,0,0,0,0,1,0,1"))
+(rule "elementOfSingleton" (formula "8") (term "1,0,0,0,0,1,0,1"))
+(rule "methodBodyExpand" (formula "8") (term "1") (newnames "heapBefore_getSignature,savedHeapBefore_getSignature"))
+(builtin "One Step Simplification" (formula "8"))
+(rule "variableDeclarationAssign" (formula "8") (term "1"))
+(rule "variableDeclaration" (formula "8") (term "1") (newnames "signature"))
+(rule "methodCallWithAssignmentUnfoldArguments" (formula "8") (term "1"))
+(rule "variableDeclarationAssign" (formula "8") (term "1"))
+(rule "variableDeclaration" (formula "8") (term "1") (newnames "var"))
+(builtin "Use Operation Contract" (formula "8") (newnames "heapBefore_copyOf,result_0,exc_0") (contract "verif.utils.MessageTools[verif.utils.MessageTools::copyOf([B)].JML normal_behavior operation contract.0#verif.utils.MessageTools[verif.utils.MessageTools::copyOf([B)].JML normal_behavior operation contract.1"))
 (branch "Post (copyOf)"
-   (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "9")) (ifInst ""  (formula "9")))
+   (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "8")) (ifInst ""  (formula "8")))
    (rule "andLeft" (formula "6"))
+   (rule "andLeft" (formula "7"))
    (rule "andLeft" (formula "6"))
-   (rule "andLeft" (formula "8"))
-   (rule "andLeft" (formula "8"))
-   (rule "andLeft" (formula "8"))
-   (rule "notLeft" (formula "9"))
+   (rule "andLeft" (formula "7"))
+   (rule "andLeft" (formula "7"))
    (rule "notLeft" (formula "8"))
-   (rule "replace_known_right" (formula "7") (term "0") (ifseqformula "10"))
-   (builtin "One Step Simplification" (formula "7") (ifInst ""  (formula "9")))
-   (rule "closeFalse" (formula "7"))
+   (rule "notLeft" (formula "7"))
+   (rule "replace_known_right" (formula "6") (term "0") (ifseqformula "10"))
+   (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "9")))
+   (rule "closeFalse" (formula "6"))
 )
 (branch "Exceptional Post (copyOf)"
-   (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "9")) (ifInst ""  (formula "9")))
+   (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "8")) (ifInst ""  (formula "8")))
    (rule "andLeft" (formula "6"))
+   (rule "andLeft" (formula "7"))
    (rule "andLeft" (formula "6"))
    (rule "andLeft" (formula "8"))
    (rule "notLeft" (formula "6"))
-   (rule "close" (formula "9") (ifseqformula "8"))
+   (rule "close" (formula "10") (ifseqformula "9"))
 )
 (branch "Pre (copyOf)"
-   (builtin "One Step Simplification" (formula "9") (ifInst ""  (formula "1")) (ifInst ""  (formula "8")) (ifInst ""  (formula "4")))
-   (rule "closeTrue" (formula "9"))
+   (builtin "One Step Simplification" (formula "8") (ifInst ""  (formula "1")) (ifInst ""  (formula "7")) (ifInst ""  (formula "4")))
+   (rule "closeTrue" (formula "8"))
 )
 )
 

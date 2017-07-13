@@ -9,9 +9,9 @@ public class Verifier {
 	public Verifier(byte[] verifKey) {
 		this.verifKey = verifKey;
 	}
-    /*@ public normal_behaviour
-        ensures \result == \dl_mSigOf(\dl_array2seq(signature), \dl_array2seq(message));
-        assignable \nothing;
+    /*@ public behaviour
+        ensures true;
+        assignable verif.environment.Environment.inputCounter, verif.environment.Environment.result;
     @*/
 	public /*@helper@*/boolean verify(byte[] signature, byte[] message) {
 		return CryptoLib.verify(message, signature, verifKey);

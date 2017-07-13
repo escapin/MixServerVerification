@@ -140,6 +140,23 @@ public class MixServer
 	  }
 	 @*/
 	
+	/*@
+	  public model_behaviour
+	  ensures \result <==> mix.precServVerif != null
+	                       && \typeof(mix.precServVerif) == \type(verif.functionalities.pkisig.UncorruptedVerifier)
+	                       && ((verif.functionalities.pkisig.UncorruptedVerifier)mix.precServVerif).log != null
+	                       && ((verif.functionalities.pkisig.UncorruptedVerifier)mix.precServVerif).log.messages != null
+	                       && \dl_array2seq(((verif.functionalities.pkisig.UncorruptedVerifier)mix.precServVerif).log.messages) == \dl_array2seq(mix.unsigned);
+	  assignable \strictly_nothing; 
+	  public static model boolean signerPre(MixServer mix){
+	     return mix.precServVerif != null
+	                       && \typeof(mix.precServVerif) == \type(verif.functionalities.pkisig.UncorruptedVerifier)
+	                       && ((verif.functionalities.pkisig.UncorruptedVerifier)mix.precServVerif).log != null
+	                       && ((verif.functionalities.pkisig.UncorruptedVerifier)mix.precServVerif).log.messages != null
+	                       && \dl_array2seq(((verif.functionalities.pkisig.UncorruptedVerifier)mix.precServVerif).log.messages) == \dl_array2seq(mix.unsigned);
+	  }
+	 @*/
+	
 	
 	/**
 	 * Assumption 3:
@@ -726,10 +743,11 @@ public class MixServer
 	
 	/*@
 	  public behaviour
+	  requires signerPre(this);
 	  requires Tag.BALLOTS != null;
 	  requires \dl_array2seq(unsigned) == \dl_mConcat(\dl_array2seq(Tag.BALLOTS), \dl_mConcat(\dl_array2seq(this.electionID), \dl_array2seq(concatenated)));
 	  ensures  \dl_array2seq(\result) == \dl_array2seq(concatenated);
-	  assignable \nothing; 
+	  assignable  verif.environment.Environment.inputCounter, verif.environment.Environment.result;
 	 @*/
 	private byte[] checkAndGetBallots(byte[] data) throws MalformedData {
 		byte[] tagged_payload = checkAndRemoveSignature(data);
@@ -788,9 +806,9 @@ public class MixServer
 
 
     /*@public behaviour
-       ensures \dl_mSigOf(\dl_mSecond(\dl_array2seq(data)), \dl_mFirst(\dl_array2seq(data)));
-       ensures \dl_array2seq(\result) == \dl_mFirst(\dl_array2seq(data));
-       assignable \nothing;
+       requires signerPre(this);
+       ensures \dl_array2seq(\result) == \dl_array2seq(unsigned);
+       assignable verif.environment.Environment.inputCounter, verif.environment.Environment.result;
     @*/
 	private byte[] checkAndRemoveSignature(byte[] data) throws MalformedData {
 		/*

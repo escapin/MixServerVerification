@@ -70,10 +70,9 @@ public class CryptoLib {
 	}
     /*@ public behaviour
         ensures true;
-        diverges true;
         assignable Environment.result, Environment.inputCounter;
     @*/
-	public static boolean verify(/*@nullable@*/byte[] message, /*@nullable@*/byte[] signature,/*@nullable@*/ byte[] pubKey) {
+	public static /*@nullable@*/boolean verify(/*@nullable@*/byte[] message, /*@nullable@*/byte[] signature,/*@nullable@*/ byte[] pubKey) {
 		// input
 		Environment.untrustedOutput(0x22); // Function code for digital signature verification ds_verify
 		Environment.untrustedOutputMessage(message);
@@ -84,10 +83,9 @@ public class CryptoLib {
 	}
 	/*@ public behaviour
         ensures true;
-        diverges true;
         assignable Environment.result, Environment.inputCounter;
     @*/
-	public static byte[] sign(byte[] message, byte[] signingKey) {
+	public static /*@nullable@*/byte[] sign(byte[] message, byte[] signingKey) {
 		// input
 		Environment.untrustedOutput(0x66); // Function code for pke_encrypt
 		Environment.untrustedOutputMessage(message);
@@ -97,10 +95,9 @@ public class CryptoLib {
 	}
 	/*@ public behaviour
     ensures true;
-    diverges true;
     assignable Environment.result, Environment.inputCounter;
     @*/
-	public static byte[] virifySignature(byte[] signature, byte[] message, byte[] verificationKey) {
+	public static /*@nullable@*/byte[] virifySignature(byte[] signature, byte[] message, byte[] verificationKey) {
 		// input
 		Environment.untrustedOutput(0x66); // Function code for pke_encrypt
 		Environment.untrustedOutputMessage(message);
@@ -111,10 +108,9 @@ public class CryptoLib {
 	}
 	/*@ public behaviour
     ensures true;
-    diverges true;
     assignable Environment.result, Environment.inputCounter;
     @*/
-	public static KeyPair generateSignatureKeyPair() {
+	public static /*@nullable@*/ KeyPair generateSignatureKeyPair() {
 		// input
 		Environment.untrustedOutput(0x88); // Function code for generateSignatureKeyPair
 

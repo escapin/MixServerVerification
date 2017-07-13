@@ -3,7 +3,7 @@ package verif.functionalities.pkisig;
 import verif.lib.crypto.CryptoLib;
 
 public final class UncorruptedVerifier extends Verifier {
-	private Signer.Log log;
+	private /*@spec_public@*/Signer.Log log;
 
 	UncorruptedVerifier(byte[] verifKey, Signer.Log log) {
 		super(verifKey);
@@ -11,8 +11,7 @@ public final class UncorruptedVerifier extends Verifier {
 	}
     /*@public behaviour
        requires log.messages != null;
-       ensures \result ==> log.contains(message); 
-       diverges true;    
+       ensures \result ==> \dl_array2seq(log.messages) == \dl_array2seq(message) ;  
        assignable verif.environment.Environment.inputCounter, verif.environment.Environment.result;
     @*/
 	public boolean verify(byte[] signature, byte[] message) {
