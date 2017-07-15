@@ -1,0 +1,372 @@
+\profile "Java Profile";
+
+\settings {
+"#Proof-Settings-Config-File
+#Sat Jul 15 09:53:08 CEST 2017
+[StrategyProperty]VBT_PHASE=VBT_SYM_EX
+[SMTSettings]useUninterpretedMultiplication=true
+[SMTSettings]SelectedTaclets=\\#begexpand_inByte\\#end,\\#begexpand_inChar\\#end,\\#begexpand_inShort\\#end,\\#begexpand_inInt\\#end,\\#begexpand_inLong\\#end
+[StrategyProperty]METHOD_OPTIONS_KEY=METHOD_CONTRACT
+[StrategyProperty]USER_TACLETS_OPTIONS_KEY3=USER_TACLETS_OFF
+[StrategyProperty]SYMBOLIC_EXECUTION_ALIAS_CHECK_OPTIONS_KEY=SYMBOLIC_EXECUTION_ALIAS_CHECK_NEVER
+[StrategyProperty]LOOP_OPTIONS_KEY=LOOP_INVARIANT
+[StrategyProperty]USER_TACLETS_OPTIONS_KEY2=USER_TACLETS_OFF
+[StrategyProperty]USER_TACLETS_OPTIONS_KEY1=USER_TACLETS_OFF
+[StrategyProperty]QUANTIFIERS_OPTIONS_KEY=QUANTIFIERS_NON_SPLITTING_WITH_PROGS
+[StrategyProperty]NON_LIN_ARITH_OPTIONS_KEY=NON_LIN_ARITH_DEF_OPS
+[SMTSettings]instantiateHierarchyAssumptions=true
+[StrategyProperty]AUTO_INDUCTION_OPTIONS_KEY=AUTO_INDUCTION_OFF
+[StrategyProperty]DEP_OPTIONS_KEY=DEP_ON
+[StrategyProperty]BLOCK_OPTIONS_KEY=BLOCK_CONTRACT
+[StrategyProperty]CLASS_AXIOM_OPTIONS_KEY=CLASS_AXIOM_FREE
+[StrategyProperty]SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OPTIONS_KEY=SYMBOLIC_EXECUTION_NON_EXECUTION_BRANCH_HIDING_OFF
+[StrategyProperty]QUERY_NEW_OPTIONS_KEY=QUERY_OFF
+[Strategy]Timeout=-1
+[Strategy]MaximumNumberOfAutomaticApplications=5000
+[SMTSettings]integersMaximum=2147483645
+[Choice]DefaultChoices=assertions-assertions\\:on , initialisation-initialisation\\:disableStaticInitialisation , intRules-intRules\\:arithmeticSemanticsIgnoringOF , programRules-programRules\\:Java , runtimeExceptions-runtimeExceptions\\:allow , JavaCard-JavaCard\\:on , Strings-Strings\\:on , modelFields-modelFields\\:treatAsAxiom , bigint-bigint\\:on , sequences-sequences\\:on , moreSeqRules-moreSeqRules\\:on , reach-reach\\:on , integerSimplificationRules-integerSimplificationRules\\:full , permissions-permissions\\:off , wdOperator-wdOperator\\:L , wdChecks-wdChecks\\:off , joinGenerateIsWeakeningGoal-joinGenerateIsWeakeningGoal\\:off
+[SMTSettings]useConstantsForBigOrSmallIntegers=true
+[StrategyProperty]STOPMODE_OPTIONS_KEY=STOPMODE_DEFAULT
+[StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
+[StrategyProperty]INF_FLOW_CHECK_PROPERTY=INF_FLOW_CHECK_FALSE
+[SMTSettings]maxGenericSorts=2
+[SMTSettings]integersMinimum=-2147483645
+[SMTSettings]invariantForall=false
+[SMTSettings]UseBuiltUniqueness=false
+[SMTSettings]explicitTypeHierarchy=false
+[Strategy]ActiveStrategy=JavaCardDLStrategy
+[StrategyProperty]SPLITTING_OPTIONS_KEY=SPLITTING_DELAYED
+"
+}
+
+\javaSource "../src";
+
+\proofObligation "#Proof Obligation Settings
+#Sat Jul 15 09:53:08 CEST 2017
+name=verif.lib.crypto.CryptoLib[verif.lib.crypto.CryptoLib\\:\\:symkey_generateKey()].JML behavior operation contract.0
+contract=verif.lib.crypto.CryptoLib[verif.lib.crypto.CryptoLib\\:\\:symkey_generateKey()].JML behavior operation contract.0
+class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
+";
+
+\proof {
+(keyLog "0" (keyUser "mihai" ) (keyVersion "0814267c8a184b1e7da1309b7a9875095ca72975"))
+
+(autoModeTime "130")
+
+(branch "dummy ID"
+(rule "impRight" (formula "1") (newnames "result,exc,heapAtPre,o,f"))
+(rule "andLeft" (formula "1"))
+(rule "eqSymm" (formula "3") (term "1,0,0,1,0,1"))
+(rule "assignment" (formula "3") (term "1"))
+(builtin "One Step Simplification" (formula "3"))
+(rule "elementOfUnion" (formula "3") (term "0,0,0,0,1,0,1"))
+(rule "elementOfSingleton" (formula "3") (term "0,0,0,0,0,1,0,1"))
+(rule "elementOfSingleton" (formula "3") (term "1,0,0,0,0,1,0,1"))
+(rule "methodBodyExpand" (formula "3") (term "1") (newnames "heapBefore_symkey_generateKey,savedHeapBefore_symkey_generateKey"))
+(builtin "One Step Simplification" (formula "3"))
+(builtin "Use Operation Contract" (formula "3") (newnames "heapBefore_untrustedOutput,exc_0,heapAfter_untrustedOutput,anon_heap_untrustedOutput") (contract "verif.environment.Environment[verif.environment.Environment::untrustedOutput(long)].JML behavior operation contract.0"))
+(branch "Post (untrustedOutput)"
+   (builtin "One Step Simplification" (formula "5"))
+   (builtin "One Step Simplification" (formula "4"))
+   (rule "andLeft" (formula "4"))
+   (rule "andLeft" (formula "5"))
+   (rule "typeEqDerived" (formula "6") (term "0,1,1") (ifseqformula "5"))
+   (rule "typeEqDerived" (formula "6") (term "0,0,1") (ifseqformula "5"))
+   (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "5")))
+   (rule "true_left" (formula "6"))
+   (rule "returnUnfold" (formula "6") (term "1") (inst "#v0=x_arr"))
+   (rule "variableDeclarationAssign" (formula "6") (term "1"))
+   (rule "variableDeclaration" (formula "6") (term "1") (newnames "x_arr"))
+   (builtin "Use Operation Contract" (formula "6") (newnames "heapBefore_untrustedInputMessage,result_0,exc_1,heapAfter_untrustedInputMessage,anon_heap_untrustedInputMessage") (contract "verif.environment.Environment[verif.environment.Environment::untrustedInputMessage()].JML behavior operation contract.0"))
+   (branch "Post (untrustedInputMessage)"
+      (builtin "One Step Simplification" (formula "7"))
+      (builtin "One Step Simplification" (formula "8"))
+      (rule "andLeft" (formula "7"))
+      (rule "selectCreatedOfAnonAsFormulaEQ" (formula "8") (term "1,1,0") (ifseqformula "7"))
+      (rule "selectCreatedOfAnonAsFormulaEQ" (formula "8") (term "0,1,1,0") (ifseqformula "4"))
+      (rule "andLeft" (formula "8"))
+      (rule "andLeft" (formula "8"))
+      (rule "typeEqDerived" (formula "10") (term "0,0,1") (ifseqformula "8"))
+      (rule "typeEqDerived" (formula "10") (term "0,1,1") (ifseqformula "8"))
+      (builtin "One Step Simplification" (formula "10") (ifInst ""  (formula "8")))
+      (rule "true_left" (formula "10"))
+      (rule "assignment" (formula "10") (term "1"))
+      (builtin "One Step Simplification" (formula "10"))
+      (rule "shift_paren_or" (formula "9"))
+      (rule "shift_paren_or" (formula "9") (term "0"))
+      (rule "commute_or_2" (formula "9"))
+      (rule "methodCallReturn" (formula "10") (term "1"))
+      (rule "assignment" (formula "10") (term "1"))
+      (builtin "One Step Simplification" (formula "10"))
+      (rule "methodCallEmpty" (formula "10") (term "1"))
+      (rule "tryEmpty" (formula "10") (term "1"))
+      (rule "emptyModality" (formula "10") (term "1"))
+      (rule "andRight" (formula "10"))
+      (branch "Case 1"
+         (rule "impRight" (formula "10"))
+         (rule "orRight" (formula "11"))
+         (builtin "One Step Simplification" (formula "1"))
+         (rule "closeFalse" (formula "1"))
+      )
+      (branch "Case 2"
+         (builtin "One Step Simplification" (formula "10"))
+         (rule "allRight" (formula "10") (inst "sk=f_0"))
+         (rule "allRight" (formula "10") (inst "sk=o_0"))
+         (rule "orRight" (formula "10"))
+         (rule "orRight" (formula "10"))
+         (rule "orRight" (formula "10"))
+         (rule "eqSymm" (formula "13"))
+         (rule "pullOutSelect" (formula "13") (term "0") (inst "selectSK=f_0_0"))
+         (rule "simplifySelectOfAnonEQ" (formula "1") (ifseqformula "8"))
+         (builtin "One Step Simplification" (formula "1"))
+         (rule "selectCreatedOfAnonAsFormulaEQ" (formula "1") (term "0,1,1,0,0") (ifseqformula "5"))
+         (rule "eqSymm" (formula "14"))
+         (rule "elementOfSingleton" (formula "1") (term "0,0,0,0"))
+         (rule "replace_known_right" (formula "1") (term "0,0,0,0") (ifseqformula "12"))
+         (builtin "One Step Simplification" (formula "1"))
+         (rule "pullOutSelect" (formula "1") (term "2,0") (inst "selectSK=f_0_1"))
+         (rule "simplifySelectOfAnonEQ" (formula "1") (ifseqformula "6"))
+         (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "14")))
+         (rule "elementOfUnion" (formula "1") (term "0,0,0"))
+         (rule "elementOfSingleton" (formula "1") (term "0,0,0,0"))
+         (rule "replace_known_right" (formula "1") (term "0,0,0,0") (ifseqformula "13"))
+         (builtin "One Step Simplification" (formula "1"))
+         (rule "elementOfSingleton" (formula "1") (term "0,0,0"))
+         (rule "replace_known_right" (formula "1") (term "0,0,0") (ifseqformula "12"))
+         (builtin "One Step Simplification" (formula "1"))
+         (rule "applyEqReverse" (formula "2") (term "2,0") (ifseqformula "1"))
+         (rule "hideAuxiliaryEq" (formula "1"))
+         (rule "commute_and" (formula "12"))
+         (rule "commute_and" (formula "11"))
+         (rule "ifthenelse_split" (formula "1") (term "0"))
+         (branch " ¬o_0 = null ∧ ¬( o_0.<created> = TRUE ∨ o_0.<created>@anon_heap_untrustedOutput«anonHeapFunction» = TRUE) TRUE"
+            (rule "andLeft" (formula "1"))
+            (rule "notLeft" (formula "2"))
+            (rule "notLeft" (formula "1"))
+            (rule "orRight" (formula "12"))
+            (rule "applyEqReverse" (formula "17") (term "1") (ifseqformula "1"))
+            (rule "hideAuxiliaryEq" (formula "1"))
+            (rule "eqSymm" (formula "16"))
+            (rule "replace_known_right" (formula "15") (term "0,0") (ifseqformula "10"))
+            (builtin "One Step Simplification" (formula "15") (ifInst ""  (formula "11")))
+            (rule "closeTrue" (formula "15"))
+         )
+         (branch " ¬o_0 = null ∧ ¬( o_0.<created> = TRUE ∨ o_0.<created>@anon_heap_untrustedOutput«anonHeapFunction» = TRUE) FALSE"
+            (rule "close" (formula "15") (ifseqformula "1"))
+         )
+      )
+   )
+   (branch "Exceptional Post (untrustedInputMessage)"
+      (builtin "One Step Simplification" (formula "7"))
+      (builtin "One Step Simplification" (formula "8"))
+      (rule "andLeft" (formula "7"))
+      (rule "selectCreatedOfAnonAsFormulaEQ" (formula "8") (term "1,0") (ifseqformula "7"))
+      (rule "selectCreatedOfAnonAsFormulaEQ" (formula "8") (term "0,1,0") (ifseqformula "4"))
+      (rule "andLeft" (formula "8"))
+      (rule "andLeft" (formula "8"))
+      (rule "notLeft" (formula "8"))
+      (rule "replace_known_right" (formula "9") (term "0,0") (ifseqformula "10"))
+      (builtin "One Step Simplification" (formula "9"))
+      (rule "commute_or_2" (formula "8"))
+      (rule "methodCallParamThrow" (formula "11") (term "1"))
+      (rule "tryCatchThrow" (formula "11") (term "1"))
+      (rule "ifElseUnfold" (formula "11") (term "1") (inst "#boolv=x"))
+      (rule "variableDeclaration" (formula "11") (term "1") (newnames "x_1"))
+      (rule "equality_comparison_simple" (formula "11") (term "1"))
+      (builtin "One Step Simplification" (formula "11"))
+      (rule "replace_known_right" (formula "11") (term "0,0,1,0") (ifseqformula "10"))
+      (builtin "One Step Simplification" (formula "11"))
+      (rule "ifElseSplit" (formula "11"))
+      (branch "if x_1 true"
+         (builtin "One Step Simplification" (formula "12"))
+         (builtin "One Step Simplification" (formula "1"))
+         (rule "closeFalse" (formula "1"))
+      )
+      (branch "if x_1 false"
+         (builtin "One Step Simplification" (formula "1"))
+         (builtin "One Step Simplification" (formula "12"))
+         (rule "true_left" (formula "1"))
+         (rule "ifElseSplit" (formula "11"))
+         (branch "if exc_1 instanceof java.lang.Throwable true"
+            (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "11")))
+            (rule "true_left" (formula "1"))
+            (rule "variableDeclaration" (formula "11") (term "1") (newnames "e_1"))
+            (rule "reference_type_cast" (formula "11") (term "1"))
+            (branch "Normal Execution (exc_1 instanceof java.lang.Throwable)"
+               (builtin "One Step Simplification" (formula "12"))
+               (builtin "One Step Simplification" (formula "1"))
+               (rule "true_left" (formula "1"))
+               (rule "assignment" (formula "11") (term "1"))
+               (builtin "One Step Simplification" (formula "11"))
+               (rule "emptyModality" (formula "11") (term "1"))
+               (rule "andRight" (formula "11"))
+               (branch "Case 1"
+                  (rule "impRight" (formula "11"))
+                  (rule "orRight" (formula "12"))
+                  (builtin "One Step Simplification" (formula "12"))
+                  (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "11")))
+                  (builtin "One Step Simplification" (formula "13"))
+                  (rule "true_left" (formula "1"))
+                  (rule "replace_known_right" (formula "9") (term "0") (ifseqformula "11"))
+                  (builtin "One Step Simplification" (formula "9") (ifInst ""  (formula "12")))
+                  (rule "closeFalse" (formula "9"))
+               )
+               (branch "Case 2"
+                  (builtin "One Step Simplification" (formula "11"))
+                  (rule "allRight" (formula "11") (inst "sk=f_1"))
+                  (rule "allRight" (formula "11") (inst "sk=o_1"))
+                  (rule "orRight" (formula "11"))
+                  (rule "orRight" (formula "11"))
+                  (rule "orRight" (formula "11"))
+                  (rule "eqSymm" (formula "14"))
+                  (rule "pullOutSelect" (formula "14") (term "0") (inst "selectSK=f_1_0"))
+                  (rule "simplifySelectOfAnonEQ" (formula "1") (ifseqformula "8"))
+                  (builtin "One Step Simplification" (formula "1"))
+                  (rule "selectCreatedOfAnonAsFormulaEQ" (formula "1") (term "0,1,1,0,0") (ifseqformula "5"))
+                  (rule "eqSymm" (formula "15"))
+                  (rule "elementOfSingleton" (formula "1") (term "0,0,0,0"))
+                  (rule "replace_known_right" (formula "1") (term "0,0,0,0") (ifseqformula "13"))
+                  (builtin "One Step Simplification" (formula "1"))
+                  (rule "pullOutSelect" (formula "1") (term "2,0") (inst "selectSK=f_1_1"))
+                  (rule "simplifySelectOfAnonEQ" (formula "1") (ifseqformula "6"))
+                  (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "15")))
+                  (rule "elementOfUnion" (formula "1") (term "0,0,0"))
+                  (rule "elementOfSingleton" (formula "1") (term "1,0,0,0"))
+                  (rule "replace_known_right" (formula "1") (term "1,0,0,0") (ifseqformula "13"))
+                  (builtin "One Step Simplification" (formula "1"))
+                  (rule "elementOfSingleton" (formula "1") (term "0,0,0"))
+                  (rule "replace_known_right" (formula "1") (term "0,0,0") (ifseqformula "14"))
+                  (builtin "One Step Simplification" (formula "1"))
+                  (rule "applyEqReverse" (formula "2") (term "2,0") (ifseqformula "1"))
+                  (rule "hideAuxiliaryEq" (formula "1"))
+                  (rule "commute_and" (formula "12"))
+                  (rule "commute_and" (formula "13"))
+                  (rule "ifthenelse_split" (formula "1") (term "0"))
+                  (branch " ¬o_1 = null ∧ ¬( o_1.<created> = TRUE ∨ o_1.<created>@anon_heap_untrustedOutput«anonHeapFunction» = TRUE) TRUE"
+                     (rule "andLeft" (formula "1"))
+                     (rule "notLeft" (formula "2"))
+                     (rule "notLeft" (formula "1"))
+                     (rule "orRight" (formula "12"))
+                     (rule "applyEqReverse" (formula "18") (term "1") (ifseqformula "1"))
+                     (rule "hideAuxiliaryEq" (formula "1"))
+                     (rule "eqSymm" (formula "17"))
+                     (rule "replace_known_right" (formula "16") (term "0,0") (ifseqformula "10"))
+                     (builtin "One Step Simplification" (formula "16") (ifInst ""  (formula "11")))
+                     (rule "closeTrue" (formula "16"))
+                  )
+                  (branch " ¬o_1 = null ∧ ¬( o_1.<created> = TRUE ∨ o_1.<created>@anon_heap_untrustedOutput«anonHeapFunction» = TRUE) FALSE"
+                     (rule "close" (formula "16") (ifseqformula "1"))
+                  )
+               )
+            )
+            (branch "ClassCastException (!(exc_1 instanceof java.lang.Throwable))"
+               (builtin "One Step Simplification" (formula "11"))
+               (rule "closeTrue" (formula "11"))
+            )
+         )
+         (branch "if exc_1 instanceof java.lang.Throwable false"
+            (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "11")))
+            (rule "closeFalse" (formula "1"))
+         )
+      )
+   )
+   (branch "Pre (untrustedInputMessage)"
+      (builtin "One Step Simplification" (formula "6"))
+      (rule "wellFormedAnonEQ" (formula "6") (ifseqformula "4"))
+      (rule "replace_known_left" (formula "6") (term "0") (ifseqformula "1"))
+      (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "3")))
+      (rule "closeTrue" (formula "6"))
+   )
+)
+(branch "Exceptional Post (untrustedOutput)"
+   (builtin "One Step Simplification" (formula "5"))
+   (builtin "One Step Simplification" (formula "4"))
+   (rule "andLeft" (formula "4"))
+   (rule "selectCreatedOfAnonAsFormulaEQ" (formula "5") (term "1,0") (ifseqformula "4"))
+   (rule "andLeft" (formula "5"))
+   (rule "andLeft" (formula "5"))
+   (rule "notLeft" (formula "5"))
+   (rule "replace_known_right" (formula "6") (term "0,0") (ifseqformula "7"))
+   (builtin "One Step Simplification" (formula "6"))
+   (rule "methodCallParamThrow" (formula "8") (term "1"))
+   (rule "tryCatchThrow" (formula "8") (term "1"))
+   (rule "ifElseUnfold" (formula "8") (term "1") (inst "#boolv=x"))
+   (rule "variableDeclaration" (formula "8") (term "1") (newnames "x"))
+   (rule "equality_comparison_simple" (formula "8") (term "1"))
+   (builtin "One Step Simplification" (formula "8"))
+   (rule "replace_known_right" (formula "8") (term "0,0,1,0") (ifseqformula "7"))
+   (builtin "One Step Simplification" (formula "8"))
+   (rule "ifElseSplit" (formula "8"))
+   (branch "if x true"
+      (builtin "One Step Simplification" (formula "1"))
+      (rule "closeFalse" (formula "1"))
+   )
+   (branch "if x false"
+      (builtin "One Step Simplification" (formula "9"))
+      (builtin "One Step Simplification" (formula "1"))
+      (rule "true_left" (formula "1"))
+      (rule "ifElseSplit" (formula "8"))
+      (branch "if exc_0 instanceof java.lang.Throwable true"
+         (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "8")))
+         (rule "true_left" (formula "1"))
+         (rule "variableDeclaration" (formula "8") (term "1") (newnames "e"))
+         (rule "reference_type_cast" (formula "8") (term "1"))
+         (branch "Normal Execution (exc_0 instanceof java.lang.Throwable)"
+            (builtin "One Step Simplification" (formula "9"))
+            (builtin "One Step Simplification" (formula "1"))
+            (rule "true_left" (formula "1"))
+            (rule "assignment" (formula "8") (term "1"))
+            (builtin "One Step Simplification" (formula "8"))
+            (rule "emptyModality" (formula "8") (term "1"))
+            (rule "andRight" (formula "8"))
+            (branch "Case 1"
+               (rule "impRight" (formula "8"))
+               (rule "orRight" (formula "9"))
+               (builtin "One Step Simplification" (formula "9"))
+               (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "8")))
+               (builtin "One Step Simplification" (formula "10"))
+               (rule "true_left" (formula "1"))
+               (rule "replace_known_right" (formula "6") (term "0") (ifseqformula "8"))
+               (builtin "One Step Simplification" (formula "6") (ifInst ""  (formula "9")))
+               (rule "closeFalse" (formula "6"))
+            )
+            (branch "Case 2"
+               (builtin "One Step Simplification" (formula "8"))
+               (rule "allRight" (formula "8") (inst "sk=f_2"))
+               (rule "allRight" (formula "8") (inst "sk=o_2"))
+               (rule "orRight" (formula "8"))
+               (rule "orRight" (formula "8"))
+               (rule "orRight" (formula "8"))
+               (rule "eqSymm" (formula "11"))
+               (rule "pullOutSelect" (formula "11") (term "0") (inst "selectSK=f_2_0"))
+               (rule "simplifySelectOfAnonEQ" (formula "1") (ifseqformula "5"))
+               (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "11")))
+               (rule "eqSymm" (formula "12"))
+               (rule "elementOfUnion" (formula "1") (term "0,0,0"))
+               (rule "elementOfSingleton" (formula "1") (term "0,0,0,0"))
+               (rule "replace_known_right" (formula "1") (term "0,0,0,0") (ifseqformula "10"))
+               (builtin "One Step Simplification" (formula "1"))
+               (rule "elementOfSingleton" (formula "1") (term "0,0,0"))
+               (rule "replace_known_right" (formula "1") (term "0,0,0") (ifseqformula "9"))
+               (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "12")))
+               (rule "closeFalse" (formula "1"))
+            )
+         )
+         (branch "ClassCastException (!(exc_0 instanceof java.lang.Throwable))"
+            (builtin "One Step Simplification" (formula "8"))
+            (rule "closeTrue" (formula "8"))
+         )
+      )
+      (branch "if exc_0 instanceof java.lang.Throwable false"
+         (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "8")))
+         (rule "closeFalse" (formula "1"))
+      )
+   )
+)
+(branch "Pre (untrustedOutput)"
+   (builtin "One Step Simplification" (formula "3") (ifInst ""  (formula "1")))
+   (rule "closeTrue" (formula "3"))
+)
+)
+
+}

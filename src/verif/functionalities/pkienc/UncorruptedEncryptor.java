@@ -19,10 +19,16 @@ public final class UncorruptedEncryptor extends Encryptor {
 
 	public byte[] encrypt(byte[] message) {
 		byte[] randomCipher = null;
-		// keep asking the environment for the ciphertext, until a fresh one is given:
-		while( randomCipher==null || log.containsCiphertext(randomCipher) ) {
-			randomCipher = MessageTools.copyOf(CryptoLib.pke_encrypt(MessageTools.getZeroMessage(message.length), MessageTools.copyOf(publicKey)));
+		randomCipher = MessageTools.copyOf(CryptoLib.pke_encrypt(MessageTools.getZeroMessage(message.length), MessageTools.copyOf(publicKey)));
+		
+		if(randomCipher == null){
+			throw new RuntimeException();
 		}
+		
+		if(log.containsCiphertext(randomCipher)){
+			throw new RuntimeException();
+		}
+		
 		log.add(MessageTools.copyOf(message), randomCipher);
 		return MessageTools.copyOf(randomCipher);
 	}

@@ -3,22 +3,31 @@ package verif.lib.crypto;
 import verif.environment.Environment;
 
 public class CryptoLib {
-
-	public static byte[] nextNonce() {
+	/*@ public behaviour
+    ensures true;
+    assignable Environment.result, Environment.inputCounter;
+    @*/
+	public static /*@nullable@*/byte[] nextNonce() {
 		// input
 		Environment.untrustedOutput(0x100);
 		// output
 		return Environment.untrustedInputMessage();
 	}
-
-	public static byte[] symkey_generateKey() {
+	 /*@ public behaviour
+    ensures true;
+    assignable Environment.result, Environment.inputCounter;
+    @*/
+	public static /*@nullable@*/byte[] symkey_generateKey() {
 		// input
 		Environment.untrustedOutput(0x91);
 		// output
 		return Environment.untrustedInputMessage();
 	}
-
-	public static byte[] symkey_encrypt(byte[] key, byte[] msg) {
+	 /*@ public behaviour
+    ensures true;
+    assignable Environment.result, Environment.inputCounter;
+    @*/
+	public static /*@nullable@*/byte[] symkey_encrypt(/*@nullable@*/byte[] key, /*@nullable@*/byte[] msg) {
 		// input
 		Environment.untrustedOutput(0x92);
 		Environment.untrustedOutputMessage(msg);
@@ -26,8 +35,11 @@ public class CryptoLib {
 		// output
 		return Environment.untrustedInputMessage();
 	}
-
-	public static byte[] symkey_decrypt(byte[] key, byte[] msg) {
+	 /*@ public behaviour
+    ensures true;
+    assignable Environment.result, Environment.inputCounter;
+    @*/
+	public static /*@nullable@*/byte[] symkey_decrypt(/*@nullable@*/byte[] key, /*@nullable@*/byte[] msg) {
 		// input
 		Environment.untrustedOutput(0x93);
 		Environment.untrustedOutputMessage(msg);
@@ -36,8 +48,11 @@ public class CryptoLib {
 		return Environment.untrustedInputMessage();
 	}
 
-
-	public static byte[] pke_encrypt(byte[] message, byte[] publKey) {
+	 /*@ public behaviour
+    ensures true;
+    assignable Environment.result, Environment.inputCounter;
+    @*/
+	public static /*@nullable@*/byte[] pke_encrypt(/*@nullable@*/byte[] message, /*@nullable@*/byte[] publKey) {
 		// input
 		Environment.untrustedOutput(0x66); // Function code for pke_encrypt
 		Environment.untrustedOutputMessage(message);
@@ -45,8 +60,11 @@ public class CryptoLib {
 		// output
 		return Environment.untrustedInputMessage();
 	}
-
-	public static byte[] pke_decrypt(byte[] message, byte[] privKey) {
+	 /*@ public behaviour
+    ensures true;
+    assignable Environment.result, Environment.inputCounter;
+    @*/
+	public static /*@nullable@*/byte[] pke_decrypt(/*@nullable@*/byte[] message, /*@nullable@*/byte[] privKey) {
 		// input
 		Environment.untrustedOutput(0x77); // Function code for pke_decrypt
 		Environment.untrustedOutputMessage(message);
@@ -54,8 +72,11 @@ public class CryptoLib {
 		// output
 		return Environment.untrustedInputMessage();
 	}
-	
-	public static KeyPair pke_generateKeyPair() {
+	 /*@ public behaviour
+    ensures true;
+    assignable Environment.result, Environment.inputCounter;
+    @*/
+	public static /*@nullable@*/KeyPair pke_generateKeyPair() {
 		// input
 		Environment.untrustedOutput(0x88); // Function code for pke_generateKeyPair
 		
@@ -85,7 +106,7 @@ public class CryptoLib {
         ensures true;
         assignable Environment.result, Environment.inputCounter;
     @*/
-	public static /*@nullable@*/byte[] sign(byte[] message, byte[] signingKey) {
+	public static /*@nullable@*/byte[] sign(/*@nullable@*/byte[] message, /*@nullable@*/byte[] signingKey) {
 		// input
 		Environment.untrustedOutput(0x66); // Function code for pke_encrypt
 		Environment.untrustedOutputMessage(message);
@@ -97,7 +118,7 @@ public class CryptoLib {
     ensures true;
     assignable Environment.result, Environment.inputCounter;
     @*/
-	public static /*@nullable@*/byte[] virifySignature(byte[] signature, byte[] message, byte[] verificationKey) {
+	public static /*@nullable@*/byte[] virifySignature(/*@nullable@*/byte[] signature, /*@nullable@*/byte[] message,/*@nullable@*/ byte[] verificationKey) {
 		// input
 		Environment.untrustedOutput(0x66); // Function code for pke_encrypt
 		Environment.untrustedOutputMessage(message);
