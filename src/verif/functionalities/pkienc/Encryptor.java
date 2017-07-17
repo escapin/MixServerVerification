@@ -18,10 +18,9 @@ public class Encryptor {
 		this.publicKey = publicKey;
 	}
 	/*@
-	public normal_behaviour
-	ensures \dl_array2seq(\result) == \dl_mEncrypt(\dl_array2seq(message));
-	ensures \fresh(\result);
-	assignable \nothing;
+	public behaviour
+	ensures true;
+	assignable verif.environment.Environment.result, verif.environment.Environment.inputCounter; 
 	@*/
 	public byte[]/*@helper@*/ encrypt(byte[] message) {
 		return MessageTools.copyOf(CryptoLib.pke_encrypt(MessageTools.copyOf(message), MessageTools.copyOf(publicKey)));

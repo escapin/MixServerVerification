@@ -60,9 +60,20 @@ public class MessageTools {
             return false; // you can also return true here, I (the Joana guy) don't care
         }
     }
-
+    /*@ public normal_behaviour
+        requires messageSize >= 0;
+        ensures \result.length == messageSize;
+        ensures \fresh(\result);
+        assignable \nothing;
+    @*/
     public static byte[] getZeroMessage(int messageSize) {
         byte[] zeroVector = new byte[messageSize];
+        /*@
+        loop_invariant zeroVector.length == messageSize;
+        loop_invariant 0 <= i && i <= zeroVector.length;
+        assignable zeroVector[*];
+        decreases zeroVector.length - i; 
+        @*/
         for (int i = 0; i < zeroVector.length; i++) {
             zeroVector[i] = 0x00;
         }

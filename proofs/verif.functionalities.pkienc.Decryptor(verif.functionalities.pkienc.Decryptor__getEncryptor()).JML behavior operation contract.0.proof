@@ -2,10 +2,10 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Tue Jul 11 20:08:05 CEST 2017
+#Mon Jul 17 23:37:10 CEST 2017
 [StrategyProperty]VBT_PHASE=VBT_SYM_EX
 [SMTSettings]useUninterpretedMultiplication=true
-[SMTSettings]SelectedTaclets=
+[SMTSettings]SelectedTaclets=\\#begexpand_inByte\\#end,\\#begexpand_inChar\\#end,\\#begexpand_inShort\\#end,\\#begexpand_inInt\\#end,\\#begexpand_inLong\\#end
 [StrategyProperty]METHOD_OPTIONS_KEY=METHOD_CONTRACT
 [StrategyProperty]USER_TACLETS_OPTIONS_KEY3=USER_TACLETS_OFF
 [StrategyProperty]SYMBOLIC_EXECUTION_ALIAS_CHECK_OPTIONS_KEY=SYMBOLIC_EXECUTION_ALIAS_CHECK_NEVER
@@ -24,7 +24,7 @@
 [Strategy]Timeout=-1
 [Strategy]MaximumNumberOfAutomaticApplications=5000
 [SMTSettings]integersMaximum=2147483645
-[Choice]DefaultChoices=assertions-assertions\\:on , initialisation-initialisation\\:disableStaticInitialisation , intRules-intRules\\:arithmeticSemanticsIgnoringOF , programRules-programRules\\:Java , runtimeExceptions-runtimeExceptions\\:allow , JavaCard-JavaCard\\:on , Strings-Strings\\:on , modelFields-modelFields\\:treatAsAxiom , bigint-bigint\\:on , sequences-sequences\\:on , moreSeqRules-moreSeqRules\\:on , reach-reach\\:on , integerSimplificationRules-integerSimplificationRules\\:full , wdOperator-wdOperator\\:L , wdChecks-wdChecks\\:off , permissions-permissions\\:off , joinGenerateIsWeakeningGoal-joinGenerateIsWeakeningGoal\\:off
+[Choice]DefaultChoices=assertions-assertions\\:on , initialisation-initialisation\\:disableStaticInitialisation , intRules-intRules\\:arithmeticSemanticsIgnoringOF , programRules-programRules\\:Java , runtimeExceptions-runtimeExceptions\\:allow , JavaCard-JavaCard\\:on , Strings-Strings\\:on , modelFields-modelFields\\:treatAsAxiom , bigint-bigint\\:on , sequences-sequences\\:on , moreSeqRules-moreSeqRules\\:on , reach-reach\\:on , integerSimplificationRules-integerSimplificationRules\\:full , permissions-permissions\\:off , wdOperator-wdOperator\\:L , wdChecks-wdChecks\\:off , joinGenerateIsWeakeningGoal-joinGenerateIsWeakeningGoal\\:off
 [SMTSettings]useConstantsForBigOrSmallIntegers=true
 [StrategyProperty]STOPMODE_OPTIONS_KEY=STOPMODE_DEFAULT
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
@@ -42,7 +42,7 @@
 \javaSource "../src";
 
 \proofObligation "#Proof Obligation Settings
-#Tue Jul 11 20:08:05 CEST 2017
+#Mon Jul 17 23:37:10 CEST 2017
 name=verif.functionalities.pkienc.Decryptor[verif.functionalities.pkienc.Decryptor\\:\\:getEncryptor()].JML behavior operation contract.0
 contract=verif.functionalities.pkienc.Decryptor[verif.functionalities.pkienc.Decryptor\\:\\:getEncryptor()].JML behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
@@ -50,8 +50,9 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 
 \proof {
 (keyLog "0" (keyUser "mihai" ) (keyVersion "0814267c8a184b1e7da1309b7a9875095ca72975"))
+(keyLog "1" (keyUser "mihai" ) (keyVersion "0814267c8a184b1e7da1309b7a9875095ca72975"))
 
-(autoModeTime "153")
+(autoModeTime "296")
 
 (branch "dummy ID"
 (builtin "One Step Simplification" (formula "1") (newnames "self,result,exc,heapAtPre,o,f"))
@@ -77,8 +78,8 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (rule "variableDeclaration" (formula "6") (term "1") (newnames "var_1"))
 (rule "assignment_read_attribute_this" (formula "6") (term "1"))
 (builtin "One Step Simplification" (formula "6"))
-(rule "onlyCreatedObjectsAreReferenced" (formula "6") (term "0,1,0") (ifseqformula "1"))
-(rule "onlyCreatedObjectsAreReferenced" (formula "7") (term "0,1,0,0") (ifseqformula "2"))
+(rule "onlyCreatedObjectsAreReferenced" (formula "6") (term "0,1,0,0") (ifseqformula "1"))
+(rule "onlyCreatedObjectsAreReferenced" (formula "7") (term "0,1,0") (ifseqformula "2"))
 (rule "instanceCreationAssignment" (formula "8") (term "1") (inst "#v0=u_1"))
 (rule "variableDeclarationAssign" (formula "8") (term "1"))
 (rule "variableDeclaration" (formula "8") (term "1") (newnames "u_1"))
@@ -176,10 +177,28 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
    (builtin "One Step Simplification" (formula "11"))
    (rule "methodCallEmpty" (formula "11") (term "1"))
    (rule "tryEmpty" (formula "11") (term "1"))
-   (builtin "One Step Simplification" (formula "11"))
    (rule "emptyModality" (formula "11") (term "1"))
-   (builtin "One Step Simplification" (formula "11") (ifInst ""  (formula "9")) (ifInst ""  (formula "8")))
-   (rule "closeTrue" (formula "11"))
+   (builtin "One Step Simplification" (formula "11") (ifInst ""  (formula "1")) (ifInst ""  (formula "9")) (ifInst ""  (formula "8")))
+   (rule "castDel" (formula "11") (term "1,0"))
+   (rule "eqSymm" (formula "11"))
+   (rule "dismissNonSelectedField" (formula "11") (term "0"))
+   (rule "eqSymm" (formula "11"))
+   (rule "dismissNonSelectedField" (formula "11") (term "1"))
+   (rule "dismissNonSelectedField" (formula "11") (term "0"))
+   (rule "dismissNonSelectedField" (formula "11") (term "1"))
+   (rule "pullOutSelect" (formula "11") (term "0") (inst "selectSK=verif_functionalities_pkienc_UncorruptedEncryptor_log_0"))
+   (rule "simplifySelectOfStore" (formula "1"))
+   (builtin "One Step Simplification" (formula "1"))
+   (rule "castDel" (formula "1") (term "0"))
+   (rule "applyEqReverse" (formula "12") (term "0") (ifseqformula "1"))
+   (rule "hideAuxiliaryEq" (formula "1"))
+   (rule "eqSymm" (formula "11"))
+   (rule "pullOutSelect" (formula "11") (term "0") (inst "selectSK=verif_functionalities_pkienc_Decryptor_log_0"))
+   (rule "simplifySelectOfCreate" (formula "1"))
+   (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "9")))
+   (rule "applyEqReverse" (formula "12") (term "0") (ifseqformula "1"))
+   (builtin "One Step Simplification" (formula "12"))
+   (rule "closeTrue" (formula "12"))
 )
 (branch "Null Reference (u_1 = null)"
    (builtin "One Step Simplification" (formula "1") (ifInst ""  (formula "9")))

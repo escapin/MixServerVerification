@@ -16,8 +16,14 @@ public final class UncorruptedEncryptor extends Encryptor {
 		super(publicKey);
 		this.log = log;
 	}
-
-	public byte[] encrypt(byte[] message) {
+    /*@ requires log.ciphertext.length == log.plaintext.length;
+        ensures (\forall int i; 0 <= i && i < \old(log.ciphertext.length); \dl_array2seq(log.ciphertext[i]) != \dl_array2seq(\result));
+        ensures \dl_array2seq(log.ciphertext) == \dl_seqConcat(\old(\dl_array2seq(log.ciphertext)), \dl_seqSingleton(\result));
+        ensures \dl_array2seq(log.plaintext) == \dl_seqConcat(\old(\dl_array2seq(log.plaintext)), \dl_seqSingleton(message));
+        ensures \dl_array2seq(log.ciphertext[log.ciphertext.length-1]) == \dl_array2seq(\result);
+        assignable verif.environment.Environment.result, verif.environment.Environment.inputCounter; 
+    @*/
+	public byte[]/*@helper@*/ encrypt(byte[] message) {
 		byte[] randomCipher = null;
 		randomCipher = MessageTools.copyOf(CryptoLib.pke_encrypt(MessageTools.getZeroMessage(message.length), MessageTools.copyOf(publicKey)));
 		
@@ -29,7 +35,7 @@ public final class UncorruptedEncryptor extends Encryptor {
 			throw new RuntimeException();
 		}
 		
-		log.add(MessageTools.copyOf(message), randomCipher);
+		log.add(message, randomCipher);
 		return MessageTools.copyOf(randomCipher);
 	}
 

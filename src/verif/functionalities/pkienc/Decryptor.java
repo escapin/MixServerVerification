@@ -13,7 +13,9 @@ public class Decryptor {
 	
     /*@public behaviour
        ensures \fresh(log);
+       ensures log.ciphertext != null;
        ensures log.ciphertext.length == 0;
+       ensures log.plaintext != null;
        ensures log.plaintext.length == 0;
        ensures \fresh(this);
     @*/
@@ -27,23 +29,30 @@ public class Decryptor {
 	/** "Decrypts" a message by, first trying to find in in the log (and returning
 	 *   the related plaintext) and, only if this fails, by using real decryption. */
 	/*@
-	public normal_behaviour
-	ensures \dl_array2seq(\result) == \dl_mDecrypt(\dl_array2seq(message));
+	public behaviour
+	requires (\exists int i; 0 <= i && i < log.ciphertext.length; \dl_array2seq(log.ciphertext[i]) == \dl_array2seq(message));
+	requires log.ciphertext.length == log.plaintext.length;
+	ensures (\exists int i; 0 <= i && i < log.ciphertext.length; \dl_array2seq(message) == \dl_array2seq(log.ciphertext[i]) && \dl_array2seq(\result) == \dl_array2seq(log.plaintext[i]));
 	ensures \fresh(\result);
 	assignable \nothing;
 	@*/
 	public /*@helper@*/byte[] decrypt(byte[] message) {
 		byte[] messageCopy = MessageTools.copyOf(message);
-		if (!log.containsCiphertext(messageCopy)) {
+		
+		byte[] plain = log.lookup(message);
+		
+		if (plain == null) {
 			return MessageTools.copyOf( CryptoLib.pke_decrypt(MessageTools.copyOf(privateKey), messageCopy) );
 		} else {
-			return MessageTools.copyOf( log.lookup(messageCopy) );
+			return MessageTools.copyOf( plain);
 		}
 	}
 
 	/** Returns a new uncorrupted encryptor object sharing the same public key, ID, and log. */
 	/*@
 	   public behaviour
+	   ensures \typeof(\result) == \type(verif.functionalities.pkienc.UncorruptedEncryptor);
+	   ensures ((verif.functionalities.pkienc.UncorruptedEncryptor)\result).log == this.log;
 	   ensures \fresh(\result);
 	@*/
 	public /*@helper@*/Encryptor getEncryptor() {

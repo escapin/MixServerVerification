@@ -406,6 +406,22 @@ public class MixServer
 	}
 	
 	
+	/*@ requires \dl_seqPerm(\dl_array2seq2d(msg), \dl_array2seq2d(decryptor.log.ciphertext));
+	    requires decryptor.log.ciphertext == decryptor.log.plaintext;
+	    
+	    ensures \dl_seqPerm(\dl_array2seq2d(\result), \dl_array2seq2d(decryptor.log.plaintext));
+	@*/
+	public byte[][] decryptBallots(byte[][] msg){
+		byte[][] res= new byte[msg.length][];
+		
+		for (int i = 0; i < res.length; i++) {
+			res[i] = decryptor.decrypt(msg[i]);
+		}
+		
+		return res;
+	}
+	
+	
 
     /*@
     public normal_behaviour    
