@@ -406,14 +406,27 @@ public class MixServer
 	}
 	
 	
-	/*@ requires \dl_seqPerm(\dl_array2seq2d(msg), \dl_array2seq2d(decryptor.log.ciphertext));
+	/*@ public behaviour
+	    requires \dl_seqPerm(\dl_array2seq2d(msg), \dl_array2seq2d(decryptor.log.ciphertext));
 	    requires decryptor.log.ciphertext == decryptor.log.plaintext;
-	    
+	    requires (\forall int i; 0 <= i && i < decryptor.log.ciphertext.length; 
+	                 (\forall int j; 0 <=j && j < decryptor.log.ciphertext.length && i != j;
+	                       \dl_array2seq(decryptor.log.ciphertext[i]) != \dl_array2seq(decryptor.log.ciphertext[j]) ));
 	    ensures \dl_seqPerm(\dl_array2seq2d(\result), \dl_array2seq2d(decryptor.log.plaintext));
 	@*/
 	public byte[][] decryptBallots(byte[][] msg){
 		byte[][] res= new byte[msg.length][];
-		
+		/*@ loop_invariant res.length == msg.length;
+		    loop_invariant (\forall int j; 0 <= j && j < i;
+		                     (\exists int k; 0 <= k && k < decryptor.log.ciphertext.length;
+		                          \dl_array2seq(res[j]) == \dl_array2seq(decryptor.log.plaintext[k]) &&
+		                            \dl_array2seq(msg[j]) == \dl_array2seq(decryptor.log.ciphertext[k])
+		                          ));
+		    loop_invariant (\forall int j; 0 <= j && j < i; res[i] != null);                  
+		    loop_invariant 0 <= i && i <= res.length;
+		    assignable res[*];
+		    decreases res.length-i;
+		@*/
 		for (int i = 0; i < res.length; i++) {
 			res[i] = decryptor.decrypt(msg[i]);
 		}

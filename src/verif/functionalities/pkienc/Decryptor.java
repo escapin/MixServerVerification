@@ -63,8 +63,8 @@ public class Decryptor {
 	
 	static class EncryptionLog {
 		
-		byte[][] ciphertext;
-		byte[][] plaintext;
+		/*@spec_public@*/byte[][] ciphertext;
+		/*@spec_public@*/byte[][] plaintext;
 	    /*@public normal_behaviour
 	       ensures \fresh(ciphertext) && \fresh(plaintext);
 	       ensures ciphertext.length == 0 && plaintext.length == 0;
