@@ -422,7 +422,7 @@ public class MixServer
 		                          \dl_array2seq(res[j]) == \dl_array2seq(decryptor.log.plaintext[k]) &&
 		                            \dl_array2seq(msg[j]) == \dl_array2seq(decryptor.log.ciphertext[k])
 		                          ));
-		    loop_invariant (\forall int j; 0 <= j && j < i; res[i] != null);                  
+		    loop_invariant (\forall int j; 0 <= j && j < i; res[j] != null);                  
 		    loop_invariant 0 <= i && i <= res.length;
 		    assignable res[*];
 		    decreases res.length-i;

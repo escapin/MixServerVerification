@@ -375,8 +375,14 @@ public final class Setup {
 		return encrMsg;
 	}
     
-	/*@public normal_behaviour	   
-	   ensures \result.length == idMsg.length;
+	/*@public normal_behaviour	 
+	   requires \typeof(mixEncr)  == \type(verif.functionalities.pkienc.UncorruptedEncryptor);
+	   requires ((verif.functionalities.pkienc.UncorruptedEncryptor)mixEncr).log != null;
+	   requires ((verif.functionalities.pkienc.UncorruptedEncryptor)mixEncr).log.plaintext != null;
+	   requires ((verif.functionalities.pkienc.UncorruptedEncryptor)mixEncr).log.ciphertext != null;
+	   requires ((verif.functionalities.pkienc.UncorruptedEncryptor)mixEncr).log.plaintext.length == 0;
+	   requires ((verif.functionalities.pkienc.UncorruptedEncryptor)mixEncr).log.ciphertext.length == 0;
+	   
 	   ensures (\forall int i; 0 <= i && i < \result.length; \dl_array2seq(\result[i]) == \dl_mEncrypt(\dl_array2seq(idMsg[i])));
 	   ensures \fresh(\result);
 	   assignable \nothing;

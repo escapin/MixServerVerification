@@ -7,7 +7,7 @@ import verif.lib.crypto.CryptoLib;
 /** Encryptor encapsulating possibly corrupted public key.
  */
 public class Encryptor {
-	protected /*@spec_public@*/byte[] publicKey;
+	protected /*@spec_public nullable@*/byte[] publicKey;
 
 	/*@
 	public normal_behaviour
